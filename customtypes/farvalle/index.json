@@ -1,0 +1,104 @@
+{
+  "format": "custom",
+  "id": "farvalle",
+  "label": "FARVALLE",
+  "repeatable": true,
+  "status": true,
+  "json": {
+    "Main": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "UID"
+        }
+      },
+      "course_image": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem do Curso",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "name": {
+        "type": "Text",
+        "config": {
+          "label": "Nome do Curso",
+          "placeholder": ""
+        }
+      },
+      "modality": {
+        "type": "Text",
+        "config": {
+          "label": "Modalidade",
+          "placeholder": ""
+        }
+      },
+      "total_value": {
+        "type": "Number",
+        "config": {
+          "label": "Valor Total",
+          "placeholder": ""
+        }
+      },
+      "discount": {
+        "type": "Number",
+        "config": {
+          "label": "Desconto",
+          "placeholder": ""
+        }
+      },
+      "course_information": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Informação do Curso",
+          "placeholder": "",
+          "allowTargetBlank": true,
+          "multi": "paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"
+        }
+      },
+      "discipline_1": {
+        "type": "Text",
+        "config": {
+          "label": "Disciplina 1",
+          "placeholder": ""
+        }
+      },
+      "discipline_2": {
+        "type": "Text",
+        "config": {
+          "label": "Disciplina 2",
+          "placeholder": ""
+        }
+      },
+      "discipline_3": {
+        "type": "Text",
+        "config": {
+          "label": "Disciplina 3",
+          "placeholder": ""
+        }
+      },
+      "discipline_4": {
+        "type": "Text",
+        "config": {
+          "label": "Disciplina 4",
+          "placeholder": ""
+        }
+      },
+      "discipline_5": {
+        "type": "Text",
+        "config": {
+          "label": "Disciplina 5",
+          "placeholder": ""
+        }
+      },
+      "discipline_6": {
+        "type": "Text",
+        "config": {
+          "label": "Disciplina 6",
+          "placeholder": ""
+        }
+      }
+    }
+  }
+}

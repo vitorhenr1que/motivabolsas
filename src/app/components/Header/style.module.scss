@@ -1,0 +1,149 @@
+
+.headerContainer{
+    width: 80%;
+    margin: 0 auto;
+.navContainer {
+    height: 80px;
+    width: 100%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    gap: .75rem;
+    .toggleAndLogoContainer{
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        
+
+        .logo{
+            height: 100%;
+                .logoImage{
+                    height: 50px;
+                    width: 100%;
+                }
+        }
+    }
+    .ulContainer{
+        
+        display: flex;
+        list-style: none;
+        gap: .5rem;
+        align-items: center;
+        justify-content: center;
+        .liItem{
+            color: #000;
+        }
+        .signInButton{
+            background: var(--button-gray);
+            border: none;
+            padding: 16px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-color-on-background);
+            transition: .5s;
+            font-weight: 700;
+            &:hover{
+                background: var(--button-gray-hover);
+            }
+        }
+        .signUpButton{
+            background: var(--button-background);
+            border: none;
+            padding: 16px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-color-on-background);
+            transition: .5s;
+            font-weight: 700;
+            &:hover{
+                background: var(--button-background-hover);
+            }
+        }
+        .loggedButton{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bf-yellow);
+            cursor: pointer;
+            transition: .3s;
+            position: relative;
+            &:hover{
+                background: var(--bf-yellow-hover);
+                transition: .5s;
+     
+                
+            }
+            .dropdownDiv{
+                cursor: initial;
+                position: absolute;
+                display: block;
+                flex-direction: column;
+                flex: 1;
+                margin-top: 6px;
+                width: 425px;
+                background: #ececec;
+                right: 0;
+                z-index: 1;
+                border-radius: 8px;
+                
+                
+            }
+        }
+        }
+    }
+}
+
+@media(max-width: 1000px){
+    .headerContainer{
+        width: 90%;
+    }
+}
+
+@media(max-width: 700px){
+    
+    .logo{
+        .logoImage{
+            height: 50px;
+            width: 100%;
+        }
+    }
+    
+}
+
+@media(max-width: 567px){
+    .headerContainer{
+        .navContainer{
+            .ulContainer{
+                .signInButton, .signUpButton{
+                    font-size: .7rem;
+                    padding: 10px 12px;
+                }
+                .loggedButton{
+                    .dropdownDiv{
+                        width: 330px;
+                        margin-top: 1.8rem;
+                     }
+                 }
+            }
+            .toggleAndLogoContainer{
+                .logo{
+                    .logoImage{
+                        height: 40px;
+                        width: 100%;
+                    }
+                }
+            }
+        }
+         
+    }
+}
+@media(max-width: 440px){
+    .headerContainer{
+        width: 100%;
+    }
+}

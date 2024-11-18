@@ -1,0 +1,122 @@
+.dropdownContainer{
+    .container{
+        display: none;
+    }
+    .buttonDiv{
+        display: flex;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .userInfoContainer{
+        display: flex;
+        width: 100%;
+        padding: 16px 24px;
+        align-items: center;
+        gap: .8rem;
+        transition: .2s;
+        &:hover{
+            background: var(--bf-gray-hover);
+        }
+        .avatarDiv{
+            width: 50px;
+            height: 50px;
+            background: var(--bf-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+    
+        }
+        .nameEmail{
+            display: flex;
+            flex-direction: column;
+        }
+        .viewProfile{
+            background: var(--button-background);
+            padding: 16px 24px;
+            border-radius: 8px;
+            border: none;
+            color: var(--text-color-on-background);
+            font-weight: 600;
+            font-size: .9rem;
+            &:hover{
+                background: var(--button-background-hover);
+            }
+        }
+        
+    }
+    .userLinks{
+        display: flex;
+        padding: 16px 24px;
+        gap: 1rem;
+        cursor: pointer;
+        transition: .2s;
+        &:hover{
+            background: var(--bf-gray-hover);
+        }
+        .myAccount{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            
+            strong{
+                font-weight: 600;
+            }
+            span{
+                font-size: 14px;
+            }
+        }
+    }   
+    .logoutButton{
+        color: var(--bf-red);
+        border: none;
+        background: var(--bf-gray);
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        display: flex;
+        padding: 16px 24px;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        transition: .2s;
+        cursor: pointer;
+        &:hover{
+            background: var(--bf-gray-hover);
+        }
+        span{
+            font-size: 1rem;
+        
+            
+        }
+    }
+    .hr{
+        margin: 0;
+    }
+}
+
+@media(max-width: 567px){
+    .dropdownContainer{
+        font-size: .8rem;
+        .userInfoContainer{
+            .viewProfile{
+                font-size: .6rem;
+                padding: 8px 8px;
+            }
+        }
+        .userLinks{
+            .myAccount{
+                span{
+                    font-size: .8rem;
+                }
+            }
+        }
+        
+        .logoutButton{
+            span{
+                font-size: .9rem;
+            }
+        }
+    }
+}

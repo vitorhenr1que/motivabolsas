@@ -1,0 +1,41 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: .5rem;
+    .headerSectionContainer{
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: .5rem;
+    }
+    .activeImage{
+        
+        height: 405px;
+        
+        .image{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+    .imagesForSelection{
+        display: flex;
+        gap: .5rem;
+        height: 80px;
+        
+        .buttonImage{
+            width: 100%;
+            height: 100%;
+            flex: 1;
+            
+            cursor: pointer;
+            border: none;
+            .image{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+    }
+}

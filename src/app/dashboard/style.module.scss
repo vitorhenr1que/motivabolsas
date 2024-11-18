@@ -1,0 +1,17 @@
+            .infoPayContainer{
+
+                background-color: var(--bf-red);
+                padding: 16px 24px;
+                border-radius: 8px;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                .button{
+                    cursor: pointer;
+                    border: none;
+                    padding: 16px 32px;
+                    border-radius: 8px;
+                }
+            }
+     

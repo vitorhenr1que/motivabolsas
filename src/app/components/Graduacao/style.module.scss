@@ -1,0 +1,60 @@
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    .selectContainer{
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        width: 100%;
+        label {
+            margin: 0;
+            font-weight: 700;
+        }
+        select {
+            width: 80%;
+            margin: 0;
+            border: 1.2px solid #acacac;
+            border-radius: 8px;
+            padding: 1rem;
+            appearance: none;
+            outline: none;
+            color: #333;
+            transition: .2s;
+            &:hover {
+                border: 1.2px solid var(--bf-yellow);
+            }
+        }
+    }
+    .buscar {
+        width: 50%;
+        border: none;
+        border-radius: 8px;
+        background: var(--button-background);
+        cursor: pointer;
+        color: var(--text-color-on-background);
+        &:hover{
+            background: var(--button-background-hover);
+        }
+        transition: .3s;
+    }
+}
+
+@media(max-width: 700px){
+    .container{
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        .selectContainer{
+            gap: .5rem;
+            align-items: center;
+            select{
+                text-align: center;
+            }
+        }
+        .buscar{
+            padding: 16px 24px;
+            width: 80%;
+        }
+    }
+}

@@ -1,0 +1,104 @@
+.tableContainer{
+    max-width: 1000px;
+    .table{
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        .thead{
+            display: flex;
+            .tHrow{
+                border-bottom: 1px solid #adadad;
+                display: flex;
+                flex: 1;
+                th{
+                    
+                    padding: 16px 24px;
+                    text-align: start;
+                }
+                .thPayment{
+                    flex: .5
+                }
+                .thClient{
+                    flex: .4
+                }
+                .thStatus{
+                    flex: .3
+                }
+                .thAmount{
+                    flex: .3
+                }
+                .thCreated{
+                    flex: .3;
+                }
+                .thComprovant{
+                    flex: .3;
+                }
+            }
+        }
+        .tbody{
+            
+            .tBrow{
+                display: flex;
+                flex: 1;
+                border-bottom: 1px solid #adadad;
+                td{
+                    padding: 16px 24px;
+                }
+                .tdPayment{
+                    flex: .5;
+                }
+                .tdClient{
+                    flex: .4;
+                }
+                .tdStatus{
+                    flex: .3;
+                    .statusDiv{
+                        display: flex;
+                        gap: .5rem;
+                        align-items: center;
+                        
+                    }
+                }
+                .tdAmount{
+                    flex: .3;
+                }
+                .tdCreated{
+                    flex: .3;
+                }
+                .tdButton{
+                    flex: .3;
+                    display: flex;
+      
+                    .button{
+                        cursor: pointer;
+                        width: 120px;
+                        background: var(--button-background);
+                        border-radius: 4px;
+                        border: none ;
+                        color: white;
+                        transition: .2s;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        
+                        &:hover{
+                            background: var(--button-background-hover);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media(max-width: 700px){
+    .tableContainer{
+        max-width: 700px;
+        font-size: .8rem;
+    }
+}
+@media(max-width: 1062px){
+    .tableContainer{
+        max-width: 600px;
+    }
+}

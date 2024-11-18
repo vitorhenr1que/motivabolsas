@@ -1,0 +1,22 @@
+.divLoading{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    .loading{
+        width: 24px;
+        height: 24px;
+        animation: is-rotate 1s infinite;
+        border: 3px solid #ececec;
+        border-top: 3px solid var(--bf-yellow);
+        border-radius: 50%;
+        
+    }
+}
+@keyframes is-rotate {
+    to{
+        transform: rotate(1turn);
+    }
+}

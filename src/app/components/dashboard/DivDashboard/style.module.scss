@@ -1,0 +1,93 @@
+.container{
+    height: 80vh;
+    width: 80%;
+    margin: 0 auto;
+    .dashboardContainer{
+        margin-top: 1rem;
+        display: flex;
+        gap: 1rem;
+        .aSide{
+            flex: .2;
+            .aSideLinks{
+                display: flex;
+                flex-direction: column;
+                gap: .5rem;
+                .link{
+                    padding: 16px 24px;
+                    border-bottom: solid 1px;
+                }
+                .logOutButton{
+                    cursor: pointer;
+                    padding: 16px 24px;
+                    border-bottom: solid 1px black;
+                    color: var(--bf-red);
+                    display: flex;
+                    align-items: center;
+                    gap: .5rem;
+                    border: none;
+                    background: none;
+                }
+            }
+        }
+
+        .mainDashboard{
+            flex: 1;
+
+            .infoPayContainer{
+
+                background-color: var(--bf-red);
+                padding: 16px 24px;
+                border-radius: 8px;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                .button{
+                    cursor: pointer;
+                    border: none;
+                    padding: 16px 32px;
+                    border-radius: 8px;
+                }
+            }
+        }
+    }
+  
+}
+
+@media(max-width: 700px){
+    .container{
+        width: 100%;
+        .dashboardContainer{
+            margin-top: 0;
+            gap: 0;
+            h1{
+                font-size: 1rem;
+            }
+            flex-direction: column;
+            hr{
+                display: none;
+            }
+            .aSide{
+                flex: .2;
+                padding: 1rem;
+                
+
+                .aSideLinks{
+                    gap: .1rem;
+
+                    .link{
+                        font-size: .9rem;
+                        padding: 8px 9px;
+                    }
+                    .logOutButton{
+                        padding: 8px 9px;
+                    }
+                }
+            }
+            .mainDashboard{
+                padding: 1rem;
+                border-radius: 4px;
+            }
+        }
+    }
+}

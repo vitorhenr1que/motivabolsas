@@ -1,0 +1,14 @@
+.inputContainer{
+  
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    .cpf{
+        padding: 16px 24px;
+        border-radius: 8px;
+        border: 1px solid var(--bf-gray-hover);
+    }
+    .spanError{
+        color: var(--bf-red);
+    }
+}

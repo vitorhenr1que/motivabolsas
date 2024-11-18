@@ -1,0 +1,62 @@
+{
+  "format": "custom",
+  "id": "courses",
+  "label": "Courses",
+  "repeatable": true,
+  "status": true,
+  "json": {
+    "Main": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "UID"
+        }
+      },
+      "course_image": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem do Curso",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "name": {
+        "type": "Text",
+        "config": {
+          "label": "Nome do Curso",
+          "placeholder": "Nome do Curso"
+        }
+      },
+      "modality": {
+        "type": "Text",
+        "config": {
+          "label": "Modalidade",
+          "placeholder": "Modalidade"
+        }
+      },
+      "total_value": {
+        "type": "Number",
+        "config": {
+          "label": "Valor Total",
+          "placeholder": "Valor Total"
+        }
+      },
+      "discount": {
+        "type": "Number",
+        "config": {
+          "label": "Desconto",
+          "placeholder": "Desconto"
+        }
+      },
+      "course_information": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Informação do Curso",
+          "placeholder": "Informação do Curso",
+          "allowTargetBlank": true,
+          "multi": "paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"
+        }
+      }
+    }
+  }
+}
