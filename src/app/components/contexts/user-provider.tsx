@@ -18,7 +18,7 @@ interface User {
 // Define o tipo para o contexto, incluindo a função `setUser`
 interface UserContextType {
   user: User | undefined;
- setUser: React.Dispatch<React.SetStateAction<User | undefined>> | undefined;
+ setUser: React.Dispatch<React.SetStateAction<User | undefined>> | any;
 }
 
 // Cria o contexto do usuário com um valor inicial
