@@ -15,8 +15,9 @@ export default async function loginAction(
     const email = formData.get('email')
     const password = formData.get('password')
 
+    const url = process.env.NEXT_PUBLIC_VERSION === 'production' ? "https://bolsa-facil.vercel.app" : "http://localhost:3000"
 
-    const res = await fetch('http://localhost:3000/api/signin', {
+    const res = await fetch(`${url}/api/signin`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
