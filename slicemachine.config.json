@@ -1,5 +1,5 @@
 {
-  "repositoryName": "bolsafacil-ba",
+  "repositoryName": "bolsafacil",
   "adapter": "@slicemachine/adapter-next",
   "libraries": ["./src/slices"],
   "localSliceSimulatorURL": "http://localhost:3000/slice-simulator"
