@@ -10,7 +10,7 @@ try{
     const signature = headers().get("stripe-signature")
 
     if(!secret || !signature) {
-        throw new Error("Missing secret or signature")
+        return Response.json({ message: "STRIPE_WEBHOOK_SECRET incorreto, verifique a variável de ambiente", ok: false, }, {status: 500})
     }
     const event = stripe.webhooks.constructEvent(body, signature,secret)
 

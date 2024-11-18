@@ -18,11 +18,11 @@ interface User {
 // Define o tipo para o contexto, incluindo a função `setUser`
 interface UserContextType {
   user: User | undefined;
- setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+ setUser: React.Dispatch<React.SetStateAction<User | undefined>> | undefined;
 }
 
 // Cria o contexto do usuário com um valor inicial
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const UserContext = createContext<UserContextType>({user: undefined, setUser: undefined});
 
 // Define as propriedades do UserProvider para aceitar os filhos
 interface UserProviderProps {
@@ -30,7 +30,7 @@ interface UserProviderProps {
 }
 
 // Provider do usuário
-export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+export const UserProvider = ({ children }: {children: ReactNode}) => {
   const [user, setUser] = useState<User | undefined>(undefined);
 
 
@@ -45,9 +45,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 // Hook para usar o contexto do usuário, garantindo o tipo do retorno
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
+
   return context;
 };
 

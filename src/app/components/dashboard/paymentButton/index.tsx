@@ -30,13 +30,13 @@ export default function PaymentButton({user}: userDataProps){
         try{
             setIsCreatingCheckout(true)
             if(!userId){
-                throw new Error("Não foi informado o ID como parâmetro para o checkout")
+                return console.error("Não foi informado o ID como parâmetro para o checkout")
             }
             if(!userEmail){
-                throw new Error("Não foi informado o E-mail como parâmetro para o checkout")
+                return console.error("Não foi informado o E-mail como parâmetro para o checkout")
             }
             if(!customerId){
-                throw new Error("Não foi informado o customerId como parâmetro para o checkout")
+                return console.error("Não foi informado o customerId como parâmetro para o checkout")
             }
             const checkoutResponse = await api.post('stripe/create-checkout', {
                 userId: userId, 
@@ -48,7 +48,7 @@ export default function PaymentButton({user}: userDataProps){
 
             const stripeClient = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string)
             if(!stripeClient){
-                throw new Error("Striple failed to initialize, verify .env variables")
+                return console.error("Striple failed to initialize, verify .env variables")
             }
 
             const { sessionId } = await checkoutResponse.data
