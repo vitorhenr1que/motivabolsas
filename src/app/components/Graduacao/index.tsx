@@ -27,7 +27,7 @@ export function Graduacao(){
                         {"2": ["EDUCAÇÃO FÍSICA", "educacao-fisica"]}, 
                         {"3": ["ENFERMAGEM", "enfermagem"]}, 
                         {"4": ["ENGENHARIA CIVIL", "engenharia-civil"]}, 
-                        {"5": ["ESTÉTICA E COSMÉTICA", "estetica"]}, 
+                        {"5": ["ESTÉTICA E COSMÉTICA", "estetica-e-cosmetica"]}, 
                         {"6":["FARMÁCIA", "farmacia"]}, 
                         {"7": ["FISIOTERAPIA", "fisioterapia"]}, 
                         {"8": ["NUTRIÇÃO", "nutricao"]}, 
