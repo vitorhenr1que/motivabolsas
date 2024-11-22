@@ -26,7 +26,7 @@ export function InfoCourse({course_information, params}: any){
 
     useEffect(() => {
         if(params === 'fazag'){ // Quando tiver um pouco mais de tempo setar link mapa pelo Prismic
-            setUrlMaps("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.1858199162457!2d-39.60802052525079!3d-13.023835887296324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x73fdcd9f7920d1f%3A0xd6607110d345a4cf!2sFAZAG%20Amargosa!5e0!3m2!1spt-BR!2sbr!4v1731615634123!5m2!1spt-BR!2sbr")
+            setUrlMaps("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3881.9943920739865!2d-39.06707302519602!3d-13.350624667545612!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x73e4165a4045dbf%3A0x4f9fdd7364a5b4e7!2sFAZAG!5e0!3m2!1spt-BR!2sbr!4v1732300198049!5m2!1spt-BR!2sbr")
         }
         if(params ==='farvalle'){
             setUrlMaps("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.1858199162457!2d-39.60802052525079!3d-13.023835887296324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x73fdcd9f7920d1f%3A0xd6607110d345a4cf!2sFAZAG%20Amargosa!5e0!3m2!1spt-BR!2sbr!4v1731615634123!5m2!1spt-BR!2sbr")
