@@ -54,7 +54,7 @@ export function Main(){
               <div className={styles.textContainer}>
                 <p className={styles.cfTitle}>Como Funciona</p>
 
-                <p>O Bolsa Fácil é um programa de inclusão educacional que conecta jovens estudantes e adultos que não podem arcar com o valor integral de uma mensalidade em instituições de ensino particular de Graduação, Pós-Graduação e Cursos de Extensão. Através do nosso portal, você tem acesso a bolsas de estudo parciais ou integrais, além de créditos educativos.</p>
+                <p>O Motiva Bolsas é um programa de inclusão educacional que conecta jovens estudantes e adultos que não podem arcar com o valor integral de uma mensalidade em instituições de ensino particular de Graduação, Pós-Graduação e Cursos de Extensão. Através do nosso portal, você tem acesso a bolsas de estudo parciais ou integrais, além de créditos educativos.</p>
 
                 <div className={styles.cfSpan}>
                   <span className={styles.cfSpanBold}>Este projeto é de iniciativa privada.</span>
