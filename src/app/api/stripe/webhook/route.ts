@@ -53,6 +53,9 @@ try{
                 //(async_payment_succeded) O cliente pagou o boleto e o pagamento foi confirmado
                 const testId = event.data.object.metadata?.testId
                 console.log("Pagamento por boleto confirmado: ", testId)
+                await api.put('/update-payment', {
+                    id: event.data.object.client_reference_id
+                })
             }
         break;
 
