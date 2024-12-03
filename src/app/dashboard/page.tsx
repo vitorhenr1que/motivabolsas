@@ -9,6 +9,7 @@ import { stripe } from "../services/stripe";
 import { SignOut } from "../services/logout";
 import { DivDashboard } from "../components/dashboard/DivDashboard";
 import { Loading } from "../components/Loading";
+import { VscVerifiedFilled } from "react-icons/vsc";
 
 interface userDataProps{
         birthDate: Date | null,
@@ -51,8 +52,19 @@ export default function Dashboard(){
                     <PaymentButton user={user}/>
                 </div> 
                 : 
-                <p>Está pago</p> }
-                <button>Lista de Pagamentos</button>
+                <div className={styles.activeContainer}>
+                <div className={styles.statusContainer}>
+                    <div className={styles.status}>
+                        <div className={styles.statusTexts}>
+                            <strong>Status da Bolsa:</strong>
+                            <span>Ativo</span>
+                        </div>
+                        <div className={styles.statusCircle}><VscVerifiedFilled color="lightgreen" size={24}/></div>
+                    </div>
+                    <hr />
+                    <Link href={"/pagamentos"} className={styles.pagamentosButton}>Lista de Pagamentos</Link>
+                </div>
+                </div> }
        </DivDashboard>
     )
 }

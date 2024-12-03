@@ -64,12 +64,12 @@ export function Main(){
               </div>
             </section>
             <section className={styles.sectionWidthContainer}>
-                <div className={styles.divWidthContainer}>
+                {/* <div className={styles.divWidthContainer}>
                   <h3>Cidades com bolsas de estudo</h3>
                   <table>
                    
                   </table>
-                </div>
+                </div> */}
             </section>
                 
         </div>
