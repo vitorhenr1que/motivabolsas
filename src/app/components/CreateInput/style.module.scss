@@ -1,0 +1,12 @@
+   .inputContainer{
+  
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        flex: 1;
+        input{
+            padding: 16px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--bf-gray-hover);
+        }
+    }

@@ -50,6 +50,7 @@ export function PasswordInput ({id, label, placeholder}: PasswordInputProps){
           value={password}
           onChange={handleChange}
           placeholder={placeholder}
+          required={true}
       />
         <span className={styles.toggleEye} onClick={() => setToggleEye(!toggleEye)}>
             {toggleEye ? <PiEyeClosed size={20}/> : <PiEye size={20}/>}

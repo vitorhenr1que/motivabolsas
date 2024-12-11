@@ -13,6 +13,19 @@
                     padding: 16px 32px;
                     border-radius: 8px;
                 }
+                .linkRenovacao{
+                    cursor: pointer;
+                    border: none;
+                    padding: 16px 32px;
+                    border-radius: 8px;
+                    background: var(--bf-gray);
+                    color: var(--foreground);
+                    text-align: center;
+                    transition: .2s;
+                    &:hover{
+                        background: var(--bf-gray-hover);
+                    }
+                }
             }
      
         .activeContainer{

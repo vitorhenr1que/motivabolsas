@@ -12,6 +12,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'images.prismic.io'
+            },
+            {
+                protocol: 'https',
+                hostname: 'www.facebook.com'
             }
         ]
     },

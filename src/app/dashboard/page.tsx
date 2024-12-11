@@ -49,7 +49,8 @@ export default function Dashboard(){
                 { user?.currentPayment === false ? 
                 <div className={styles.infoPayContainer}>
                     <span>A sua bolsa não foi renovada para esse semestre. Efetue o pagamento para renova-la.</span>
-                    <PaymentButton user={user}/>
+                    {/* <PaymentButton user={user}/> */}
+                    <Link href={"https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0"} className={styles.linkRenovacao} target="_blank">Solicite a renovação</Link>
                 </div> 
                 : 
                 <div className={styles.activeContainer}>

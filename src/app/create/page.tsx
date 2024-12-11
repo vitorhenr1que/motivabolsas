@@ -8,6 +8,10 @@ import { PasswordInput } from '../components/PasswordInput'
 import { redirect } from 'next/navigation'
 import { navigate } from '../actions'
 import { Loading } from '../components/Loading'
+import PhoneInput from '../components/PhoneInput'
+import AddressLookup from '../components/AdressInputs/AdressLookup'
+import { CreateInput } from '../components/CreateInput'
+
 
 interface DataProps{
     name: string,
@@ -78,6 +82,7 @@ export default function Create(){
 
             if(validatePassword(data.password) === false){
                 setError('A senha deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, um número e um caractere especial.')
+                setLoading(false)
                 return
             }
 
@@ -138,14 +143,8 @@ export default function Create(){
         <div className={styles.container}>
         <h1>Crie sua conta</h1>
         <form className={styles.formContainer} onSubmit={(e) => handleSubmit(e)}>
-            <div className={styles.inputContainer}>
-                <label htmlFor="name">Nome completo *</label>
-                <input name='name'id='name' type='text' placeholder='Nome completo' />
-            </div>
-            <div className={styles.inputContainer}>
-                <label htmlFor="email">E-mail *</label>
-                <input name='email' id='email' type='email' placeholder='E-mail' />
-            </div>
+            <CreateInput id='name' name='name' type='text' label='Nome Completo *' placeholder='Nome completo' required={true}/>
+            <CreateInput id='email' name='email' type='email' placeholder='E-mail' label='E-mail *' required={true}/>
             {/* <div className={styles.inputContainer}>
                 <label htmlFor="password">Senha *</label>
                 <input name='password' type='password' id='password' placeholder='Senha'/>
@@ -160,10 +159,23 @@ export default function Create(){
                 <label htmlFor="cpf">CPF *</label>
                 <input name='cpf' id='cpf' type='number' placeholder='CPF'/>
             </div> */}
-            <div className={styles.inputContainer}>
-            <CPFInput/>
+            <div className={styles.doubleInputContainer}>
+                <CPFInput/>
+                <PhoneInput/>
             </div>
-            
+            <div>
+                <strong>Endereço</strong>
+            </div>
+            <hr className={styles.hr}/>
+            <AddressLookup/>
+            <div className={styles.doubleInputContainer}>
+                <CreateInput id='neighborhood' name='neighborhood' type='text' placeholder='Bairro' label='Bairro *' required={true}/>
+                <CreateInput id='street' name='street' type='text' placeholder='Rua' label='Rua *' required={true}/>
+            </div>
+            <div className={styles.doubleInputContainer}>
+                <CreateInput id='number' name='number' type='text' placeholder='Número' label='Número *' required={true}/>
+                <CreateInput id='complement' name='complement' type='text' placeholder='Complemento' label='Complemento' required={false}/>
+            </div>
             {error && <span className={styles.error}>{error}</span>}
             <button type='submit' className={styles.signUpButton}>{!!loading ? <Loading/> : "Cadastrar"}</button>
         </form>

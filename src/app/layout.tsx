@@ -7,6 +7,7 @@ import { createContext } from "react";
 import { UserProvider } from "./components/contexts/user-provider";
 import { Inter } from 'next/font/google'
 import { inter, oswald, poppins } from "./fonts";
+import { MetaPixel } from "./components/MetaPixel";
 
 
 const geistSans = localFont({
@@ -39,6 +40,9 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR"> 
+    <head>
+    <MetaPixel/>
+    </head>
     <UserProvider>
       <body className={`${geistSans.variable} ${geistMono.variable} ${poppins.className}`}>
       <header>

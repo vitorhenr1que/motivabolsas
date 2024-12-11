@@ -1,0 +1,36 @@
+.container{
+    display: flex;
+    gap: 1rem;
+    .inputContainer{
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        // .passInput{
+        //     padding: 16px 24px;
+        //     border-radius: 8px;
+        //     border: 1px solid var(--bf-gray-hover);
+        // }
+        flex: 1;
+        .spanError{
+            color: var(--bf-red);
+        }
+        .divInput{
+            border-radius: 8px;
+            border: 1px solid var(--bf-gray-hover);
+            display: flex;
+            input{
+                padding: 16px 24px;
+                border-radius: 8px;
+                flex: 1;
+                border: none;
+                width: 100%;
+            }
+        }
+    }
+}
+
+@media(max-width: 655px){
+    .container{
+        flex-direction: column;
+    }
+}

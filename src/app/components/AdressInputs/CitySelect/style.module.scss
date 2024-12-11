@@ -1,0 +1,35 @@
+.inputContainer{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    // .passInput{
+    //     padding: 16px 24px;
+    //     border-radius: 8px;
+    //     border: 1px solid var(--bf-gray-hover);
+    // }
+    flex: 1;
+    .spanError{
+        color: var(--bf-red);
+    }
+    .divInput{
+        border-radius: 8px;
+        border: 1px solid var(--bf-gray-hover);
+        display: flex;
+        .select{
+            padding: 16px 24px;
+            border-radius: 8px;
+            flex: 1;
+            border: none;
+            width: 100%;
+        }
+        .cepCity{
+            padding: 16px 24px;
+            border-radius: 8px;
+            flex: 1;
+            border: none;
+            width: 100%;
+            background: var(--bf-gray-hover);
+            pointer-events: none;
+        }
+    }
+}

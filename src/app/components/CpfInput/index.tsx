@@ -73,7 +73,7 @@ export function CPFInput() {
 
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor="cpf">CPF:</label>
+      <label htmlFor="cpf">CPF: *</label>
       <input 
         className={styles.cpf}
         type="text"
@@ -83,6 +83,7 @@ export function CPFInput() {
         onChange={handleChange}
         maxLength={14}
         placeholder="Digite seu CPF"
+        required={true}
       />
       {error && <span className={styles.spanError}>{error}</span>}
     </div>

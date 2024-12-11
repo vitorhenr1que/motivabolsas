@@ -32,6 +32,15 @@
             border: 1px solid var(--bf-gray-hover);
         }
     }
+    .doubleInputContainer{
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .hr{
+        width: 100%;
+    }
     .signUpButton{
         padding: 16px 24px;
         border: none;
@@ -59,4 +68,11 @@
 .generalContainer{
     width: 95%;
 }
+}
+@media(max-width: 560px){
+    .formContainer{
+        .doubleInputContainer{
+            flex-direction: column;
+        }
+    }
 }
