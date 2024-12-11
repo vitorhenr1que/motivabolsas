@@ -99,6 +99,14 @@ export default function Create(){
                 password: data.password,
                 cpf: data.cpf,
                 name: data.name,
+                phone: data.phone ,
+                cep: data.cep ,
+                city: data.city ,
+                neighborhood: data.neighborhood ,
+                number: data.number ,
+                street: data.street ,
+                uf: data.uf ,
+                complement: data.complement ,
                 customerId: generateShortId() // id aleatório
             })
 

@@ -2,8 +2,9 @@
 import { prisma } from "@/app/services/prisma";
 import { cookies } from "next/headers";
 
-export async function POST(){
+export async function POST(request: Request){
     const email = cookies().get('email')?.value
+    //const {email} = await request.json()
     console.log('entrou no e-mail:: ', email)
     //Compare email
  try{
@@ -19,8 +20,10 @@ export async function POST(){
             email: true,
             name: true,
             currentPayment: true,
-            customerId: true
-        }
+            customerId: true,
+            addresses: true
+        },
+ 
     })
 
     return Response.json(userinfo)

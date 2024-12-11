@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 
 export async function POST(request: Request){
-    const { email, password, cpf, name, birthDate, customerId  } = await request.json()
+    const { email, password, cpf, name, birthDate, customerId, phone, cep, city, neighborhood, number, street, uf, complement } = await request.json()
     console.log('CPF NUMB: ', cpf)
 
 
@@ -16,7 +16,19 @@ export async function POST(request: Request){
                 password, 
                 cpf,
                 name, 
-                customerId
+                customerId,
+                phone,
+                addresses: {
+                    create: {
+                        cep,
+                        city,
+                        neighborhood,
+                        number,
+                        street,
+                        uf,
+                        complement
+                    }
+                }
             }
         })
     
