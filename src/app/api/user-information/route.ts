@@ -16,9 +16,10 @@ export async function POST(request: Request){
             id: true,
             birthDate: true,
             cpf: true,
-            createdAt: true,
-            email: true,
             name: true,
+            email: true,
+            phone: true,
+            createdAt: true,
             currentPayment: true,
             customerId: true,
             addresses: true
