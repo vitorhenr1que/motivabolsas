@@ -18,9 +18,10 @@
         
 
         .logo{
-            height: 100%;
+            width: 100%;
                 .logoImage{
                     height: 50px;
+                    width: 100%;
                 }
         }
     }
@@ -142,5 +143,32 @@
 @media(max-width: 440px){
     .headerContainer{
         width: 100%;
+    }
+}
+
+@media(max-width: 365px){
+    .headerContainer{
+        .navContainer{
+            .ulContainer{
+                .signInButton, .signUpButton{
+                    font-size: .5rem;
+                    padding: 8px 10px;
+                }
+                .loggedButton{
+                    .dropdownDiv{
+                        width: 330px;
+                        margin-top: 1.8rem;
+                     }
+                 }
+            }
+            .toggleAndLogoContainer{
+                .logo{
+                    .logoImage{
+                        height: 40px;
+                    }
+                }
+            }
+        }
+         
     }
 }
