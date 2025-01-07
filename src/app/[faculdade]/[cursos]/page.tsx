@@ -71,7 +71,7 @@ export default async function Curso({params}: ParamsProps){
                     <span>Durante todo o curso</span>
                     <div className={styles.courseFooter}>
                         <Link href="#" className={styles.comoFunciona}>Como funciona?</Link>
-                        <Link className={styles.linkButton} href="https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0">Solicitar Bolsa</Link>
+                        <Link className={styles.linkButton} id={`click_whatsapp_${params.faculdade}`} href="https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0">Solicitar Bolsa</Link>
                     </div>
                 </div>
                     
