@@ -8,6 +8,7 @@ import { LuCopy } from "react-icons/lu";
 import { LuCopyCheck } from "react-icons/lu";
 import { InfoCamp } from "../components/InfoCamp";
 
+
 interface addressProps{
         cep: string,
         city: string,
@@ -57,14 +58,19 @@ return humanizedDate
 
 console.log(users)
     async function handleClickFind(page: number){
-        const response = await api.post('usuarios', {
-            secret_key: adminKey,
-            page: page
-        })
-        if(response.status === 200){
+        try{
+            const response = await api.post('usuarios', {
+                secret_key: adminKey,
+                page: page
+            })
+            
             setUsers(response.data)
+            console.log(response)
+        } catch(e: any){
+            console.log(e)
         }
-        console.log(response)
+
+        
     }
 
 
