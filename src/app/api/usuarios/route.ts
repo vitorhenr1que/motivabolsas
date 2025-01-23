@@ -6,7 +6,7 @@ export async function POST(request: Request){
     const { page, secret_key } = await request.json()
 
     //Com paginação
-    const secret = process.env.ADMIN_KEY
+    const secret = process.env.NEXT_PUBLIC_ADMIN_KEY
     if (secret === secret_key){
         try{
             const userinfo = await prisma.user.findMany({
