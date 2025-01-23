@@ -38,7 +38,6 @@ const [adminKey, setAdminKey] = useState("")
 const [actualPage, setActualPage] = useState(0)
 const [users, setUsers] = useState<userDataProps[]>()
 const [showInformation, setShowInformation] = useState<String>("")
-const [copied, setCopied] = useState(false)
 const response = [1,2,3,4,5,6,7,8,9,10]
 
 
@@ -62,8 +61,10 @@ console.log(users)
             secret_key: adminKey,
             page: page
         })
-        setUsers(response.data)
-        console.log(users)
+        if(response.status === 200){
+            setUsers(response.data)
+        }
+        console.log(response)
     }
 
 
@@ -116,7 +117,7 @@ console.log(users)
                 })}</div>}
             </div>
             <ul className={styles.paginationContainer}>
-                {response.map((index: number, position: number) => {
+                {users !== undefined && response.map((index: number, position: number) => {
                     return(
                         <li className={styles.paginationItem} key={position}>
                             <button onClick={() => handleClickPagination(position)} className={actualPage === position ? styles.paginationButtonActive : styles.paginationButton}>{index}</button>

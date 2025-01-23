@@ -34,5 +34,5 @@ export async function POST(request: Request){
             return Response.json({error: 'Usuário Inválido'}, {status: 400})
          }
     }
-    return Response.json('Chave de Administrador Incorreta.')
+    return Response.json({error: 'Chave de Administrador Incorreta.'}, {status: 400})
 }
