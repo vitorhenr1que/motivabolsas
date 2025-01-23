@@ -7,6 +7,7 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuCopy } from "react-icons/lu";
 import { LuCopyCheck } from "react-icons/lu";
 import { InfoCamp } from "../components/InfoCamp";
+import { Loading } from "../components/Loading";
 
 
 interface addressProps{
@@ -39,7 +40,9 @@ const [adminKey, setAdminKey] = useState("")
 const [actualPage, setActualPage] = useState(0)
 const [users, setUsers] = useState<userDataProps[]>()
 const [showInformation, setShowInformation] = useState<String>("")
+const [loading, setLoading] = useState(false)
 const response = [1,2,3,4,5,6,7,8,9,10]
+
 
 
 
@@ -59,6 +62,7 @@ return humanizedDate
 console.log(users)
     async function handleClickFind(page: number){
         try{
+            setLoading(true)
             const response = await api.post('usuarios', {
                 secret_key: adminKey,
                 page: page
@@ -66,8 +70,11 @@ console.log(users)
             
             setUsers(response.data)
             console.log(response)
+            setLoading(false)
         } catch(e: any){
             console.log(e)
+            setLoading(false)
+            alert(e.response.data.error)
         }
 
         
@@ -86,7 +93,7 @@ console.log(users)
             <div className={styles.inputContainer}>
                 <input type="text" placeholder="Digite a chave de admnistrador" onChange={(e) => setAdminKey(e.target.value)} />
                 <button onClick={() => handleClickFind(actualPage)}>
-                    Mostrar usuários
+                    {loading ? <Loading/> : "Mostrar usuários"}
                 </button>
             </div>
             <div className={styles.userList}>
