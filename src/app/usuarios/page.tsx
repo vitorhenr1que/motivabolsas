@@ -110,7 +110,7 @@ console.log(users)
                             {showInformation === index.id && <div className={styles.showInformationContainer}>
                             
                             <InfoCamp campName={"Id: "} campValue={index.id} />
-                            <InfoCamp campName={"Nome: "} campValue={index.name} />
+                            <InfoCamp campName={"Nome: "} campValue={index.name.toLocaleUpperCase()} />
                             <InfoCamp campName={"CPF: "} campValue={index.cpf} />
                             <InfoCamp campName={"E-mail: "} campValue={index.email} />
                             <InfoCamp campName={"Telefone: "} campValue={index.phone} />
