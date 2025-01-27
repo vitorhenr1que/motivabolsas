@@ -83,7 +83,7 @@ export default async function Curso({params}: ParamsProps){
                             <s>R$ {course.total_value?.toFixed(2)}</s>
                             <span>R$ <strong>{course.total_value && course.discount !== null ? (course?.total_value - (course?.total_value * course?.discount / 100)).toFixed(2) : ''}</strong> /mês</span>
                         </div>
-                        <Link href={"#"} className={styles.fixedLinkButton}>
+                        <Link id={`click_whatsapp_${params.faculdade}`} href={"https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0"}  className={styles.fixedLinkButton}>
                             <span>Solicitar Bolsa</span>
                         </Link>
                     </div>
