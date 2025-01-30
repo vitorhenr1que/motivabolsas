@@ -41,9 +41,12 @@ const [actualPage, setActualPage] = useState(0)
 const [users, setUsers] = useState<userDataProps[]>()
 const [showInformation, setShowInformation] = useState<String>("")
 const [loading, setLoading] = useState(false)
+const [onlyPaid, setOnlyPaid] = useState(false)
 const response = [1,2,3,4,5,6,7,8,9,10]
 
-
+useEffect(() => {
+    console.log(onlyPaid)
+},[onlyPaid])
 
 
 function humanizedDate(createdDate: string){
@@ -65,7 +68,8 @@ console.log(users)
             setLoading(true)
             const response = await api.post('usuarios', {
                 secret_key: adminKey,
-                page: page
+                page: page,
+                onlyPaid: onlyPaid,
             })
             
             setUsers(response.data)
@@ -95,6 +99,10 @@ console.log(users)
                 <button onClick={() => handleClickFind(actualPage)}>
                     {loading ? <Loading/> : "Mostrar usuários"}
                 </button>
+                <div className={styles.isPaid}>
+                    <label htmlFor="paid">Somente Pagos</label>
+                    <input type="checkbox" id="paid" name="drone" value={""} onChange={() => setOnlyPaid(!onlyPaid)}/>
+                </div>
             </div>
             <div className={styles.userList}>
                 {users !== undefined && <div className={styles.userListContainer}>{users.map((index, position) => {
