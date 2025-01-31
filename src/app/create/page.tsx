@@ -55,6 +55,10 @@ export default function Create(){
         return String(cpf).length === 14
     }
 
+    function validateCep(cep: FormDataEntryValue){
+        return String(cep).length === 8
+    }
+
     async function handleSubmit(e: FormEvent){
         e.preventDefault()
         setLoading(true)
@@ -91,7 +95,11 @@ export default function Create(){
                 setLoading(false)
                 return
             }
-
+            if(validateCep(data.cep) === false){
+                setError('CEP Inválido. Por favor, insira os 8 números.')
+                setLoading(false)
+                return
+            }
 
 
             const createUser = await api.post('/create', { //Criar usuário no banco de dados
