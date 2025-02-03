@@ -1,0 +1,31 @@
+.container{
+    display: flex;
+    flex-direction: column;
+
+    .viewBoletoContainer{
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 800px;
+        height: 150px;
+        background: #ececec;
+        padding: 16px 24px;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .buttonViewBoleto{
+            margin-top: 1rem;
+            padding: 16px 24px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            background: var(--bf-yellow);
+            transition: .2s;
+            font-weight: 700;
+            &:hover{
+                background: var(--bf-yellow-hover);   
+        }
+    }
+}

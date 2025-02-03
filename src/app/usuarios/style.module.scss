@@ -145,5 +145,10 @@
                 gap: .3rem;
             }
         }
+        .lastDiv{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 }

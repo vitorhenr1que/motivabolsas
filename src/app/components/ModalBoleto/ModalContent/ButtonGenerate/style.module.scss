@@ -1,0 +1,13 @@
+.buttonGenerate{
+    margin-top: 1rem;
+    padding: 16px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    background: var(--bf-yellow);
+    transition: .2s;
+    font-weight: 700;
+    &:hover{
+        background: var(--bf-yellow-hover);
+    }
+}

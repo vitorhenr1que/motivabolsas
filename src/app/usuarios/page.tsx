@@ -8,7 +8,9 @@ import { LuCopy } from "react-icons/lu";
 import { LuCopyCheck } from "react-icons/lu";
 import { InfoCamp } from "../components/InfoCamp";
 import { Loading } from "../components/Loading";
-
+import { useUser } from "../components/contexts/user-provider";
+import { getInterToken } from "../services/inter-token";
+import { ModalBoleto } from "../components/ModalBoleto";
 
 interface addressProps{
         cep: string,
@@ -40,14 +42,20 @@ const [adminKey, setAdminKey] = useState("")
 const [actualPage, setActualPage] = useState(0)
 const [users, setUsers] = useState<userDataProps[]>()
 const [showInformation, setShowInformation] = useState<String>("")
+const [toggle, setToggle] = useState(false)
 const [loading, setLoading] = useState(false)
 const [onlyPaid, setOnlyPaid] = useState(false)
 const response = [1,2,3,4,5,6,7,8,9,10]
+const {interToken, setInterToken} = useUser()
 
 useEffect(() => {
     console.log(onlyPaid)
 },[onlyPaid])
 
+function handleClickShowInformation(id: string){
+    setToggle(!toggle)
+    setShowInformation(toggle ? id : "")
+}
 
 function humanizedDate(createdDate: string){
 const date = new Date(createdDate);
@@ -71,8 +79,8 @@ console.log(users)
                 page: page,
                 onlyPaid: onlyPaid,
             })
-            
             setUsers(response.data)
+            setInterToken(await getInterToken())
             console.log(response)
             setLoading(false)
         } catch(e: any){
@@ -90,12 +98,23 @@ console.log(users)
         handleClickFind(page)
         }
 
+        function Test(){
+            console.log(interToken)
+        }
+
+        function FormatPhone(phone: any){
+            return phone.match(/\((\d{2})\)\s(\d{5})-(\d{4})/)[1]
+        }
+        function FormatDdd(phone: any){
+            return phone.match(/\((\d{2})\)\s(\d{5})-(\d{4})/)[2] + phone.match(/\((\d{2})\)\s(\d{5})-(\d{4})/)[3]
+        }
 
     return (
         <div className={styles.container}>
+            <button onClick={() => Test()}>Test</button>
             <h1>Lista de Usuários</h1>
             <div className={styles.inputContainer}>
-                <input type="text" placeholder="Digite a chave de admnistrador" onChange={(e) => setAdminKey(e.target.value)} />
+                <input type="text" name="token" autoComplete="on" placeholder="Digite a chave de admnistrador" onChange={(e) => setAdminKey(e.target.value)} />
                 <button onClick={() => handleClickFind(actualPage)}>
                     {loading ? <Loading/> : "Mostrar usuários"}
                 </button>
@@ -113,7 +132,7 @@ console.log(users)
                                     <span className={styles.name}>{index.name.toLocaleUpperCase()}</span>
                                     <span className={styles.cpf}>{index.cpf}</span>
                                 </div>
-                                <button className={styles.showButton} onClick={() => setShowInformation(index.id)}><MdKeyboardArrowDown size={24}/><span>Mostrar Informações</span></button>
+                                <button className={styles.showButton} onClick={() => handleClickShowInformation(index.id)}><MdKeyboardArrowDown size={24}/><span>Mostrar Informações</span></button>
                             </div>
                             {showInformation === index.id && <div className={styles.showInformationContainer}>
                             
@@ -130,7 +149,26 @@ console.log(users)
                             <InfoCamp campName={"Cidade: "} campValue={index.addresses[0].city} />
                             <InfoCamp campName={"Identificação Stipe: "} campValue={index.customerId} />
                             <p><strong>Status da Bolsa: </strong><span className={index.currentPayment === true ? styles.statusActive : styles.statusInactive}>{index.currentPayment === true ? "Ativo" : "Inativo"}</span></p>
-                            <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`)}</span></p>
+                            <div className={styles.lastDiv}>
+                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`)}</span></p>
+                                <ModalBoleto 
+                                    cep={index.addresses[0].cep}
+                                    city={index.addresses[0].city}
+                                    complement={index.addresses[0].complement}
+                                    cpf={index.cpf}
+                                    email={index.email}
+                                    houseNumber={index.addresses[0].number}
+                                    neighborhood={index.addresses[0].neighborhood}
+                                    name={index.name}
+                                    person="FISICA"
+                                    street={index.addresses[0].street}
+                                    uf={index.addresses[0].uf}
+                                    ddd={FormatPhone(index.phone)}
+                                    tel={FormatDdd(index.phone)}
+                                    key={index.id}
+                                />
+                            </div>
+                            
                         </div>}
                         </div>
                         
