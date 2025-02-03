@@ -1,0 +1,21 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    .boletoUrl{
+        margin-top: 1rem;
+        padding: 16px 24px;
+        border: none;
+        cursor: pointer;
+        border: 1px solid var(--bf-yellow);
+        border-radius: 4px;
+        background: none;
+        transition: .4s;
+        font-weight: 700;
+        text-align: center;
+        font-size: .8rem;
+        &:hover{
+            background: var(--bf-yellow);   
+    }
+    }
+}
