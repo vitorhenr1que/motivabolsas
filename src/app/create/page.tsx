@@ -159,8 +159,8 @@ export default function Create(){
         <div className={styles.container}>
         <h1>Crie sua conta</h1>
         <form className={styles.formContainer} onSubmit={(e) => handleSubmit(e)}>
-            <CreateInput id='name' name='name' type='text' label='Nome Completo *' placeholder='Nome completo' required={true}/>
-            <CreateInput id='email' name='email' type='email' placeholder='E-mail' label='E-mail *' required={true}/>
+            <CreateInput id='name' name='name' type='text' label='Nome Completo *' placeholder='Nome completo' required={true} maxLength={100}/>
+            <CreateInput id='email' name='email' type='email' placeholder='E-mail' label='E-mail *' required={true} maxLength={50}/>
             {/* <div className={styles.inputContainer}>
                 <label htmlFor="password">Senha *</label>
                 <input name='password' type='password' id='password' placeholder='Senha'/>
@@ -185,12 +185,12 @@ export default function Create(){
             <hr className={styles.hr}/>
             <AddressLookup/>
             <div className={styles.doubleInputContainer}>
-                <CreateInput id='neighborhood' name='neighborhood' type='text' placeholder='Bairro' label='Bairro *' required={true}/>
-                <CreateInput id='street' name='street' type='text' placeholder='Rua' label='Rua *' required={true}/>
+                <CreateInput id='neighborhood' name='neighborhood' type='text' placeholder='Bairro' label='Bairro *' required={true} maxLength={60}/>
+                <CreateInput id='street' name='street' type='text' placeholder='Rua' label='Rua *' required={true} maxLength={100}/>
             </div>
             <div className={styles.doubleInputContainer}>
-                <CreateInput id='number' name='number' type='text' placeholder='Número' label='Número *' required={true}/>
-                <CreateInput id='complement' name='complement' type='text' placeholder='Complemento' label='Complemento' required={false}/>
+                <CreateInput id='number' name='number' type='text' placeholder='Número' label='Número *' required={true} maxLength={10}/>
+                <CreateInput id='complement' name='complement' type='text' placeholder='Complemento' label='Complemento' required={false} maxLength={30}/>
             </div>
             {error && <span className={styles.error}>{error}</span>}
             <button type='submit' className={styles.signUpButton}>{!!loading ? <Loading/> : "Cadastrar"}</button>
