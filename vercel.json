@@ -1,0 +1,10 @@
+{
+    "functions": {
+      "api/**": {
+        "includeFiles": [
+          "src/app/certificates/interCert.crt",
+          "src/app/certificates/privateKey.key"
+        ]
+      }
+    }
+  }
