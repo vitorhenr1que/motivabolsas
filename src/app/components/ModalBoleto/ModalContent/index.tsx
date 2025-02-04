@@ -88,6 +88,7 @@ async function handleBoletoView(codigoSolicitacao: string){
 useEffect(() => {
     async function getBoletos(){
         setLoading(true)
+       
         try{
             const response = await api.post('boletos/find',{
             interToken: interToken,
