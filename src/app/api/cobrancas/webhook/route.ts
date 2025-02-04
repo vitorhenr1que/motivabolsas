@@ -16,7 +16,6 @@ export async function POST(req: Request){
     console.log(response)
     
         try{
-            
             if(!sslCert || !sslKey || !sslCa){
                 return Response.json("Certificados não encontrados.", {status: 500})
             }
@@ -37,11 +36,11 @@ export async function POST(req: Request){
             const agent = new https.Agent({
                 cert: fs.readFileSync(`${certPath}`),
                 key: fs.readFileSync(`${keyPath}`),
-                ca: fs.readFileSync(`${caPath}`),
+                
             })
-
+            console.log('até aqui')
             const interToken = await api.post('inter-token')
-            console.log('INTER TOKEN', interToken.data)
+            console.log('INTER TOKEN: ', interToken.data)
 
             const response = await axios.put("https://cdpj.partners.bancointer.com.br/cobranca/v3/cobrancas/webhook",{
                 "webhookUrl": 'https://www.motivabolsas.com.br/api/cobrancas/webhook'
@@ -49,7 +48,7 @@ export async function POST(req: Request){
                 httpsAgent: agent,
                 
                 headers: {
-                    "Authorization": `Bearer ${interToken}`,
+                    "Authorization": `Bearer ${interToken.data}`,
                     "x-conta-corrente": `${contaCorrente}`,
                     "Content-Type": "application/json"
                 }
