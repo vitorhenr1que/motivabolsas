@@ -41,7 +41,7 @@ export async function POST(req: Request){
             const interToken = await getInterToken()
 
             const response = await axios.put("https://cdpj.partners.bancointer.com.br/cobranca/v3/cobrancas/webhook",{
-                webhookUrl: 'https://www.motivabolsas.com.br/api/cobrancas/webhook'
+                "webhookUrl": 'https://www.motivabolsas.com.br/api/cobrancas/webhook'
             } ,{
                 httpsAgent: agent,
                 
