@@ -5,19 +5,34 @@ import fs from 'fs'
 import https from 'https'
 
 const contaCorrente = process.env.INTER_ACCOUNT
-const cert = process.env.CERT_PATH
-const key = process.env.KEY_PATH
 const version = process.env.NEXT_PUBLIC_VERSION
+const sslCert = process.env.SSL_CERT_BASE64
+const sslKey = process.env.SSL_KEY_BASE64
 
 export async function POST(req: Request){
  
     
     
         try{
+            if(!sslCert || !sslKey){
+                return Response.json("Certificados não encontrados.", {status: 500})
+            }
+            // Converter Base64 de volta para String
+            const cert = Buffer.from(sslCert, "base64").toString("utf-8");
+            const key = Buffer.from(sslKey, "base64").toString("utf-8");
+    
+            // 🔹 (Opcional) Criar arquivos temporários para APIs que exigem caminhos físicos
+            const certPath = "/tmp/interCert.crt";
+            const keyPath = "/tmp/privateKey.key";
             
+            // Adiciona ao arquivo temporário certPath e keyPath o conteúdo do cert e key (certPath > cert)
+            fs.writeFileSync(certPath, cert);
+            fs.writeFileSync(keyPath, key);
+    
             const agent = new https.Agent({
-                cert: fs.readFileSync(`${cert}`),
-                key: fs.readFileSync(`${key}`)
+                cert: fs.readFileSync(`${certPath}`),
+                key: fs.readFileSync(`${keyPath}`)
+          
             })
 
             const interToken = await getInterToken()
