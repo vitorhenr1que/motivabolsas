@@ -1,12 +1,15 @@
 import axios from 'axios'
 import fs from 'fs'
 import https from 'https'
+import path from 'path'
 
 const cert = process.env.CERT_PATH
 const key = process.env.KEY_PATH
 const clientId = process.env.INTER_CLIENT_ID
 const clientSecret = process.env.INTER_CLIENT_SECRET
 const authUrl = process.env.NEXT_PUBLIC_INTER_AUTH_URL
+const certPath = path.join(process.cwd(), `${cert}`);
+const keyPath = path.join(process.cwd(), `${key}`);
 export async function POST(req: Request){
   // Adicionar secret depois para não ir direto só com o link
     
@@ -19,8 +22,8 @@ export async function POST(req: Request){
     } 
     try{
         const agent = new https.Agent({
-            cert: fs.readFileSync(`${cert}`),
-            key: fs.readFileSync(`${key}`)
+            cert: fs.readFileSync(`${certPath}`),
+            key: fs.readFileSync(`${keyPath}`)
         })
         console.log('teste agent', agent)
         const response = await axios.post(`${authUrl}`, formData, {
