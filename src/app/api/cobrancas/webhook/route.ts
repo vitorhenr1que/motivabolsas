@@ -3,14 +3,12 @@ import { getInterToken } from "@/app/services/inter-token"
 import axios from "axios"
 import fs from 'fs'
 import https from 'https'
-import path from 'path'
 
 const contaCorrente = process.env.INTER_ACCOUNT
 const cert = process.env.CERT_PATH
 const key = process.env.KEY_PATH
 const version = process.env.NEXT_PUBLIC_VERSION
-const certPath = path.join(process.cwd(), `${cert}`);
-const keyPath = path.join(process.cwd(), `${key}`);
+
 export async function POST(req: Request){
  
     
@@ -18,8 +16,8 @@ export async function POST(req: Request){
         try{
             
             const agent = new https.Agent({
-                cert: fs.readFileSync(`${certPath}`),
-                key: fs.readFileSync(`${keyPath}`)
+                cert: fs.readFileSync(`${cert}`),
+                key: fs.readFileSync(`${key}`)
             })
 
             const interToken = await getInterToken()
