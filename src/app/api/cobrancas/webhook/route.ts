@@ -12,7 +12,8 @@ const sslCa = process.env.SSL_CA_BASE64
 
 export async function POST(req: Request){
  
-    
+    const response = await req.json()
+    console.log(response)
     
         try{
             if(!sslCert || !sslKey || !sslCa){
