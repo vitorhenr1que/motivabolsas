@@ -15,21 +15,22 @@ export async function POST(req: Request){
  
     const event = await req.json()
     console.log('CORPO DO EVENTO: ', event )
+    console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
+
        try{
-        if(event.situacao)
-       
-        switch (event.situacao){
-            case "RECEBIDO":
-                const refreshPayment = await prisma.user.update({
-                    where: {
-                        cpf: event.seuNumero,
-                    },
-                    data: {
-                        currentPayment: true
-                    }
-                })
-            break;
-    
+        if(event.situacao){
+            switch (event.situacao){
+                case "RECEBIDO":
+                    const refreshPayment = await prisma.user.update({
+                        where: {
+                            cpf: event.seuNumero,
+                        },
+                        data: {
+                            currentPayment: true
+                        }
+                    })
+                break;
+            }
         }
         return Response.json(event, {status: 200})
        }catch(e){
