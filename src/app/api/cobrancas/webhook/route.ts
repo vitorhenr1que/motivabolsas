@@ -14,27 +14,54 @@ const sslCa = process.env.SSL_CA_BASE64
 export async function POST(req: Request){
  
     const event = await req.json()
-    console.log('CORPO DO EVENTO: ', event[0] )
-    console.log('seuNumero: ', event[0].seuNumero, "situacao: ", event[0].situacao)
-
-       try{
-        if(event[0].situacao){
-            switch (event[0].situacao){
-                case "RECEBIDO":
-                    const refreshPayment = await prisma.user.update({
-                        where: {
-                            cpf: event[0].seuNumero,
-                        },
-                        data: {
-                            currentPayment: true
-                        }
-                    })
-                break;
+    if(event[0]){ // Se o receber um array
+        console.log('CORPO DO EVENTO: ', event[0] )
+        console.log('seuNumero: ', event[0].seuNumero, "situacao: ", event[0].situacao)
+    
+           try{
+            if(event[0].situacao){
+                switch (event[0].situacao){
+                    case "RECEBIDO":
+                        const refreshPayment = await prisma.user.update({
+                            where: {
+                                cpf: event[0].seuNumero,
+                            },
+                            data: {
+                                currentPayment: true
+                            }
+                        })
+                    break;
+                }
             }
-        }
-        return Response.json(event[0], {status: 200})
-       }catch(e){
-            return Response.json({error: e}, {status: 400})
-        }
+            return Response.json(event[0], {status: 200})
+           }catch(e){
+                return Response.json({error: e}, {status: 400})
+            }
+    }
+    else{ // Se receber um objeto
+        console.log('CORPO DO EVENTO: ', event )
+        console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
+    
+           try{ 
+            if(event.situacao){
+                switch (event.situacao){
+                    case "RECEBIDO":
+                        const refreshPayment = await prisma.user.update({
+                            where: {
+                                cpf: event.seuNumero,
+                            },
+                            data: {
+                                currentPayment: true
+                            }
+                        })
+                    break;
+                }
+            }
+            return Response.json(event, {status: 200})
+           }catch(e){
+                return Response.json({error: e}, {status: 400})
+            }
+    }
+    
        
 }
