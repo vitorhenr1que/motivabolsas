@@ -1,0 +1,32 @@
+.container{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex: 1;
+    .input{
+       padding: 16px 24px; 
+       flex: 1;
+    }
+    .findButton{
+        padding: 12px 16px;
+        border: none;
+        background: var(--bf-yellow);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: .2s;
+        &:hover{
+            background: var(--bf-yellow-hover);
+        }
+    }
+    .clearButton{
+        background: var(--bf-yellow);
+        padding: 12px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: .2s;
+        &:hover{
+            background: var(--bf-yellow-hover);
+        }
+    }
+}
