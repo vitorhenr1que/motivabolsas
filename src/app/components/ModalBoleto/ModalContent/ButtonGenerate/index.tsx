@@ -36,6 +36,7 @@ export function ButtonGenerate(){
                 return response.data
         }catch(e: any){
             setLoading(false)
+            console.log(e)
             return alert(`Erro: ${e.message}`)
         }         
     }
