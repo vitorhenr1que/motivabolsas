@@ -8,28 +8,30 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  name      String
-  cpf       String    @unique
-  customerId String @unique
-  phone String
-  currentPayment Boolean @default(false)
-  birthDate DateTime?
-  createdAt DateTime  @default(now())
-  addresses Address[]
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password        String
+  name            String
+  cpf             String    @unique
+  customerId      String    @unique
+  birthDate       DateTime?
+  createdAt       DateTime  @default(now())
+  currentPayment  Boolean   @default(false)
+  phone           String
+  token String?
+  tokenExpiration String?
 }
 
 model Address {
-  id String @id @default(uuid())
-  street String
-  number String
-  complement String?
+  id           String  @id @default(uuid())
+  street       String
+  number       String
+  complement   String?
   neighborhood String
-  uf String
-  city String
-  cep String
-  userId String
-  address User @relation(fields: [userId], references: [id])
+  uf           String
+  city         String
+  cep          String
+  userId       String
+
+  @@index([userId], map: "Address_userId_fkey")
 }

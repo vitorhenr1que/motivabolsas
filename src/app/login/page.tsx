@@ -10,6 +10,7 @@ import { authenticate } from '../lib/actions'
 import { useFormState, useFormStatus } from 'react-dom'
 import loginAction  from './loginAction'
 import { Loading } from '../components/Loading'
+import { ModalResetRequest } from '../components/ModalResetRequest'
  
 
 
@@ -60,7 +61,7 @@ export default function LogIn(){
                 <input placeholder='Sua senha' type='password' name='password' id='password' required/>
                 </div>
                 <div className={styles.divLink}>
-                    <Link href={"#"} >Esqueci minha senha</Link>
+                    <ModalResetRequest/>
                 </div>
                 <div className={styles.divSignIn}>
                 {errorMessage && <span className={styles.errorMessage}>{errorMessage}</span>}
