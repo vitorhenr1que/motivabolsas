@@ -2,18 +2,19 @@
 import { prisma } from "@/app/services/prisma";
 import { NextResponse } from "next/server";
 import { NextApiRequest, NextApiResponse } from "next";
-
+import bcrypt from 'bcrypt'
 
 export async function POST(request: Request){
     const { email, password, cpf, name, birthDate, customerId, phone, cep, city, neighborhood, number, street, uf, complement } = await request.json()
     console.log('CPF NUMB: ', cpf)
 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
         const createUser = await prisma.user.create({
             data: {
                 email, 
-                password, 
+                password: hashedPassword, 
                 cpf,
                 name, 
                 customerId,
