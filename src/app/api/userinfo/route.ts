@@ -21,6 +21,7 @@ export async function POST(request: Request){
             name: true,
             phone: true,
             currentPayment: true,
+            firstPayment: true,
             customerId: true,
             addresses: true
         },
