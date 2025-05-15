@@ -10,6 +10,7 @@ import { SignOut } from "../services/logout";
 import { DivDashboard } from "../components/dashboard/DivDashboard";
 import { Loading } from "../components/Loading";
 import { VscVerifiedFilled } from "react-icons/vsc";
+import { InfoPayContainer } from "../components/InfoPayContainer";
 
 interface userDataProps{
         birthDate: Date | null,
@@ -19,6 +20,7 @@ interface userDataProps{
         id: string,
         name: string,
         currentPayment: boolean,
+        firstPayment: boolean,
         customerId: string
 }
 
@@ -47,11 +49,8 @@ export default function Dashboard(){
         : (
        <DivDashboard>
                 { user?.currentPayment === false ? 
-                <div className={styles.infoPayContainer}>
-                    <span>A sua bolsa não foi renovada para esse semestre. Efetue o pagamento para renova-la.</span>
-                    {/* <PaymentButton user={user}/> */}
-                    <Link href={"https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0"} className={styles.linkRenovacao} target="_blank">Solicite a renovação</Link>
-                </div> 
+                <InfoPayContainer firstPayment={user?.firstPayment}/>
+                
                 : 
                 <div className={styles.activeContainer}>
                 <div className={styles.statusContainer}>
@@ -65,7 +64,7 @@ export default function Dashboard(){
                     <hr />
                     <Link href={"/pagamentos"} className={styles.pagamentosButton}>Lista de Pagamentos</Link>
                 </div>
-                </div> }
+                </div>} 
        </DivDashboard>
     )
 }

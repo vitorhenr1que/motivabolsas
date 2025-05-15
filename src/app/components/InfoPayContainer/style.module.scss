@@ -1,0 +1,39 @@
+.infoPayContainer{
+
+    background-color: var(--bf-red);
+    padding: 16px 24px;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .button{
+        cursor: pointer;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 8px;
+    }
+    .linkRenovacao{
+        cursor: pointer;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 8px;
+        background: var(--bf-gray);
+        color: var(--foreground);
+        text-align: center;
+        transition: .2s;
+        &:hover{
+            background: var(--bf-gray-hover);
+        }
+    }
+}
+
+@media(max-width: 700px){
+    .infoPayContainer{
+        flex-direction: column;
+        gap: 1rem;
+        .linkRenovacao{
+            width: 100%;
+        }
+    }
+}
