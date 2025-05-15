@@ -17,6 +17,7 @@ model User {
   birthDate       DateTime?
   createdAt       DateTime  @default(now())
   currentPayment  Boolean   @default(false)
+  firstPayment Boolean @default(false)
   phone           String
   tokenExpiration String?
   token           String?
@@ -33,6 +34,7 @@ model Address {
   city         String
   cep          String
   userId       String
-
   address User @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Address_userId_fkey")
 }
