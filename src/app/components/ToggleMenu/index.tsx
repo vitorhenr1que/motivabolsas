@@ -36,7 +36,7 @@ export function ToggleMenu({isLogged}: isLoggedProps){
                 <Link href={"/"} className={styles.link} onClick={() => handleToggleClick()}>
                         Inicio
                     </Link>
-                    <Link href={"#"} className={styles.link} onClick={() => handleToggleClick()}>
+                    <Link href={"/contato"} className={styles.link} onClick={() => handleToggleClick()}>
                         Contato
                     </Link>
                 </div>
