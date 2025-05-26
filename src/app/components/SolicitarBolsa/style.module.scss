@@ -1,0 +1,23 @@
+.linkButton{
+    background: var(--bf-yellow);
+    padding: 16px 24px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    border-radius: 8px;
+    transition: .2s;
+    &:hover{
+        background: var(--bf-yellow-hover);
+    }
+}
+.fixedLinkButton{
+    background: var(--bf-yellow);
+        padding: 10px 24px;
+        text-align: center;
+        color: white;
+        border-radius: 8px;
+        transition: .2s;
+        &:hover{
+            background: var(--bf-yellow-hover);
+        }
+}
