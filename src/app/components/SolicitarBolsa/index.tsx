@@ -35,7 +35,7 @@ export function SolicitarBolsa({faculdade, fixed}: SolicitarBolsaProps){
             solicitarBolsaButtonMobile?.addEventListener('click', handleClickMobile)
             return () => {
                 solicitarBolsaButton.removeEventListener('click', handleClick)
-                solicitarBolsaButtonMobile?.addEventListener('click', handleClickMobile)
+                solicitarBolsaButtonMobile?.removeEventListener('click', handleClickMobile)
             }
         }
     },[])
