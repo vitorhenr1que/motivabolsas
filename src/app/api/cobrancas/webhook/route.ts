@@ -52,7 +52,8 @@ export async function POST(req: Request){
                                 cpf: event.seuNumero,
                             },
                             data: {
-                                currentPayment: true
+                                currentPayment: true,
+                                firstPayment: true,
                             }
                         })
                     break;
