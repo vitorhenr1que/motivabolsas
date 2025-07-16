@@ -4,6 +4,71 @@ import type * as prismic from "@prismicio/client";
 
 type Simplify<T> = { [KeyType in keyof T]: T[KeyType] };
 
+type PickContentRelationshipFieldData<
+  TRelationship extends
+    | prismic.CustomTypeModelFetchCustomTypeLevel1
+    | prismic.CustomTypeModelFetchCustomTypeLevel2
+    | prismic.CustomTypeModelFetchGroupLevel1
+    | prismic.CustomTypeModelFetchGroupLevel2,
+  TData extends Record<
+    string,
+    | prismic.AnyRegularField
+    | prismic.GroupField
+    | prismic.NestedGroupField
+    | prismic.SliceZone
+  >,
+  TLang extends string,
+> =
+  // Content relationship fields
+  {
+    [TSubRelationship in Extract<
+      TRelationship["fields"][number],
+      prismic.CustomTypeModelFetchContentRelationshipLevel1
+    > as TSubRelationship["id"]]: ContentRelationshipFieldWithData<
+      TSubRelationship["customtypes"],
+      TLang
+    >;
+  } & // Group
+  {
+    [TGroup in Extract<
+      TRelationship["fields"][number],
+      | prismic.CustomTypeModelFetchGroupLevel1
+      | prismic.CustomTypeModelFetchGroupLevel2
+    > as TGroup["id"]]: TData[TGroup["id"]] extends prismic.GroupField<
+      infer TGroupData
+    >
+      ? prismic.GroupField<
+          PickContentRelationshipFieldData<TGroup, TGroupData, TLang>
+        >
+      : never;
+  } & // Other fields
+  {
+    [TFieldKey in Extract<
+      TRelationship["fields"][number],
+      string
+    >]: TFieldKey extends keyof TData ? TData[TFieldKey] : never;
+  };
+
+type ContentRelationshipFieldWithData<
+  TCustomType extends
+    | readonly (prismic.CustomTypeModelFetchCustomTypeLevel1 | string)[]
+    | readonly (prismic.CustomTypeModelFetchCustomTypeLevel2 | string)[],
+  TLang extends string = string,
+> = {
+  [ID in Exclude<
+    TCustomType[number],
+    string
+  >["id"]]: prismic.ContentRelationshipField<
+    ID,
+    TLang,
+    PickContentRelationshipFieldData<
+      Extract<TCustomType[number], { id: ID }>,
+      Extract<prismic.Content.AllDocumentTypes, { type: ID }>["data"],
+      TLang
+    >
+  >;
+}[Exclude<TCustomType[number], string>["id"]];
+
 /**
  * Content for Courses documents
  */
@@ -15,7 +80,7 @@ interface CoursesDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: courses.course_image
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   course_image: prismic.ImageField<never>;
 
@@ -26,7 +91,7 @@ interface CoursesDocumentData {
    * - **Placeholder**: Nome do Curso
    * - **API ID Path**: courses.name
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   name: prismic.KeyTextField;
 
@@ -37,7 +102,7 @@ interface CoursesDocumentData {
    * - **Placeholder**: Modalidade
    * - **API ID Path**: courses.modality
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   modality: prismic.KeyTextField;
 
@@ -48,7 +113,7 @@ interface CoursesDocumentData {
    * - **Placeholder**: Valor Total
    * - **API ID Path**: courses.total_value
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#number
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
   total_value: prismic.NumberField;
 
@@ -59,7 +124,7 @@ interface CoursesDocumentData {
    * - **Placeholder**: Desconto
    * - **API ID Path**: courses.discount
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#number
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
   discount: prismic.NumberField;
 
@@ -70,7 +135,7 @@ interface CoursesDocumentData {
    * - **Placeholder**: Informação do Curso
    * - **API ID Path**: courses.course_information
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#rich-text-title
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
    */
   course_information: prismic.RichTextField;
 }
@@ -80,7 +145,7 @@ interface CoursesDocumentData {
  *
  * - **API ID**: `courses`
  * - **Repeatable**: `true`
- * - **Documentation**: https://prismic.io/docs/custom-types
+ * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */
@@ -102,7 +167,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.course_image
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   course_image: prismic.ImageField<never>;
 
@@ -113,7 +178,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.name
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   name: prismic.KeyTextField;
 
@@ -124,7 +189,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.modality
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   modality: prismic.KeyTextField;
 
@@ -135,7 +200,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.total_value
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#number
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
   total_value: prismic.NumberField;
 
@@ -146,7 +211,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discount
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#number
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
   discount: prismic.NumberField;
 
@@ -157,7 +222,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.course_information
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#rich-text-title
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
    */
   course_information: prismic.RichTextField;
 
@@ -168,7 +233,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discipline_1
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_1: prismic.KeyTextField;
 
@@ -179,7 +244,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discipline_2
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_2: prismic.KeyTextField;
 
@@ -190,7 +255,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discipline_3
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_3: prismic.KeyTextField;
 
@@ -201,7 +266,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discipline_4
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_4: prismic.KeyTextField;
 
@@ -212,7 +277,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discipline_5
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_5: prismic.KeyTextField;
 
@@ -223,7 +288,7 @@ interface FarvalleDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle.discipline_6
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_6: prismic.KeyTextField;
 }
@@ -233,7 +298,7 @@ interface FarvalleDocumentData {
  *
  * - **API ID**: `farvalle`
  * - **Repeatable**: `true`
- * - **Documentation**: https://prismic.io/docs/custom-types
+ * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */
@@ -255,7 +320,7 @@ interface FarvallePhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle_photos.image_01
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_01: prismic.ImageField<never>;
 
@@ -266,7 +331,7 @@ interface FarvallePhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle_photos.image_02
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_02: prismic.ImageField<never>;
 
@@ -277,7 +342,7 @@ interface FarvallePhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle_photos.image_03
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_03: prismic.ImageField<never>;
 
@@ -288,7 +353,7 @@ interface FarvallePhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: farvalle_photos.image_04
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_04: prismic.ImageField<never>;
 }
@@ -298,7 +363,7 @@ interface FarvallePhotosDocumentData {
  *
  * - **API ID**: `farvalle_photos`
  * - **Repeatable**: `true`
- * - **Documentation**: https://prismic.io/docs/custom-types
+ * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */
@@ -320,7 +385,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.course_image
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   course_image: prismic.ImageField<never>;
 
@@ -331,7 +396,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.name
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   name: prismic.KeyTextField;
 
@@ -342,7 +407,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.modality
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   modality: prismic.KeyTextField;
 
@@ -353,7 +418,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.total_value
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#number
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
   total_value: prismic.NumberField;
 
@@ -364,7 +429,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discount
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#number
+   * - **Documentation**: https://prismic.io/docs/fields/number
    */
   discount: prismic.NumberField;
 
@@ -375,7 +440,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.course_information
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#rich-text-title
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
    */
   course_information: prismic.RichTextField;
 
@@ -386,7 +451,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discipline_1
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_1: prismic.KeyTextField;
 
@@ -397,7 +462,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discipline_2
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_2: prismic.KeyTextField;
 
@@ -408,7 +473,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discipline_3
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_3: prismic.KeyTextField;
 
@@ -419,7 +484,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discipline_4
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_4: prismic.KeyTextField;
 
@@ -430,7 +495,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discipline_5
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_5: prismic.KeyTextField;
 
@@ -441,7 +506,7 @@ interface FazagDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag.discipline_6
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   discipline_6: prismic.KeyTextField;
 }
@@ -451,7 +516,7 @@ interface FazagDocumentData {
  *
  * - **API ID**: `fazag`
  * - **Repeatable**: `true`
- * - **Documentation**: https://prismic.io/docs/custom-types
+ * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */
@@ -469,7 +534,7 @@ interface FazagPhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag_photos.image_01
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_01: prismic.ImageField<never>;
 
@@ -480,7 +545,7 @@ interface FazagPhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag_photos.image_02
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_02: prismic.ImageField<never>;
 
@@ -491,7 +556,7 @@ interface FazagPhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag_photos.image_03
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_03: prismic.ImageField<never>;
 
@@ -502,7 +567,7 @@ interface FazagPhotosDocumentData {
    * - **Placeholder**: *None*
    * - **API ID Path**: fazag_photos.image_04
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   image_04: prismic.ImageField<never>;
 }
@@ -512,7 +577,7 @@ interface FazagPhotosDocumentData {
  *
  * - **API ID**: `fazag_photos`
  * - **Repeatable**: `true`
- * - **Documentation**: https://prismic.io/docs/custom-types
+ * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */
@@ -524,51 +589,68 @@ export type FazagPhotosDocument<Lang extends string = string> =
   >;
 
 /**
- * Content for Faculdades documents
+ * Content for Instituições documents
  */
 interface UniversityDocumentData {
   /**
-   * Nome da Faculdade field in *Faculdades*
+   * Nome da Faculdade field in *Instituições*
    *
    * - **Field Type**: Text
    * - **Placeholder**: Nome da Faculdade
    * - **API ID Path**: university.university
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
   university: prismic.KeyTextField;
 
   /**
-   * Imagens da Faculdade field in *Faculdades*
+   * Imagens da Faculdade field in *Instituições*
    *
    * - **Field Type**: Image
    * - **Placeholder**: *None*
    * - **API ID Path**: university.university_images
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#image
+   * - **Documentation**: https://prismic.io/docs/fields/image
    */
   university_images: prismic.ImageField<
     "image_01" | "image_02" | "image_03" | "image_04"
   >;
 
   /**
-   * embed_maps field in *Faculdades*
+   * embed_maps field in *Instituições*
    *
    * - **Field Type**: Link
    * - **Placeholder**: Link do Google Maps (Embed)
    * - **API ID Path**: university.embed_maps
    * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#link-content-relationship
+   * - **Documentation**: https://prismic.io/docs/fields/link
    */
-  embed_maps: prismic.LinkField;
+  embed_maps: prismic.LinkField<
+    string,
+    string,
+    unknown,
+    prismic.FieldState,
+    never
+  >;
+
+  /**
+   * Nível field in *Instituições*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: Nível da Instituição
+   * - **API ID Path**: university.nivel
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  nivel: prismic.KeyTextField;
 }
 
 /**
- * Faculdades document from Prismic
+ * Instituições document from Prismic
  *
  * - **API ID**: `university`
  * - **Repeatable**: `true`
- * - **Documentation**: https://prismic.io/docs/custom-types
+ * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */

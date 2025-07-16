@@ -13,6 +13,9 @@ model User {
   password        String
   name            String
   cpf             String    @unique
+  course String?
+  discount String?
+  instituition String?
   customerId      String    @unique
   birthDate       DateTime?
   createdAt       DateTime  @default(now())
@@ -38,3 +41,4 @@ model Address {
 
   @@index([userId], map: "Address_userId_fkey")
 }
+

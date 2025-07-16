@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from 'bcrypt'
 
 export async function POST(request: Request){
-    const { email, password, cpf, name, birthDate, customerId, phone, cep, city, neighborhood, number, street, uf, complement } = await request.json()
+    const { email, password, cpf, name, birthDate, customerId, phone, cep, city, neighborhood, number, street, uf, complement, course, instituition } = await request.json()
     console.log('CPF NUMB: ', cpf)
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -19,6 +19,8 @@ export async function POST(request: Request){
                 name, 
                 customerId,
                 phone,
+                course,
+                instituition,
                 addresses: {
                     create: {
                         cep,

@@ -4,3 +4,6 @@ node_modules
 .DS_Store
 certificates
 certificados
+slices
+slice-simulator
+slicemachine.config.json

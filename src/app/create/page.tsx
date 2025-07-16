@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import styles from './style.module.scss'
 import { api } from '../services/api'
 import { CPFInput } from '../components/CpfInput'
@@ -11,6 +11,9 @@ import { Loading } from '../components/Loading'
 import PhoneInput from '../components/PhoneInput'
 import AddressLookup from '../components/AdressInputs/AdressLookup'
 import { CreateInput } from '../components/CreateInput'
+import { getClient } from '../services/prismic'
+import { FarvalleDocument, FarvalleDocumentData, FazagDocument, FazagDocumentData, Simplify, UniversityDocument } from '../../../prismicio-types'
+import { SelectInstituition } from '../components/SelectInstituition'
 
 
 interface DataProps{
@@ -20,6 +23,8 @@ interface DataProps{
     password: string,
     passConfirm: string
 }
+
+
 
 export default function Create(){
 
@@ -108,6 +113,8 @@ export default function Create(){
                 cpf: data.cpf,
                 name: data.name,
                 phone: data.phone ,
+                instituition: data.instituition,
+                course: data.course,
                 cep: data.cep ,
                 city: data.city ,
                 neighborhood: data.neighborhood ,
@@ -154,6 +161,9 @@ export default function Create(){
             }   
             }
         }
+
+  
+
         return(
         <div className={styles.generalContainer}>
         <div className={styles.container}>
@@ -178,6 +188,9 @@ export default function Create(){
             <div className={styles.doubleInputContainer}>
                 <CPFInput/>
                 <PhoneInput/>
+            </div>
+            <div className={styles.doubleInputContainer}>
+                <SelectInstituition/>
             </div>
             <div>
                 <strong>Endereço</strong>

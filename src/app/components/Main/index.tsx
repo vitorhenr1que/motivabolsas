@@ -5,11 +5,12 @@ import { GoMortarBoard } from "react-icons/go";
 import { PiCertificateLight } from "react-icons/pi";
 import { LiaPencilRulerSolid } from "react-icons/lia";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Graduacao } from "../Graduacao";
 import { PosGraduacao } from "../PosGraduacao";
 import { CursosTecnicos } from "../CursosTecnicos";
 import Banner from '../../public/banner-bolsa.jpg'
+
 
 
 export function Main(){

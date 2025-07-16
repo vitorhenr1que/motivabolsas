@@ -1,7 +1,7 @@
 {
   "format": "custom",
   "id": "university",
-  "label": "Faculdades",
+  "label": "Instituições",
   "repeatable": true,
   "status": true,
   "json": {
@@ -56,6 +56,13 @@
           "allowTargetBlank": true,
           "select": null,
           "allowText": true
+        }
+      },
+      "nivel": {
+        "type": "Text",
+        "config": {
+          "label": "Nível",
+          "placeholder": "Nível da Instituição"
         }
       }
     }
