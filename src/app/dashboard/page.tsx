@@ -11,6 +11,7 @@ import { DivDashboard } from "../components/dashboard/DivDashboard";
 import { Loading } from "../components/Loading";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { InfoPayContainer } from "../components/InfoPayContainer";
+import { IoDocumentText } from "react-icons/io5";
 
 interface userDataProps{
         birthDate: Date | null,
@@ -19,6 +20,9 @@ interface userDataProps{
         email: string,
         id: string,
         name: string,
+        instituition: string,
+        course: string,
+        discount: string,
         currentPayment: boolean,
         firstPayment: boolean,
         customerId: string
@@ -27,6 +31,7 @@ interface userDataProps{
 export default function Dashboard(){
     const [user, setUser] = useState<userDataProps>()
     const [loading, setLoading] = useState(true)
+    const [loadingButton, setLoadingButton] = useState(false)
     useEffect(()=> {
         setLoading(true)
         const getUser = async () => {
@@ -41,6 +46,24 @@ export default function Dashboard(){
     }, [])
     console.log(user?.currentPayment)
 
+    async function handleComprovante(name: string, course: string, instituition: string, cpf: string, discount: string, createdAt: Date){
+        setLoadingButton(true)
+        try{
+            const response = await api.post('/duplicatedoc',{
+                name,
+                course,
+                instituition,
+                cpf,
+                discount,
+                createdAt
+            })
+            setLoadingButton(false)
+            return response
+        }catch(e){
+            setLoadingButton(false)
+            return console.log(e)
+        }
+    }
 
     return !!loading ? 
         <DivDashboard>
@@ -52,6 +75,7 @@ export default function Dashboard(){
                 <InfoPayContainer firstPayment={user?.firstPayment}/>
                 
                 : 
+                <div className={styles.container}>
                 <div className={styles.activeContainer}>
                 <div className={styles.statusContainer}>
                     <div className={styles.status}>
@@ -64,7 +88,23 @@ export default function Dashboard(){
                     <hr />
                     <Link href={"/pagamentos"} className={styles.pagamentosButton}>Lista de Pagamentos</Link>
                 </div>
-                </div>} 
+                </div>
+                    <div className={styles.activeContainer}>
+                    <div className={styles.statusContainer}>
+                    <div className={styles.status}>
+                        <div className={styles.statusTexts}>
+                            <strong>Comprovante de Bolsa</strong>
+                            <span>{`${new Date().getFullYear()}.${new Date().getMonth() + 1 >= 10 || new Date().getMonth() + 1 <= 4 ? 1 : 2 }`}</span>
+                        </div>
+                        <div className={styles.statusCircle}><IoDocumentText color="lightgreen" size={24}/></div>
+                        </div>
+                        <hr />
+                        <button className={styles.pagamentosButton} onClick={() => {!!user && handleComprovante(user?.name, user?.course, user?.instituition, user?.cpf, user?.discount, user?.createdAt)}}>{loadingButton ? <Loading/> : "Gerar Comprovante"}</button>
+                    
+                    </div>
+                    </div>
+                </div>
+                } 
        </DivDashboard>
     )
 }
