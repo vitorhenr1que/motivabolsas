@@ -13,39 +13,40 @@ export async function POST(request: Request){
             if(onlyPaid === false){ // Se estiver desmarcado no site mande todos os usuários
                 console.log('entrou aq')
                 const userinfo = await prisma.user.findMany({
-                    where: { // Buscar pelo nome ou cpf
-                        OR: [
-                            {
+                  where: {
+                      OR: [
+                          {
                               name: {
-                                contains: name,
-                              },
-                            },
-                            {
-                              AND: {
-                                cpf: {
                                   contains: name,
-                                },
                               },
-                            },
-                          ],
-                    },
-                    select:{
-                        id: true,
-                        birthDate: true,
-                        cpf: true,
-                        name: true,
-                        email: true,
-                        phone: true,
-                        course: true,
-                        instituition: true,
-                        discount: true,
-                        createdAt: true,
-                        currentPayment: true,
-                        customerId: true,
-                        addresses: true
-                    },
-                    orderBy: {createdAt: "desc"},
-                })
+                          },
+                          {
+                              cpf: {
+                                  contains: name,
+                              },
+                          },
+                          {
+                              id: name, // Busca direta por ID (assumindo que 'name' pode ser um ID no input)
+                          },
+                      ],
+                  },
+                  select: {
+                      id: true,
+                      birthDate: true,
+                      cpf: true,
+                      name: true,
+                      email: true,
+                      phone: true,
+                      course: true,
+                      instituition: true,
+                      discount: true,
+                      createdAt: true,
+                      currentPayment: true,
+                      customerId: true,
+                      addresses: true,
+                  },
+                  orderBy: { createdAt: "desc" },
+              });
                 console.log('Teste API find-users', userinfo)
                 return Response.json(userinfo)
             }

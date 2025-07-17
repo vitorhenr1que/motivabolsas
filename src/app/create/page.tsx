@@ -37,7 +37,7 @@ export default function Create(){
       }
 
     const validateName = (name: FormDataEntryValue) => { // Função de Validar nome
-        if(!!name === false || String(name).length < 6){
+        if(!!name === false || String(name).length < 16){
             return false
         }
         else true
@@ -78,7 +78,7 @@ export default function Create(){
         try {
 
             if(validateName(data.name) === false){ //Verificação de Nome
-                setError('Insira um nome válido.')
+                setError('Insira seu nome completo.')
                 setLoading(false)
                 return
             }

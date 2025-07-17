@@ -16,7 +16,7 @@ import { IoDocumentText } from "react-icons/io5";
 interface userDataProps{
         birthDate: Date | null,
         cpf: string,
-        createdAt: Date,
+        createdAt: string,
         email: string,
         id: string,
         name: string,
@@ -46,17 +46,36 @@ export default function Dashboard(){
     }, [])
     console.log(user?.currentPayment)
 
-    async function handleComprovante(name: string, course: string, instituition: string, cpf: string, discount: string, createdAt: Date){
+    async function handleDownloadComprovante(id: string, name: string, course: string, instituition: string, cpf: string, discount: string, createdAt: string){
         setLoadingButton(true)
         try{
-            const response = await api.post('/duplicatedoc',{
+            const response = await api.post('/download-comprovante',{
                 name,
                 course,
                 instituition,
                 cpf,
                 discount,
-                createdAt
+                createdAt,
+                id
+            }, {
+                responseType: 'blob'
             })
+            // Criar Blob diretamente do arquivo PDF
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+
+            // recuperar o ID do novo documento via headers
+            const newDocumentId = response.headers['x-document-id'];
+            console.log('Novo documento Google Docs criado com ID:', newDocumentId);
+
+            // Criar URL para download do Blob
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Comprovante de Bolsa - Motiva Bolsas (${instituition.toUpperCase()})`;
+            a.click();
+            URL.revokeObjectURL(url);
+
             setLoadingButton(false)
             return response
         }catch(e){
@@ -99,7 +118,7 @@ export default function Dashboard(){
                         <div className={styles.statusCircle}><IoDocumentText color="lightgreen" size={24}/></div>
                         </div>
                         <hr />
-                        <button className={styles.pagamentosButton} onClick={() => {!!user && handleComprovante(user?.name, user?.course, user?.instituition, user?.cpf, user?.discount, user?.createdAt)}}>{loadingButton ? <Loading/> : "Gerar Comprovante"}</button>
+                        <button className={styles.pagamentosButton} onClick={() => {!!user && handleDownloadComprovante(user?.name, user?.course, user?.instituition, user?.cpf, user?.discount, user?.createdAt, user?.id)}}>{loadingButton ? <Loading/> : "Gerar Comprovante"}</button>
                     
                     </div>
                     </div>
