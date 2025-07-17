@@ -1,22 +1,26 @@
 import { google } from 'googleapis';
 import {  OAuth2Client } from 'google-auth-library';
-import fs from 'fs';
-import path from 'path';
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 /**
  * Retorna cliente OAuth2 autenticado.
  */
 export function getAuthenticatedClient(): OAuth2Client {
-    
-  const credentialsPath = path.join(process.cwd(), 'src/app/credentials/credentials.json');
-  const tokenPath = path.join(process.cwd(), 'src/app/credentials/token.json');
+  // Credenciais do cliente OAuth 2.0
+  const clientId = process.env.GOOGLE_CLIENT_ID!;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI!;
 
-  const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf-8'));
-  const token = JSON.parse(fs.readFileSync(tokenPath, 'utf-8'));
+  // Tokens de acesso (access_token e refresh_token)
+  const token = {
+    access_token: process.env.GOOGLE_ACCESS_TOKEN!,
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN!,
+    scope: process.env.GOOGLE_TOKEN_SCOPE || 'https://www.googleapis.com/auth/drive',
+    token_type: 'Bearer',
+    expiry_date: Number(process.env.GOOGLE_TOKEN_EXPIRY_DATE) || undefined
+  };
 
-  const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
+  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 
-  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
   oAuth2Client.setCredentials(token);
 
   return oAuth2Client;
