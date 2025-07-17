@@ -6,4 +6,5 @@ certificates
 certificados
 slices
 slice-simulator
-slicemachine.config.json
+slicemachine.config.jsonsrc/app/credentials/credentials.json
+src/app/credentials/token.json
