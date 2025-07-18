@@ -67,7 +67,8 @@ export async function POST(req: Request){
                             }
                         })
                         axios.post('https://webhook.fazag.edu.br:8443/webhook/motiva-bolsas', {
-                            userInfo
+                            userInfo,
+                            event: event
                         })
                     break;
                 }
