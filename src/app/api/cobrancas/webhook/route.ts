@@ -57,6 +57,19 @@ export async function POST(req: Request){
                             }
                         })
                     break;
+                    case "A_RECEBER":
+                        const userInfo = await prisma.user.findUnique({
+                            where: {
+                                cpf: event.seuNumero,
+                            },
+                            select: {
+                                phone: true,
+                            }
+                        })
+                        axios.post('https://webhook.fazag.edu.br:8443/webhook/motiva-bolsas', {
+                            userInfo
+                        })
+                    break;
                 }
             }
             return Response.json(event, {status: 200})

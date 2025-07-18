@@ -41,7 +41,7 @@ export async function POST(req: Request){
                     "Content-Type": "application/json"
                 }
             })
-            console.log(response.data, 'TESTE')
+ 
             return Response.json(response.data, {status: 200})
         }catch(e){
             return Response.json({error: e}, {status: 400})
