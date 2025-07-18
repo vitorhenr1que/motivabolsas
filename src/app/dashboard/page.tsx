@@ -12,11 +12,12 @@ import { Loading } from "../components/Loading";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { InfoPayContainer } from "../components/InfoPayContainer";
 import { IoDocumentText } from "react-icons/io5";
+import { calcularSemestre } from "../scripts/calcularSemestre";
 
 interface userDataProps{
         birthDate: Date | null,
         cpf: string,
-        createdAt: string,
+        createdAt: Date,
         email: string,
         id: string,
         name: string,
@@ -46,17 +47,17 @@ export default function Dashboard(){
     }, [])
     console.log(user?.currentPayment)
 
-    async function handleDownloadComprovante(id: string, name: string, course: string, instituition: string, cpf: string, discount: string, createdAt: string){
+    async function handleDownloadComprovante(){
         setLoadingButton(true)
         try{
             const response = await api.post('/download-comprovante',{
-                name,
-                course,
-                instituition,
-                cpf,
-                discount,
-                createdAt,
-                id
+                name: user?.name,
+                course: user?.course,
+                instituition: user?.instituition,
+                cpf: user?.cpf,
+                discount: user?.discount,
+                createdAt: user?.createdAt,
+                id: user?.id
             }, {
                 responseType: 'blob'
             })
@@ -72,7 +73,7 @@ export default function Dashboard(){
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Comprovante de Bolsa - Motiva Bolsas (${instituition.toUpperCase()})`;
+            a.download = `Comprovante de Bolsa - Motiva Bolsas (${user?.instituition.toUpperCase()})`;
             a.click();
             URL.revokeObjectURL(url);
 
@@ -113,12 +114,12 @@ export default function Dashboard(){
                     <div className={styles.status}>
                         <div className={styles.statusTexts}>
                             <strong>Comprovante de Bolsa</strong>
-                            <span>{`${new Date().getFullYear()}.${new Date().getMonth() + 1 >= 10 || new Date().getMonth() + 1 <= 4 ? 1 : 2 }`}</span>
+                            <span>{`${calcularSemestre(new Date())}`}</span>
                         </div>
                         <div className={styles.statusCircle}><IoDocumentText color="lightgreen" size={24}/></div>
                         </div>
                         <hr />
-                        <button className={styles.pagamentosButton} onClick={() => {!!user && handleDownloadComprovante(user?.name, user?.course, user?.instituition, user?.cpf, user?.discount, user?.createdAt, user?.id)}}>{loadingButton ? <Loading/> : "Gerar Comprovante"}</button>
+                        <button className={styles.pagamentosButton} onClick={() => {!!user && handleDownloadComprovante()}}>{loadingButton ? <Loading/> : "Gerar Comprovante"}</button>
                     
                     </div>
                     </div>
