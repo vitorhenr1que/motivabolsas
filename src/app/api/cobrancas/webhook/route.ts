@@ -31,6 +31,25 @@ export async function POST(req: Request){
                                 firstPayment: true,
                             }
                         })
+                        const getPaidUser = await prisma.user.findUnique({
+                            where: {
+                                cpf: event.seuNumero,
+                            },
+                            select: {
+                                phone: true,
+                                name: true,
+                                course: true,
+                                instituition: true,
+                                cpf: true,
+                                discount: true,
+                                createdAt: true,
+                                id: true
+                           }
+                        })
+                        await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
+                            getPaidUser,
+                            event: event
+                        })
                     break;
                 }
             }
@@ -56,6 +75,25 @@ export async function POST(req: Request){
                                 firstPayment: true,
                             }
                         })
+                        const getPaidUser = await prisma.user.findUnique({
+                            where: {
+                                cpf: event.seuNumero,
+                            },
+                            select: {
+                                phone: true,
+                                name: true,
+                                course: true,
+                                instituition: true,
+                                cpf: true,
+                                discount: true,
+                                createdAt: true,
+                                id: true
+                           }
+                        })
+                        await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
+                            getPaidUser,
+                            event: event
+                        })
                     break;
                     case "A_RECEBER":
                         const userInfo = await prisma.user.findUnique({
@@ -64,9 +102,16 @@ export async function POST(req: Request){
                             },
                             select: {
                                 phone: true,
-                            }
+                                name: true,
+                                course: true,
+                                instituition: true,
+                                cpf: true,
+                                discount: true,
+                                createdAt: true,
+                                id: true
+                           }
                         })
-                        const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/motiva-bolsas', {
+                        const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
                             userInfo,
                             event: event
                         })
