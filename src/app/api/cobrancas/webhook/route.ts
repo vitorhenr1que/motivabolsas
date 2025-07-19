@@ -66,7 +66,7 @@ export async function POST(req: Request){
                                 phone: true,
                             }
                         })
-                        axios.post('https://webhook.fazag.edu.br:8443/webhook/motiva-bolsas', {
+                        const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/motiva-bolsas', {
                             userInfo,
                             event: event
                         })
