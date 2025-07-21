@@ -36,6 +36,7 @@ export async function POST(req: Request){
                                 cpf: event[0].seuNumero,
                             },
                             select: {
+                                id: true,
                                 phone: true,
                                 name: true,
                                 course: true,
@@ -43,7 +44,11 @@ export async function POST(req: Request){
                                 cpf: true,
                                 discount: true,
                                 createdAt: true,
-                                id: true
+                                addresses: {
+                                    select: {
+                                        city: true
+                                    }
+                                },  
                            }
                         })
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
@@ -83,6 +88,7 @@ export async function POST(req: Request){
                                 cpf: event.seuNumero,
                             },
                             select: {
+                                id: true,
                                 phone: true,
                                 name: true,
                                 course: true,
@@ -90,7 +96,11 @@ export async function POST(req: Request){
                                 cpf: true,
                                 discount: true,
                                 createdAt: true,
-                                id: true
+                                addresses: {
+                                    select: {
+                                        city: true
+                                    }
+                                },  
                            }
                         })
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
@@ -107,6 +117,7 @@ export async function POST(req: Request){
                                 cpf: event.seuNumero,
                             },
                             select: {
+                                id: true,
                                 phone: true,
                                 name: true,
                                 course: true,
@@ -114,7 +125,11 @@ export async function POST(req: Request){
                                 cpf: true,
                                 discount: true,
                                 createdAt: true,
-                                id: true
+                                addresses: {
+                                    select: {
+                                        city: true
+                                    }
+                                },  
                            }
                         })
                         const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
