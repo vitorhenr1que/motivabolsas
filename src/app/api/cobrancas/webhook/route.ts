@@ -49,8 +49,9 @@ export async function POST(req: Request){
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser,
                             event: event
-                        }).catch(err => {
-                            console.error('Falha no envio do webhook recebido:', err?.message || err)
+                        }).catch(() => {
+                            console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
+                            console.log('seuNumero: ', event[0].seuNumero, "situacao: ", event[0].situacao)
                         })
                     break;
                 }
@@ -95,8 +96,9 @@ export async function POST(req: Request){
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser,
                             event: event
-                        }).catch(err => {
-                            console.error('Falha no envio do webhook recebido:', err?.message || err)
+                        }).catch(() => {
+                            console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
+                            console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
                         })
                     break;
                     case "A_RECEBER":
@@ -118,8 +120,9 @@ export async function POST(req: Request){
                         const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
                             userInfo,
                             event: event
-                        }).catch(err => {
-                            console.error('Falha no envio do webhook recebido:', err?.message || err)
+                        }).catch(() => {
+                            console.log(`Processo concluído, mas não foi possível notificar o webhook N8N a receber.`)
+                            console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
                         })
                     break;
                 }
