@@ -49,6 +49,8 @@ export async function POST(req: Request){
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser,
                             event: event
+                        }).catch(err => {
+                            console.error('Falha no envio do webhook recebido:', err?.message || err)
                         })
                     break;
                 }
@@ -93,6 +95,8 @@ export async function POST(req: Request){
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser,
                             event: event
+                        }).catch(err => {
+                            console.error('Falha no envio do webhook recebido:', err?.message || err)
                         })
                     break;
                     case "A_RECEBER":
@@ -114,6 +118,8 @@ export async function POST(req: Request){
                         const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
                             userInfo,
                             event: event
+                        }).catch(err => {
+                            console.error('Falha no envio do webhook recebido:', err?.message || err)
                         })
                     break;
                 }
