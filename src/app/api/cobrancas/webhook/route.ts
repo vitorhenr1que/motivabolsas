@@ -33,7 +33,7 @@ export async function POST(req: Request){
                         })
                         const getPaidUser = await prisma.user.findUnique({
                             where: {
-                                cpf: event.seuNumero,
+                                cpf: event[0].seuNumero,
                             },
                             select: {
                                 phone: true,
