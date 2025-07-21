@@ -6,6 +6,7 @@ import { getClient } from '@/app/services/prismic'
 import Image from 'next/image'
 import { FarvalleDocumentData, FazagDocumentData, Simplify } from '../../../../prismicio-types'
 import { SolicitarBolsa } from '@/app/components/SolicitarBolsa'
+import { notFound } from 'next/navigation'
 
 type faculdade = "fazag" | "farvalle"  // Colocar novas faculdades aqui
 
@@ -23,12 +24,20 @@ interface ParamsProps{
     }
 }
 
-
+const FACULDADES_PERMITIDAS = ['fazag', 'farvalle']; // Colocar faculdades aqui
 
 export default async function Curso({params}: ParamsProps){
     console.log('faculdade/cursos - Params: ', params)
     const parametros = params
 
+    if (!FACULDADES_PERMITIDAS.includes(params.faculdade)) {
+        notFound();  // Retorna 404 silenciosamente
+      }
+    
+      const slugValido = /^[a-z0-9-]+$/.test(params.cursos);
+      if (!slugValido) {
+        notFound();
+      }
         const client = getClient()
         
         const response = await client.getByUID(`${params.faculdade}`, `${params.cursos}`, {})
