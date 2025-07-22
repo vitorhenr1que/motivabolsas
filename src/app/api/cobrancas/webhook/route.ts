@@ -22,15 +22,6 @@ export async function POST(req: Request){
             if(event[0].situacao){
                 switch (event[0].situacao){
                     case "RECEBIDO":
-                        const refreshPayment = await prisma.user.update({
-                            where: {
-                                cpf: event[0].seuNumero,
-                            },
-                            data: {
-                                currentPayment: true,
-                                firstPayment: true,
-                            }
-                        })
                         const getPaidUser = await prisma.user.findUnique({
                             where: {
                                 cpf: event[0].seuNumero,
@@ -43,6 +34,7 @@ export async function POST(req: Request){
                                 instituition: true,
                                 cpf: true,
                                 discount: true,
+                                renovacao: true,
                                 createdAt: true,
                                 addresses: {
                                     select: {
@@ -51,6 +43,17 @@ export async function POST(req: Request){
                                 },  
                            }
                         })
+                        const refreshPayment = await prisma.user.update({
+                            where: {
+                                cpf: event[0].seuNumero,
+                            },
+                            data: {
+                                currentPayment: true,
+                                firstPayment: true,
+                                renovacao: Number(getPaidUser?.renovacao) + 1
+                            }
+                        })
+                        
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser,
                             event: event
@@ -74,15 +77,6 @@ export async function POST(req: Request){
             if(event.situacao){
                 switch (event.situacao){
                     case "RECEBIDO":
-                        const refreshPayment = await prisma.user.update({
-                            where: {
-                                cpf: event.seuNumero,
-                            },
-                            data: {
-                                currentPayment: true,
-                                firstPayment: true,
-                            }
-                        })
                         const getPaidUser = await prisma.user.findUnique({
                             where: {
                                 cpf: event.seuNumero,
@@ -95,6 +89,7 @@ export async function POST(req: Request){
                                 instituition: true,
                                 cpf: true,
                                 discount: true,
+                                renovacao: true,
                                 createdAt: true,
                                 addresses: {
                                     select: {
@@ -102,6 +97,16 @@ export async function POST(req: Request){
                                     }
                                 },  
                            }
+                        })
+                        const refreshPayment = await prisma.user.update({
+                            where: {
+                                cpf: event.seuNumero,
+                            },
+                            data: {
+                                currentPayment: true,
+                                firstPayment: true,
+                                renovacao: Number(getPaidUser?.renovacao) + 1 
+                            }
                         })
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser,
@@ -124,6 +129,7 @@ export async function POST(req: Request){
                                 instituition: true,
                                 cpf: true,
                                 discount: true,
+                                renovacao: true,
                                 createdAt: true,
                                 addresses: {
                                     select: {

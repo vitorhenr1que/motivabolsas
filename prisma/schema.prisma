@@ -21,6 +21,7 @@ model User {
   createdAt       DateTime  @default(now())
   currentPayment  Boolean   @default(false)
   firstPayment Boolean @default(false)
+  renovacao Int? @default(0)
   phone           String
   tokenExpiration String?
   token           String?
@@ -41,4 +42,3 @@ model Address {
 
   @@index([userId], map: "Address_userId_fkey")
 }
-

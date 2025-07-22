@@ -34,7 +34,8 @@ interface userDataProps{
     name: string,
     phone: string,
     currentPayment: boolean,
-    customerId: string
+    customerId: string,
+    renovacao: number,
     addresses: addressProps[]
 }
 
@@ -212,6 +213,7 @@ console.log(searchTerm)
                             <InfoCamp campName={"Identificação Stipe: "} campValue={index.customerId} />
                             <p><strong>Status da Bolsa: </strong><span className={index.currentPayment === true ? styles.statusActive : styles.statusInactive}>{index.currentPayment === true ? "Ativo" : "Inativo"}</span></p>
                             <div className={styles.lastDiv}>
+                                <p><strong>Renovação: </strong>{index.renovacao >= 2 ? "Sim" : "Não"}</p>
                                 <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`)}</span></p>
                                 <ModalBoleto 
                                     cep={index.addresses[0].cep}

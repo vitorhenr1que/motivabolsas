@@ -42,6 +42,7 @@ export async function POST(request: Request){
                       discount: true,
                       createdAt: true,
                       currentPayment: true,
+                      renovacao: true,
                       customerId: true,
                       addresses: true,
                   },
@@ -82,6 +83,7 @@ export async function POST(request: Request){
                         createdAt: true,
                         currentPayment: true,
                         customerId: true,
+                        renovacao: true,
                         addresses: true
                     }
                 })

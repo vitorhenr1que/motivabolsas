@@ -25,6 +25,7 @@ export async function POST(request: Request){
             instituition: true,
             currentPayment: true,
             firstPayment: true,
+            renovacao: true,
             customerId: true,
             addresses: true
         },

@@ -22,6 +22,7 @@ export async function POST(request: Request){
             createdAt: true,
             currentPayment: true,
             customerId: true,
+            renovacao: true,
             addresses: true
         },
  
