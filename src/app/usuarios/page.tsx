@@ -43,6 +43,8 @@ export default function Usuarios(){
 const [adminKey, setAdminKey] = useState("")
 const [actualPage, setActualPage] = useState(0)
 const [users, setUsers] = useState<userDataProps[]>()
+const [totalPages, setTotalPages] = useState(0);
+const [currentPage, setCurrentPage] = useState(0);
 const [searchUsers, setSearchUsers] = useState<userDataProps[]>()
 const [showInformation, setShowInformation] = useState<String>("")
 const [toggle, setToggle] = useState(false)
@@ -77,7 +79,7 @@ return humanizedDate
 }
 
 console.log(searchTerm)
-    async function handleClickFind(page: number){
+    async function fetchUsers(page: number){
         try{
             setLoading(true)
             
@@ -86,7 +88,9 @@ console.log(searchTerm)
                 page: page,
                 onlyPaid: onlyPaid,
             })
-            setUsers(response.data)
+            setUsers(response.data.users)
+            setTotalPages(response.data.totalPages);
+            setCurrentPage(response.data.currentPage);
             setInterToken(await getInterToken())
             console.log(response)
             setLoading(false)
@@ -94,20 +98,57 @@ console.log(searchTerm)
             console.log(e)
             setLoading(false)
             alert(e.response.data.error)
-        }
-
-        
+        } 
     }
 
+    async function fetchPaginationUsers(page: number){
+        try{
+            
+            
+            const response = await api.post('usuarios', {  
+                secret_key: adminKey,
+                page: page,
+                onlyPaid: onlyPaid,
+            })
+            setUsers(response.data.users)
+            setTotalPages(response.data.totalPages);
+            setCurrentPage(response.data.currentPage);
+            console.log(response)
+            
+        } catch(e: any){
+            console.log(e)
+            
+            alert(e.response.data.error)
+        } 
+    }
 
-    async function handleClickPagination( page: number){
-        if(searchUsers){
-            alert('É necessário limpar a busca de usuários para alterar entre as páginas, clique no ícone de lixeira.')
-            return
+    const paginationWindow = 10; // Define o tamanho fixo da janela (quantos botões serão mostrados)
+
+    /**
+     * Gera a janela fixa de 10 páginas, rolando como uma esteira.
+     * Ao avançar uma página, uma página antiga desaparece e uma nova aparece.
+     */
+    const getVisiblePages = () => {
+        // Define o início da janela com base direta na página atual.
+        // Exemplo:
+        // Página 0: start = 0
+        // Página 4: start = 4 (página 1, 2 e 3 somem)
+        const start = Math.max(currentPage - 3, 0);
+    
+        // Define o fim da janela, mantendo no máximo 10 páginas visíveis.
+        let end = start + paginationWindow;
+    
+        // Ajuste para não ultrapassar o total de páginas.
+        if (end > totalPages) {
+            end = totalPages;
         }
-        setActualPage(page)
-        handleClickFind(page)
-        }
+    
+        // Se chegou no fim e tem menos de 10 páginas, reposiciona o início:
+        const adjustedStart = Math.max(end - paginationWindow, 0);
+    
+        // Gera o array de páginas que devem ser mostradas.
+        return Array.from({ length: end - adjustedStart }, (_, index) => adjustedStart + index);
+    };
 
         function Test(){
             console.log(interToken)
@@ -126,7 +167,7 @@ console.log(searchTerm)
             <h1>Lista de Usuários</h1>
             <div className={styles.inputContainer}>
                 <input type="text" name="token" autoComplete="on" placeholder="Digite a chave de admnistrador" onChange={(e) => setAdminKey(e.target.value)} />
-                <button onClick={() => handleClickFind(actualPage)}>
+                <button onClick={() => fetchUsers(currentPage)}>
                     {loading ? <Loading/> : "Mostrar usuários"}
                 </button>
                 <div className={styles.isPaid}>
@@ -240,15 +281,47 @@ console.log(searchTerm)
                     )
                 })}</div>}
             </div>
-            <ul className={styles.paginationContainer}>
-                {users !== undefined && response.map((index: number, position: number) => {
-                    return(
-                        <li className={styles.paginationItem} key={position}>
-                            <button onClick={() => handleClickPagination(position)} className={actualPage === position ? styles.paginationButtonActive : styles.paginationButton}>{index}</button>
-                        </li>
-                    )
-                })}
-            </ul>
+            
+                {users !== undefined && 
+               <ul className={styles.paginationContainer}>
+               <li className={styles.paginationItem}>
+                   <button
+                       className={styles.paginationButton}
+                       onClick={() => fetchPaginationUsers(0)}
+                       disabled={currentPage === 0}
+                   >
+                       {"<<"}
+                   </button>
+               </li>
+           
+               {getVisiblePages().map((page) => (
+                   <li key={page} className={styles.paginationItem}>
+                       <button
+                           onClick={() => fetchPaginationUsers(page)}
+                           className={currentPage === page
+                               ? styles.paginationButtonActive
+                               : styles.paginationButton
+                           }
+                       >
+                           {page + 1}
+                       </button>
+                   </li>
+               ))}
+           
+               <li className={styles.paginationItem}>
+                   <button
+                       className={styles.paginationButton}
+                       onClick={() => fetchPaginationUsers(totalPages - 1)}
+                       disabled={currentPage === totalPages - 1}
+                   >
+                       {">>"}
+                   </button>
+               </li>
+           </ul>
+                }
+                
+                    
+           
         </div>
     )
 }
