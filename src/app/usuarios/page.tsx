@@ -164,7 +164,8 @@ console.log(searchTerm)
                             <InfoCamp campName={"Identificação Stipe: "} campValue={index.customerId} />
                             <p><strong>Status da Bolsa: </strong><span className={index.currentPayment === true ? styles.statusActive : styles.statusInactive}>{index.currentPayment === true ? "Ativo" : "Inativo"}</span></p>
                             <div className={styles.lastDiv}>
-                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`)}</span></p>
+                                <p><strong>Renovação: </strong>{index.renovacao >= 2 ? "Sim" : "Não"}</p>
+                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`).split(',')[0]}</span></p>
                                 <ModalBoleto 
                                     cep={index.addresses[0].cep}
                                     city={index.addresses[0].city}
@@ -214,7 +215,7 @@ console.log(searchTerm)
                             <p><strong>Status da Bolsa: </strong><span className={index.currentPayment === true ? styles.statusActive : styles.statusInactive}>{index.currentPayment === true ? "Ativo" : "Inativo"}</span></p>
                             <div className={styles.lastDiv}>
                                 <p><strong>Renovação: </strong>{index.renovacao >= 2 ? "Sim" : "Não"}</p>
-                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`)}</span></p>
+                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`).split(',')[0]}</span></p>
                                 <ModalBoleto 
                                     cep={index.addresses[0].cep}
                                     city={index.addresses[0].city}

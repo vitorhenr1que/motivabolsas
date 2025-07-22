@@ -27,6 +27,7 @@ id: string,
 name: string,
 phone: string,
 currentPayment: boolean,
+renovacao: number,
 customerId: string
 addresses: addressProps[]
 }
