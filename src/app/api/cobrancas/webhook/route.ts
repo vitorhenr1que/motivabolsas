@@ -27,6 +27,19 @@ export async function POST(req: Request){
                                 cpf: event[0].seuNumero,
                             },
                             select: {
+                                renovacao: true, 
+                           }
+                        })
+                        const refreshPayment = await prisma.user.update({
+                            where: {
+                                cpf: event[0].seuNumero,
+                            },
+                            data: {
+                                currentPayment: true,
+                                firstPayment: true,
+                                renovacao: Number(getPaidUser?.renovacao) + 1
+                            },
+                            select: {
                                 id: true,
                                 phone: true,
                                 name: true,
@@ -43,19 +56,9 @@ export async function POST(req: Request){
                                 },  
                            }
                         })
-                        const refreshPayment = await prisma.user.update({
-                            where: {
-                                cpf: event[0].seuNumero,
-                            },
-                            data: {
-                                currentPayment: true,
-                                firstPayment: true,
-                                renovacao: Number(getPaidUser?.renovacao) + 1
-                            }
-                        })
                         
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
-                            getPaidUser,
+                            getPaidUser: refreshPayment,
                             event: event
                         }).catch(() => {
                             console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
@@ -82,6 +85,19 @@ export async function POST(req: Request){
                                 cpf: event.seuNumero,
                             },
                             select: {
+                                renovacao: true
+                           }
+                        })
+                        const refreshPayment = await prisma.user.update({
+                            where: {
+                                cpf: event.seuNumero,
+                            },
+                            data: {
+                                currentPayment: true,
+                                firstPayment: true,
+                                renovacao: Number(getPaidUser?.renovacao) + 1 
+                            },
+                            select: {
                                 id: true,
                                 phone: true,
                                 name: true,
@@ -98,18 +114,8 @@ export async function POST(req: Request){
                                 },  
                            }
                         })
-                        const refreshPayment = await prisma.user.update({
-                            where: {
-                                cpf: event.seuNumero,
-                            },
-                            data: {
-                                currentPayment: true,
-                                firstPayment: true,
-                                renovacao: Number(getPaidUser?.renovacao) + 1 
-                            }
-                        })
                         await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
-                            getPaidUser,
+                            getPaidUser: refreshPayment,
                             event: event
                         }).catch(() => {
                             console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
