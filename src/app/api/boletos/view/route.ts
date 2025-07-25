@@ -13,7 +13,7 @@ export async function POST(req: Request){
 
         try{
             if(!sslCert || !sslKey){
-                return Response.json("Certificados não encontrados.", {status: 500})
+                return Response.json({error: "Certificados não encontrados."}, {status: 500})
             }
             // Converter Base64 de volta para String
             const cert = Buffer.from(sslCert, "base64").toString("utf-8");

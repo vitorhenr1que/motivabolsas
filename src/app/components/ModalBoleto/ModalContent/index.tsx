@@ -56,9 +56,9 @@ export function ModalContent({cpf, sevenNextDays, twoMonthsAgo}: ModalContentPro
  
 
   const [loading, setLoading] = useState(false)
-  const [loadingViewBoleto, setLoadingViewBoleto] = useState(false)
+  const [loadingViewBoleto, setLoadingViewBoleto] = useState('')
   const [cobrancas, setCobrancas] = useState<ApiResponse[] | undefined>()
-  const [viewBoleto, setViewBoleto] = useState(false)
+  const [viewBoleto, setViewBoleto] = useState('')
   const [pdf, setPdf] = useState('')
   const {interToken, modalUser, codigoSolicitacao} = useUser()
 
@@ -68,17 +68,18 @@ function convertDate(date: string){
 }
 
 async function handleBoletoView(codigoSolicitacao: string){
-    setLoadingViewBoleto(true)
+    setLoadingViewBoleto(codigoSolicitacao)
+    setViewBoleto(codigoSolicitacao)
     try{
         const response = await api.post('boletos/view', {
             codigoSolicitacao: codigoSolicitacao,
             interToken: interToken
         })
         setPdf(response.data.pdf)
-        setLoadingViewBoleto(false)
+        setLoadingViewBoleto('')
         return response.data
     }catch(e){
-        setLoadingViewBoleto(false)
+        setLoadingViewBoleto('')
         console.log('error: ', e)
         return alert(`Erro: ${e}`)
     }
@@ -116,8 +117,8 @@ useEffect(() => {
     <div className={styles.container}>
             {cobrancas?.length !== 0 ? cobrancas?.map((index, position) => {
                 return(
-                    <>
-                    <div className={styles.viewBoletoContainer} key={index.cobranca.codigoSolicitacao}>
+                    <div key={index.cobranca.codigoSolicitacao}>
+                    <div className={styles.viewBoletoContainer} >
                         <div className={styles.containerFlexLine}>
                             <div className={styles.solicitationCodeDiv}>
                                 <strong>Código de Solicitação: </strong>
@@ -140,15 +141,15 @@ useEffect(() => {
                              
                             </div>
                             <div>
-                                <button className={styles.buttonView} disabled={loadingViewBoleto} onClick={() => handleBoletoView(index.cobranca.codigoSolicitacao)}>{loadingViewBoleto ? <Loading/> : "Visualizar Boleto"}</button>
+                                <button className={styles.buttonView}  disabled={loadingViewBoleto === index.cobranca.codigoSolicitacao} onClick={() => handleBoletoView(index.cobranca.codigoSolicitacao)}>{loadingViewBoleto === index.cobranca.codigoSolicitacao ? <Loading/> : "Visualizar Boleto"}</button>
                             </div>
                             
                         </div>
                     </div>
-                    <div className={styles.divViewBoleto}>
+                    {viewBoleto === index.cobranca.codigoSolicitacao && <div className={styles.divViewBoleto}>
                         <BoletoViewer base64={pdf} name={`${modalUser?.name}`}/>
+                    </div>}
                     </div>
-                    </>
                 )
             }) : <>
             <div className={styles.viewBoletoContainer}>
