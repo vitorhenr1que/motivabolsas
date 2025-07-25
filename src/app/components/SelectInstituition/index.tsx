@@ -48,7 +48,7 @@ export function SelectInstituition() {
         <>
             <div className={styles.selectDiv}>
                 <label htmlFor="instituicao">Instituição: *</label>
-                <select className={styles.selectInput} id='instituicao' name='instituition' onChange={(e) => getCourses(e.target.value)}>
+                <select className={styles.selectInput} id='instituicao' name='instituition' onChange={(e) => getCourses(e.target.value)} required>
                     <option value="" disabled selected>Selecione a Instituição</option>
                     {instituitions?.map((item, index) => (
                         <option key={index} value={item.uid}>
@@ -60,7 +60,7 @@ export function SelectInstituition() {
 
             <div className={styles.selectDiv}>
                 <label htmlFor="curso">Curso: *</label>
-                <select className={styles.selectInput} id='curso' name='course' disabled={!courses || loadingCourses}>
+                <select className={styles.selectInput} id='curso' name='course' disabled={!courses || loadingCourses} required>
                     <option value="" disabled selected>
                         {loadingCourses ? 'Carregando cursos...' : 'Selecione o Curso'}
                     </option>
