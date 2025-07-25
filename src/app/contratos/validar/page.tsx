@@ -15,8 +15,9 @@ export default function ValidarPage() {
   const [motivo, setMotivo] = useState('')
   const [secret_key, setSecretKey] = useState('')
   const [loading, setLoading] = useState(false)
-  const [isSuccess, setIsSucceess] = useState<true | false | ''>('')
+  const [isSuccess, setIsSucceess] = useState<string>('')
   const [message, setMessage] = useState('')
+  const [showSuccessMessage, setShowSuccessMessage] = useState(true)
 
   const enviarValidacao = async () => {
     try{
@@ -25,14 +26,16 @@ export default function ValidarPage() {
             documentoId, status, motivo, secret_key
         })
         setLoading(false)
-        setIsSucceess(true)
+        setIsSucceess(styles.divSuccess)
         setMessage('Validação enviada com sucesso!')
+        setShowSuccessMessage(true)
         return 
     } catch(e){
         console.log('Erro ao validar: ', e)
         setLoading(false)
-        setIsSucceess(false)
+        setIsSucceess(styles.divNoSuccess)
         setMessage('Ocorreu um erro ao enviar a validação!')
+        setShowSuccessMessage(true)
         return 
     }
     }
@@ -40,7 +43,7 @@ export default function ValidarPage() {
   return (
     <div className={styles.container}>
       <h1 className="text-xl font-bold">Validação de Contrato</h1>
-      <div className={isSuccess === '' ? styles.divSuccessIsInv : '' || isSuccess ? styles.divSuccess : styles.divNoSuccess}><strong>{message}</strong></div>
+      <div className={ showSuccessMessage ? isSuccess : styles.divSuccessIsInv}><strong>{message}</strong></div>
       {documentoId && (
         <iframe
           src={`https://urflzgdnzbwugbvpmzuf.supabase.co/storage/v1/object/public/contratos/${documentoId}`}
