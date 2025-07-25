@@ -1,0 +1,73 @@
+.container {
+    display: block;
+   h1{
+    text-align: center;
+   }
+   .divSuccess{
+    height: 50px;
+    background: rgb(3, 162, 3);
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+   }
+   .divNoSuccess{
+    height: 50px;
+    background: var(--bf-red);
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+   }
+   .divSuccessIsInv{
+    display: none;
+   }
+   .divInputContainer{
+    display: flex;
+    justify-content: space-around;
+    .divInput{
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+        justify-content: flex-end;
+        .input{
+            width: 300px;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            border: .5px solid;
+            display: flex;
+            align-items: center;
+        }
+        .select{
+            width: 300px;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            border: .5px solid;
+            display: flex;
+            align-items: center;
+        }
+    }
+    .button{
+            width: 300px;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            border: .5px solid;
+            display: flex;
+            align-items: center; 
+            transition: .2s;
+            background: var(--button-background);
+            justify-content: center;
+            color: white;
+            height: 70%;
+            font-weight: 700;
+            cursor: pointer;
+            &:hover{
+                background: var(--button-background-hover);
+            }
+    }
+   }
+   
+}
