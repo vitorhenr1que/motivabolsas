@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   title: "Motiva Bolsas",
   description: "Programa de Bolsas de Descontos para Universidades",
   openGraph: {
-    title: "Motiva Bolsas - Seu site de confiança",
+    title: "Motiva Bolsas",
     description: "Confira nossas ofertas incríveis!",
     url: "https://motivabolsas.com.br",
     siteName: "Motiva Bolsas",
