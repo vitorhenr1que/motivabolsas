@@ -64,6 +64,21 @@ export default function Create(){
         return String(cep).length === 8
     }
 
+    function validateUf(uf: FormDataEntryValue){
+        if(!!uf === false){
+            return false
+        } else {
+            true
+        }
+    }
+    function validateCity(city: FormDataEntryValue){
+        if(!!city === false){
+            return false
+        } else {
+            true
+        }
+    }
+
     async function handleSubmit(e: FormEvent){
         e.preventDefault()
         setLoading(true)
@@ -105,7 +120,16 @@ export default function Create(){
                 setLoading(false)
                 return
             }
-
+            if(!!validateUf(data.uf) === false){
+                setError('Não conseguimos encontrar o estado (UF), por favor, digite o CEP novamente.')
+                setLoading(false)
+                return 
+            }
+            if(!!validateCity(data.city) === false){
+                setError('Não conseguimos encontrar a sua cidade, por favor, digite o CEP novamente.')
+                setLoading(false)
+                return 
+            }
 
             const createUser = await api.post('/create', { //Criar usuário no banco de dados
                 email: data.email,

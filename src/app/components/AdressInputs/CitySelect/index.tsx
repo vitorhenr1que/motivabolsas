@@ -15,7 +15,7 @@ export function CitySelect({cepCity}: cepUfProps) {
 
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor="uf">Cidade: *</label>
+      <label htmlFor="city">Cidade: *</label>
       <div className={styles.divInput}>
       <select id="city" name="city" className={cepCity ? styles.cepCity : styles.select} value={selectedUF} onChange={(e) => setSelectedUF(e.target.value)}>
       {cepCity ?

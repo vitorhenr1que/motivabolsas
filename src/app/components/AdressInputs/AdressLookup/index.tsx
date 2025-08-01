@@ -31,10 +31,16 @@ function AddressLookup() {
       try {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await response.json();
+        if(data.erro){
+          setAddress(null);
+          alert('Não foi possível encontrar o CEP da sua cidade, tente novamente.')
+          return console.error('Erro ao buscar o cep: ', cep, '. Tente novamente.');
+        }
         setAddress(data);
       } catch (error) {
-        console.error('Erro ao buscar o endereço:', error);
         setAddress(null);
+        alert('Não foi possível encontrar o CEP da sua cidade, tente novamente.')
+        return console.error('Erro ao buscar o endereço:', error);
       }
     }
   };
