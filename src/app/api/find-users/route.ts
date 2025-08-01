@@ -54,21 +54,21 @@ export async function POST(request: Request){
             else{
                 const userinfo = await prisma.user.findMany({
                     where: {
-                        currentPayment: true,
                         OR: [
                             {
-                              name: {
-                                contains: name,
-                              },
+                                name: {
+                                    contains: name,
+                                },
                             },
                             {
-                              AND: {
                                 cpf: {
-                                  contains: name,
+                                    contains: name,
                                 },
-                              },
                             },
-                          ],
+                            {
+                                id: name, // Busca direta por ID (assumindo que 'name' pode ser um ID no input)
+                            },
+                        ],
                     },
                     select:{
                         id: true,
@@ -87,7 +87,7 @@ export async function POST(request: Request){
                         addresses: true
                     }
                 })
-            
+            console.log(userinfo)
                 return Response.json(userinfo)
             }
             
