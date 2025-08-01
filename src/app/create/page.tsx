@@ -68,14 +68,14 @@ export default function Create(){
         if(!!uf === false){
             return false
         } else {
-            true
+            return true
         }
     }
     function validateCity(city: FormDataEntryValue){
         if(!!city === false){
             return false
         } else {
-            true
+            return true
         }
     }
 
@@ -120,6 +120,7 @@ export default function Create(){
                 setLoading(false)
                 return
             }
+            console.log('UF: ', validateUf(data.uf))
             if(!!validateUf(data.uf) === false){
                 setError('Não conseguimos encontrar o estado (UF), por favor, digite o CEP novamente.')
                 setLoading(false)
