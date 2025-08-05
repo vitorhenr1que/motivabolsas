@@ -5,6 +5,7 @@ export function calcularDesconto(curso: string, desconto: string | null): number
       'Educação Física': 40,
       'Educação Física (Licenciatura)': 40,
       'Educação Física (Bacharelado)': 40,
+      'Engenharia Civil': 40,
       'Enfermagem': 40,
       'Estética e Cosmética': 40,
       'Farmácia': 40,
