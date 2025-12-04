@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       // 4️⃣ Exclusão do documento duplicado (após envio)
       if (newFileId) {
         try {
-           await deleteGoogleDoc(newFileId);
+          deleteGoogleDoc(newFileId);
         } catch (deletionError) {
           console.error('Erro ao deletar o documento:', deletionError);
           // Obs: Não interrompe o fluxo do usuário mesmo que a exclusão falhe
