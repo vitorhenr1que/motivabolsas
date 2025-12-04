@@ -57,10 +57,10 @@ export async function POST(req: Request){
                            }
                         })
                         
-                        await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
+                         axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', { // Utilizando sem o await para nao travar o processo e encaminhar a resposta pro INTER imediato, o webhook faz depois
                             getPaidUser: refreshPayment,
                             event: event
-                        }).catch(() => {
+                        }, {timeout: 5000}).catch(() => {
                             console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
                             console.log('seuNumero: ', event[0].seuNumero, "situacao: ", event[0].situacao)
                         })
@@ -114,10 +114,10 @@ export async function POST(req: Request){
                                 },  
                            }
                         })
-                        await axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
+                         axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
                             getPaidUser: refreshPayment,
                             event: event
-                        }).catch(() => {
+                        }, {timeout: 5000}).catch(() => {
                             console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
                             console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
                         })
@@ -144,10 +144,10 @@ export async function POST(req: Request){
                                 },  
                            }
                         })
-                        const webhook = await axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
+                        const webhook = axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
                             userInfo,
                             event: event
-                        }).catch(() => {
+                        }, {timeout: 5000}).catch(() => {
                             console.log(`Processo concluído, mas não foi possível notificar o webhook N8N a receber.`)
                             console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
                         })
