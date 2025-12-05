@@ -4,6 +4,7 @@ import { calcularDesconto } from '../../scripts/calcularDesconto';
 import { exportGoogleDocAsPDF,replaceTextsAndImagesInGoogleDoc, duplicateGoogleDoc, deleteGoogleDoc } from '../../services/googleApisAuth';
 import { api } from '../../services/api';
 
+export const maxDuration = 60
 export async function POST(request: Request) {
     let newFileId = '' // o finally não pega variáveis de detro do try
     const url = new URL(request.url);
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
       // 4️⃣ Exclusão do documento duplicado (após envio)
       if (newFileId) {
         try {
-          deleteGoogleDoc(newFileId);
+           deleteGoogleDoc(newFileId);
         } catch (deletionError) {
           console.error('Erro ao deletar o documento:', deletionError);
           // Obs: Não interrompe o fluxo do usuário mesmo que a exclusão falhe
