@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const where: Prisma.UserWhereInput = {
       ...commonWhere,
       currentPayment: false,
-      renovacao: { gt: 1 },
+      renovacao: { gte: 1 },
     };
 
     const [totalItems, users] = await Promise.all([

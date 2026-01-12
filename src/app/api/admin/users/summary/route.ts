@@ -37,6 +37,10 @@ export async function POST(request: Request) {
 
     const { start, end } = calcNovosPendentesWindow();
 
+    // renovacao: 1: - igual a 1
+    //renovacao: { gt: 1 } - maior que 1
+    // renovacao: { gte: 1 } - maior ou igual a 1
+
     const whereTotal: Prisma.UserWhereInput = {
       ...commonWhere,
     };
@@ -61,7 +65,7 @@ export async function POST(request: Request) {
     const whereRenovadosPendentes: Prisma.UserWhereInput = {
       ...commonWhere,
       currentPayment: false,
-      renovacao: { gt: 1 },
+      renovacao: { gte: 1 },
     };
 
     const whereNovosPendentes: Prisma.UserWhereInput = {
