@@ -8,3 +8,4 @@ slices
 slice-simulator
 slicemachine.config.jsonsrc/app/credentials/credentials.json
 src/app/credentials/token.json
+src/app/certificados
