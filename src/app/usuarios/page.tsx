@@ -82,7 +82,8 @@ console.log(searchTerm)
     async function fetchUsers(page: number){
         try{
             setLoading(true)
-            
+            const { access_token } = await getInterToken()
+            console.log('ACESS TOKEN: ', access_token)
             const response = await api.post('usuarios', {  
                 secret_key: adminKey,
                 page: page,
@@ -91,7 +92,7 @@ console.log(searchTerm)
             setUsers(response.data.users)
             setTotalPages(response.data.totalPages);
             setCurrentPage(response.data.currentPage);
-            setInterToken(await getInterToken())
+            setInterToken(access_token)
             console.log(response)
             setLoading(false)
         } catch(e: any){

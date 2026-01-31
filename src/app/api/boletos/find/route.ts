@@ -13,7 +13,8 @@ export async function POST(req: Request) {
     }
 
     const { interToken, initialDate, finalDate, cpf } = await req.json();
-
+ console.log('CHEGOU --->>>',interToken, initialDate, finalDate, cpf); 
+   
     // --- Validações básicas do request ---
     if (!interToken) {
       return Response.json({ error: "interToken não informado." }, { status: 400 });
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
 
     // --- Agent mTLS (cert + key) ---
     const agent = createInterHttpsAgent();
-
+ console.log('CHEGOU AGENT--->>>',agent);  
     // Endpoint do Inter
     const url = "https://cdpj.partners.bancointer.com.br/cobranca/v3/cobrancas";
 
