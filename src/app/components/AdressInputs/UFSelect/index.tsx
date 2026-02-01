@@ -4,15 +4,17 @@ import styles from './style.module.scss'
 import { useUser } from '../../contexts/user-provider';
 import { api } from '@/app/services/api';
 import axios from 'axios';
-interface cepUfProps{
-    cepUf?: string
+interface cepUfProps {
+  cepUf?: string
 }
-export function UFSelect({cepUf}: cepUfProps) {
-  const [selectedUF, setSelectedUF] = useState('');
-  const {setCity} = useUser()
+import { PiMapPinBold, PiCaretDownBold } from 'react-icons/pi';
 
-  async function getCity(UF: string){ // Pega cidade na api do IBGE e coloca no context setCity
-    
+export function UFSelect({ cepUf }: cepUfProps) {
+  const [selectedUF, setSelectedUF] = useState('');
+  const { setCity } = useUser()
+
+  async function getCity(UF: string) { // Pega cidade na api do IBGE e coloca no context setCity
+
     const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${UF}/municipios`)
     setCity(response.data)
   }
@@ -27,25 +29,25 @@ export function UFSelect({cepUf}: cepUfProps) {
 
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor="uf">Estado: *</label>
-      <div className={styles.divInput}>
-        {cepUf ? <select id='uf' name='uf' className={styles.cepUf} >
-        <option value={cepUf}>
-          {cepUf}
-        </option>
-        </select> :
-        <select id='uf' name='uf' className={styles.select} onChange={(e) => getCity(e.target.value)}>
-        <option value={""}>Selecione</option>
-        {estados.map((uf) => (
-          <option key={uf} value={uf}>
-            {uf}
-          </option>
-        ))}
-        </select>
-        }
-     
+      <label htmlFor="uf">UF</label>
+      <div className={styles.selectWrapper}>
+        <PiMapPinBold className={styles.inputIcon} />
+        {cepUf ? (
+          <select id='uf' name='uf' className={styles.cepUf} defaultValue={cepUf}>
+            <option value={cepUf}>{cepUf}</option>
+          </select>
+        ) : (
+          <select id='uf' name='uf' className={styles.select} onChange={(e) => getCity(e.target.value)} defaultValue="">
+            <option value="" disabled>UF</option>
+            {estados.map((uf) => (
+              <option key={uf} value={uf}>
+                {uf}
+              </option>
+            ))}
+          </select>
+        )}
+        <PiCaretDownBold className={styles.chevronIcon} />
       </div>
-
     </div>
   );
 }

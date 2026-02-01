@@ -1,0 +1,126 @@
+.receiptContainer {
+    width: 800px;
+    padding: 3rem;
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #e2e8f0;
+
+        .brand {
+            h1 {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: #0f172a;
+                margin: 0;
+            }
+
+            span {
+                font-size: 0.875rem;
+                color: #64748b;
+            }
+        }
+
+        .receiptTitle {
+            text-align: right;
+
+            h2 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #0f172a;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            p {
+                margin: 0.25rem 0 0;
+                color: #64748b;
+                font-size: 0.875rem;
+            }
+        }
+    }
+
+    .content {
+        .amountRow {
+            margin-bottom: 3rem;
+            text-align: center;
+
+            p {
+                font-size: 0.875rem;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+
+            h3 {
+                font-size: 3rem;
+                font-weight: 800;
+                color: #0f172a;
+                margin: 0;
+            }
+        }
+
+        .detailsGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+
+            .detailItem {
+                label {
+                    display: block;
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    color: #64748b;
+                    font-weight: 600;
+                    margin-bottom: 0.5rem;
+                }
+
+                span {
+                    display: block;
+                    font-size: 1.125rem;
+                    color: #0f172a;
+                    font-weight: 500;
+                    border-bottom: 1px solid #e2e8f0;
+                    padding-bottom: 0.5rem;
+                }
+            }
+        }
+    }
+
+    .footer {
+        margin-top: 4rem;
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px dashed #cbd5e1;
+
+        .authCode {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 0.875rem;
+            color: #64748b;
+
+            strong {
+                color: #0f172a;
+            }
+        }
+    }
+}

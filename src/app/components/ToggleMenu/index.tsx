@@ -1,63 +1,103 @@
 'use client'
 import { IoMenu } from "react-icons/io5";
 import styles from './style.module.scss'
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MdOutlineLogout } from "react-icons/md";
+import { PiHouseBold, PiPhoneBold, PiLayoutBold, PiUserCircleBold, PiCurrencyDollarBold, PiXBold } from "react-icons/pi";
 
-interface isLoggedProps{
+interface isLoggedProps {
     isLogged: boolean;
 }
 
-export function ToggleMenu({isLogged}: isLoggedProps){
-    const [toggle, setToggle] = useState(false)
+export function ToggleMenu({ isLogged }: isLoggedProps) {
+    const [isOpen, setIsOpen] = useState(false)
 
-    function handleToggleClick(){
-        setToggle(false)
-    }
+    // Prevenir scroll do body quando o menu estiver aberto
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [isOpen]);
 
+    // Fechar com ESC
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsOpen(false);
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, []);
 
-    
-    
-
+    const handleClose = () => setIsOpen(false);
 
     return (
-        <div>
-        <button className={styles.toggleButton} onClick={() => setToggle(!toggle)}>
-            <IoMenu size={30} color='#ececec'/>
-         </button>
-         {toggle && 
-         <div className={toggle ? styles.dropDownMenuActive : styles.dropDownMenuInactive}>
-            <div className={styles.menuSection}>
-                <span>Menu</span>
-                <hr/>
-            </div>
-            <div className={styles.loggedLinks}>
-                <Link href={"/"} className={styles.link} onClick={() => handleToggleClick()}>
-                        Inicio
-                    </Link>
-                    <Link href={"/contato"} className={styles.link} onClick={() => handleToggleClick()}>
-                        Contato
-                    </Link>
+        <>
+            <button
+                className={styles.toggleTrigger}
+                onClick={() => setIsOpen(true)}
+                aria-label="Abrir menu"
+            >
+                <IoMenu size={28} />
+            </button>
+
+            {/* Overlay */}
+            <div
+                className={`${styles.overlay} ${isOpen ? styles.overlayVisible : ''}`}
+                onClick={handleClose}
+            />
+
+            {/* Drawer Menu */}
+            <aside className={`${styles.drawer} ${isOpen ? styles.drawerOpen : ''}`}>
+                <div className={styles.drawerHeader}>
+                    <div className={styles.logoPlaceholder}>Motiva Bolsas</div>
+                    <button className={styles.closeButton} onClick={handleClose}>
+                        <PiXBold size={24} />
+                    </button>
                 </div>
-            {isLogged === true ? <>
-            <div className={styles.menuSection}>
-                <span>Dashboard</span>
-                <hr/>
-            </div>
-            
-            <div className={styles.loggedLinks}>
-                <Link href={"/dashboard"} className={styles.link} onClick={() => handleToggleClick()}>
-                        Painel
-                    </Link>
-                    <Link href={"#"} className={styles.link} onClick={() => handleToggleClick()}>
-                        Minha conta
-                    </Link>
-                    <Link href={"/pagamentos"}className={styles.link} onClick={() => handleToggleClick()}>
-                        Pagamentos
-                    </Link>
-                </div></> : <div></div>}
-        </div>}
-        </div>
+
+                <nav className={styles.drawerBody}>
+                    <div className={styles.menuSection}>
+                        <span className={styles.sectionTitle}>Navegação</span>
+                        <div className={styles.linkGroup}>
+                            <Link href="/" className={styles.menuLink} onClick={handleClose}>
+                                <PiHouseBold size={22} />
+                                <span>Início</span>
+                            </Link>
+                            <Link href="/contato" className={styles.menuLink} onClick={handleClose}>
+                                <PiPhoneBold size={22} />
+                                <span>Contato</span>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {isLogged && (
+                        <div className={styles.menuSection}>
+                            <span className={styles.sectionTitle}>Área do Aluno</span>
+                            <div className={styles.linkGroup}>
+                                <Link href="/dashboard" className={styles.menuLink} onClick={handleClose}>
+                                    <PiLayoutBold size={22} />
+                                    <span>Painel do Aluno</span>
+                                </Link>
+                                <Link href="/perfil" className={styles.menuLink} onClick={handleClose}>
+                                    <PiUserCircleBold size={22} />
+                                    <span>Minha Conta</span>
+                                </Link>
+                                <Link href="/pagamentos" className={styles.menuLink} onClick={handleClose}>
+                                    <PiCurrencyDollarBold size={22} />
+                                    <span>Pagamentos</span>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </nav>
+
+                <div className={styles.drawerFooter}>
+                    <p>© 2026 Motiva Bolsas</p>
+                    <span>v1.2.0</span>
+                </div>
+            </aside>
+        </>
     )
 }

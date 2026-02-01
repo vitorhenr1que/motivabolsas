@@ -6,71 +6,79 @@ import { UFSelect } from '../UFSelect';
 import { CitySelect } from '../CitySelect';
 
 interface AddressProps {
-  bairro: string;         
-  cep: string;            
-  complemento: string;    
-  ddd: string;            
-  estado: string;         
-  gia: string;            
-  ibge: string;           
-  localidade: string;     
-  logradouro: string;     
-  regiao: string;         
-  siafi: string;          
-  uf: string;             
-  unidade: string;        
+  bairro: string;
+  cep: string;
+  complemento: string;
+  ddd: string;
+  estado: string;
+  gia: string;
+  ibge: string;
+  localidade: string;
+  logradouro: string;
+  regiao: string;
+  siafi: string;
+  uf: string;
+  unidade: string;
 }
 type AddressType = null | AddressProps
+import { PiMapPinBold } from 'react-icons/pi';
+
 function AddressLookup() {
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState<AddressType>(null);
-  console.log(address)
 
   const fetchAddress = async () => {
-    if (cep.length === 8) { // Apenas busca se o CEP tiver 8 dígitos
+    const rawCep = cep.replace(/\D/g, '');
+    if (rawCep.length === 8) {
       try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const response = await fetch(`https://viacep.com.br/ws/${rawCep}/json/`);
         const data = await response.json();
-        if(data.erro){
+        if (data.erro) {
           setAddress(null);
-          alert('Não foi possível encontrar o CEP da sua cidade, tente novamente.')
-          return console.error('Erro ao buscar o cep: ', cep, '. Tente novamente.');
+          return;
         }
         setAddress(data);
       } catch (error) {
         setAddress(null);
-        alert('Não foi possível encontrar o CEP da sua cidade, tente novamente.')
-        return console.error('Erro ao buscar o endereço:', error);
       }
     }
   };
 
   useEffect(() => {
-    if(cep.length < 8){
-      setAddress(null)
+    const rawCep = cep.replace(/\D/g, '');
+    if (rawCep.length < 8) {
+      setAddress(null);
     }
-  }, [cep])
+  }, [cep]);
 
   return (
     <div className={styles.container}>
-    <div className={styles.inputContainer}>
-      <label htmlFor="cep">CEP: *</label>
-      <div className={styles.divInput}>
-      <input
-        id="cep"
-        name="cep"
-        type="text"
-        value={cep}
-        onChange={(e) => setCep(e.target.value.replace(/\D/g, ''))} // Remove caracteres não numéricos
-        onBlur={fetchAddress} // Ao clicar fora do botão de input selecionado
-        placeholder="XXXXX-XXX"
-        maxLength={8}
-        required={true}
-      />
-     </div>
-    </div>
-    <UFSelect cepUf={address?.uf}/>
-    <CitySelect cepCity={address?.localidade}/>
+      <div className={styles.inputContainer}>
+        <label htmlFor="cep">CEP</label>
+        <div className={styles.divInput}>
+          <PiMapPinBold className={styles.inputIcon} />
+          <ReactInputMask
+            mask="99999-999"
+            maskChar={null}
+            value={cep}
+            onChange={(e) => setCep(e.target.value)}
+            onBlur={fetchAddress}
+          >
+            {(inputProps: any) => (
+              <input
+                {...inputProps}
+                id="cep"
+                name="cep"
+                type="text"
+                placeholder="00000-000"
+                required={true}
+              />
+            )}
+          </ReactInputMask>
+        </div>
+      </div>
+      <UFSelect cepUf={address?.uf} />
+      <CitySelect cepCity={address?.localidade} />
     </div>
   );
 }

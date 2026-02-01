@@ -1,91 +1,205 @@
-.container{
-    .ul{
-        margin-top: 3rem;
+.container {
+    margin-top: 4rem;
+    width: 100%;
+
+    .tabsHeader {
         display: flex;
-        list-style: none;
+        border-bottom: 2px solid var(--slate-200);
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        overflow-x: auto;
+        scrollbar-width: none;
 
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
-        .list{
-           
-            .listButtonActive{
-                padding: 16px 24px;
-                border: solid 1px var(--button-background);
-                border-bottom: none;
-                border-radius: 8px 8px 0px 0px;
-                background: none;
-                cursor: pointer;
+        .tabItem,
+        .tabItemActive {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: var(--slate-500);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+            transition: var(--transition);
+
+            svg {
+                opacity: 0.7;
             }
-            .listButton{
-                padding: 16px 24px;
-                border: solid 1px var(--button-background);
-                border-radius: 8px 8px 0px 0px;
-                background: none;
-                cursor: pointer;
+
+            &:hover {
+                color: var(--primary);
+                background: var(--slate-100);
+                border-radius: var(--radius-md) var(--radius-md) 0 0;
             }
         }
-        .listFinal{
-            flex: 1;
-            border-bottom: 1px solid var(--button-background);
+
+        .tabItemActive {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+
+            svg {
+                opacity: 1;
+                color: var(--primary);
+            }
         }
     }
-    .courseInfoContainer{
-        .textInfo{
-            text-align: justify;
+
+    .tabPanel {
+        animation: fadeIn 0.3s ease;
+    }
+
+    .courseInfoContainer {
+        .paragraph {
+            margin-bottom: 1.5rem;
+            color: var(--slate-600);
+            line-height: 1.7;
         }
-        .paragraph, h3 {
-            margin-top: 2rem;
-            text-align: justify;
-        }
-    
+
         .headingOne {
-            font-size: 2rem;
+            font-size: 2.25rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
         }
-        .headingTwo {
-            font-size: 1.5rem;
-        }
-        .headingTree {
-            font-size: 1.2rem;
-        }
-    }
-    .iframeMaps{
-        width: 100%;
-        height: 400px;
-        
-    }
-    .regrasContainer{
 
-        .regrasUl{
+        .headingTwo {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .headingThree {
+            font-size: 1.25rem;
+            color: var(--slate-800);
+            margin-top: 1.5rem;
+        }
+
+        .imageBlock {
+            margin: 2rem 0;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+
+            .image {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+        }
+    }
+
+    .regrasContainer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+
+        .descriptionSection {
+            background: var(--white);
             padding: 2rem;
-            margin: 0;
-            color: #4d4d4d;
-           
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--slate-100);
+            box-shadow: var(--shadow-sm);
+
+            .iconHeading {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+
+                h3 {
+                    font-size: 1.125rem;
+                    color: var(--slate-800);
+                }
+
+                .iconSuccess {
+                    color: var(--success);
+                }
+
+                .iconWarning {
+                    color: var(--warning);
+                }
+            }
+
+            .regrasUl {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+
+                .regrasLi {
+                    font-size: 0.9375rem;
+                    color: var(--slate-600);
+                    position: relative;
+                    padding-left: 1.5rem;
+
+                    &::before {
+                        content: "•";
+                        position: absolute;
+                        left: 0;
+                        color: var(--primary);
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+
+    .mapsContainer {
+        .mapsHeading {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+
+            h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        .iframeMaps {
+            width: 100%;
+            height: 450px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
         }
     }
 }
 
-@media(max-width: 1000px){
-    .container{
-        .ul{
-            width: 100%;
-            align-items: center;
-            justify-content: center;
-            .list{
-                flex: .3;
-     
-                .listButton{
-                    width: 100%;
-                    padding: 16px 12px;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        .tabsHeader {
+
+            .tabItem,
+            .tabItemActive {
+                flex: 1;
+                justify-content: center;
+                padding: 1rem 0.5rem;
+
+                span {
+                    font-size: 0.8125rem;
                 }
-                &:nth-child(1){
-                    flex: .8;
-                }
-            }
-            .listFinal{
-                display: none;
             }
         }
-        .courseInfoContainer{
-            margin-bottom: 150px;
+
+        .regrasContainer {
+            grid-template-columns: 1fr;
         }
     }
 }

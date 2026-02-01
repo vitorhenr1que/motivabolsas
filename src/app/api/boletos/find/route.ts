@@ -13,8 +13,8 @@ export async function POST(req: Request) {
     }
 
     const { interToken, initialDate, finalDate, cpf } = await req.json();
- console.log('CHEGOU --->>>',interToken, initialDate, finalDate, cpf); 
-   
+    console.log('CHEGOU --->>>', interToken, initialDate, finalDate, cpf);
+
     // --- Validações básicas do request ---
     if (!interToken) {
       return Response.json({ error: "interToken não informado." }, { status: 400 });
@@ -26,9 +26,12 @@ export async function POST(req: Request) {
       return Response.json({ error: "cpf (cpfCnpjPessoaPagadora) é obrigatório." }, { status: 400 });
     }
 
+    // --- Sanitize CPF (apenas números) ---
+    const cpfSanitized = cpf.replace(/\D/g, "");
+
     // --- Agent mTLS (cert + key) ---
     const agent = createInterHttpsAgent();
- console.log('CHEGOU AGENT--->>>',agent);  
+
     // Endpoint do Inter
     const url = "https://cdpj.partners.bancointer.com.br/cobranca/v3/cobrancas";
 
@@ -39,7 +42,7 @@ export async function POST(req: Request) {
       params: {
         dataInicial: initialDate, // esperado: YYYY-MM-DD
         dataFinal: finalDate,     // esperado: YYYY-MM-DD
-        cpfCnpjPessoaPagadora: cpf,
+        cpfCnpjPessoaPagadora: cpfSanitized,
         "paginacao.itensPorPagina": 15,
         "paginacao.paginaAtual": 0,
       },
@@ -56,6 +59,11 @@ export async function POST(req: Request) {
   } catch (err: any) {
     const status = err?.response?.status ?? 400;
     const interData = err?.response?.data ?? null;
+
+    console.error("Erro /api/boletos/find:", err.message);
+    if (interData) {
+      console.error("Detalhes do Inter:", JSON.stringify(interData, null, 2));
+    }
 
     return Response.json(
       {

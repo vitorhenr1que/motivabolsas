@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { getClient } from '../../services/prismic'
 import styles from './style.module.scss'
 import { FarvalleDocument, FazagDocument, UniversityDocument } from '../../../../prismicio-types'
-import { Loading } from '../Loading'
+import { PiBankBold, PiBookOpenBold, PiCaretDownBold } from 'react-icons/pi'
 
 export function SelectInstituition() {
 
@@ -47,29 +47,37 @@ export function SelectInstituition() {
     return (
         <>
             <div className={styles.selectDiv}>
-                <label htmlFor="instituicao">Instituição: *</label>
-                <select className={styles.selectInput} id='instituicao' name='instituition' onChange={(e) => getCourses(e.target.value)} required>
-                    <option value="" disabled selected>Selecione a Instituição</option>
-                    {instituitions?.map((item, index) => (
-                        <option key={index} value={item.uid}>
-                            {item.data.university}
-                        </option>
-                    ))}
-                </select>
+                <label htmlFor="instituicao">Instituição</label>
+                <div className={styles.selectWrapper}>
+                    <PiBankBold className={styles.inputIcon} />
+                    <select className={styles.selectInput} id='instituicao' name='instituition' onChange={(e) => getCourses(e.target.value)} required defaultValue="">
+                        <option value="" disabled>Onde você quer estudar?</option>
+                        {instituitions?.map((item, index) => (
+                            <option key={index} value={item.uid}>
+                                {item.data.university}
+                            </option>
+                        ))}
+                    </select>
+                    <PiCaretDownBold className={styles.chevronIcon} />
+                </div>
             </div>
 
             <div className={styles.selectDiv}>
-                <label htmlFor="curso">Curso: *</label>
-                <select className={styles.selectInput} id='curso' name='course' disabled={!courses || loadingCourses} required>
-                    <option value="" disabled selected>
-                        {loadingCourses ? 'Carregando cursos...' : 'Selecione o Curso'}
-                    </option>
-                    {courses?.map((item, index) => (
-                        <option key={index} value={`${item.data.name}`}>
-                            {item.data.name}
+                <label htmlFor="curso">Curso de Interesse</label>
+                <div className={styles.selectWrapper}>
+                    <PiBookOpenBold className={styles.inputIcon} />
+                    <select className={styles.selectInput} id='curso' name='course' disabled={!courses || loadingCourses} required defaultValue="">
+                        <option value="" disabled>
+                            {loadingCourses ? 'Carregando cursos...' : 'Qual curso você busca?'}
                         </option>
-                    ))}
-                </select>
+                        {courses?.map((item, index) => (
+                            <option key={index} value={`${item.data.name}`}>
+                                {item.data.name}
+                            </option>
+                        ))}
+                    </select>
+                    <PiCaretDownBold className={styles.chevronIcon} />
+                </div>
             </div>
         </>
     )

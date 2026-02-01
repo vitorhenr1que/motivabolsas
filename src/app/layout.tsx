@@ -44,23 +44,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-
   return (
-    <html lang="pt-BR"> 
-    <head>
-    <MetaPixel/>
-    </head>
-    <UserProvider>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${poppins.className}`}>
-      <header>
-        <Header/>
-      </header>
-      <main>
-      {children}    
-      </main> 
-      </body>
-    </UserProvider>
+    <html lang="pt-BR">
+      <head>
+        <MetaPixel />
+      </head>
+      <UserProvider>
+        <body className={`${inter.variable} antialiased`}>
+          <Header />
+          <main>
+            {children}
+          </main>
+        </body>
+      </UserProvider>
     </html>
   );
 }

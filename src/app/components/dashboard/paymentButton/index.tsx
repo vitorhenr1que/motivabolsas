@@ -4,68 +4,77 @@ import { useState } from "react"
 import { loadStripe } from "@stripe/stripe-js"
 import { api } from "@/app/services/api"
 import styles from './style.module.scss'
+import { PiCreditCardBold } from "react-icons/pi"
+import { Loading } from "../../Loading"
+import { getInterToken } from "@/app/services/inter-token"
 
-interface userDataProps{
-    user: undefined | {
-        birthDate: Date | null,
-        cpf: string,
-        createdAt: Date,
-        email: string,
-        id: string,
-        name: string,
-        currentPayment: boolean,
-        customerId: string
-    }
+interface PaymentButtonProps {
+    user: any;
+    disabled?: boolean;
+    loading?: boolean;
 }
 
-export default function PaymentButton({user}: userDataProps){
-    
-
+export default function PaymentButton({ user, disabled, loading }: PaymentButtonProps) {
     const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
-    function handleButton(){
-        console.log(user?.id)
-    }
-    async function handleClickBuyButton(userId?: string, userEmail?: string, customerId?: string){
-        console.log('Entrou')
-        try{
-            setIsCreatingCheckout(true)
-            if(!userId){
-                return console.error("Não foi informado o ID como parâmetro para o checkout")
-            }
-            if(!userEmail){
-                return console.error("Não foi informado o E-mail como parâmetro para o checkout")
-            }
-            if(!customerId){
-                return console.error("Não foi informado o customerId como parâmetro para o checkout")
-            }
-            const checkoutResponse = await api.post('stripe/create-checkout', {
-                userId: userId, 
-                email: userEmail,
-                customerId: customerId
-            })
-            console.log('checkoutResponse: ', await checkoutResponse.data)
-            
 
-            const stripeClient = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string)
-            if(!stripeClient){
-                return console.error("Striple failed to initialize, verify .env variables")
+    async function handleCreateBoleto() {
+        if (!user || disabled || isCreatingCheckout) return;
+
+        try {
+            setIsCreatingCheckout(true);
+            const { access_token } = await getInterToken();
+
+            const address = user.addresses?.[0];
+            if (!address) {
+                alert("Endereço não encontrado em seu perfil.");
+                return;
             }
 
-            const { sessionId } = await checkoutResponse.data
+            const cleanPhone = user.phone.replace(/\D/g, '');
+            const ddd = cleanPhone.substring(0, 2);
+            const phone = cleanPhone.substring(2);
 
-            await stripeClient.redirectToCheckout({sessionId})
-            
-        }catch(e){
-            console.error(e)
-    } finally{
-        setIsCreatingCheckout(false)
-    }
-        
+            await api.post('/boletos/create', {
+                interToken: access_token,
+                email: user.email,
+                ddd,
+                phone,
+                houseNumber: address.number,
+                complement: address.complement || "",
+                cpf: user.cpf,
+                name: user.name,
+                street: address.street,
+                city: address.city,
+                neighborhood: address.neighborhood,
+                uf: address.uf,
+                cep: address.cep.replace(/\D/g, '')
+            });
+
+            // Recarregar para que a verificação de boletos no Dashboard detecte o novo boleto
+            window.location.reload();
+
+        } catch (e) {
+            console.error('Erro ao criar boleto:', e);
+            alert("Falha ao gerar o boleto. Por favor, tente novamente.");
+        } finally {
+            setIsCreatingCheckout(false);
+        }
     }
 
     return (
-        <>
-        <button className={styles.paymentButton} onClick={() => handleClickBuyButton(user?.id, user?.email, user?.customerId)} disabled={isCreatingCheckout}>Renovar Bolsa</button>
-        </>
+        <button
+            className={styles.paymentButton}
+            onClick={handleCreateBoleto}
+            disabled={isCreatingCheckout || disabled || loading}
+        >
+            {isCreatingCheckout || loading ? (
+                <Loading />
+            ) : (
+                <>
+                    <PiCreditCardBold />
+                    <span>Ativar minha Bolsa</span>
+                </>
+            )}
+        </button>
     )
 }

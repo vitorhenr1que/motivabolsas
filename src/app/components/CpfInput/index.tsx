@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './style.module.scss'
+import { PiCardsBold } from 'react-icons/pi';
 
 export function CPFInput() {
 
@@ -60,10 +61,9 @@ export function CPFInput() {
     if (cpfFormatado.length === 14) {
       if (!validarCPF(cpfFormatado)) {
         setError("CPF inválido. Por favor, insira um CPF válido.");
-        setCpf('')
       } else {
         setError(''); // Remove a mensagem de erro se o CPF for válido
-        
+
       }
     } else {
       setError(''); // Limpa o erro se o CPF ainda não estiver completo
@@ -73,18 +73,21 @@ export function CPFInput() {
 
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor="cpf">CPF: *</label>
-      <input 
-        className={styles.cpf}
-        type="text"
-        id="cpf"
-        name="cpf"
-        value={cpf}
-        onChange={handleChange}
-        maxLength={14}
-        placeholder="Digite seu CPF"
-        required={true}
-      />
+      <label htmlFor="cpf">CPF</label>
+      <div className={styles.inputWrapper}>
+        <PiCardsBold className={styles.inputIcon} />
+        <input
+          className={styles.cpf}
+          type="text"
+          id="cpf"
+          name="cpf"
+          value={cpf}
+          onChange={handleChange}
+          maxLength={14}
+          placeholder="000.000.000-00"
+          required={true}
+        />
+      </div>
       {error && <span className={styles.spanError}>{error}</span>}
     </div>
   );

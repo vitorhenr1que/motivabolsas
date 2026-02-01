@@ -1,0 +1,140 @@
+.boletoCard {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+
+        .icon {
+            font-size: 1.5rem;
+            color: #d97706; // Amber color for pending
+        }
+
+        h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .status {
+            margin-left: auto;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 500;
+
+            &.pending {
+                background: #fef3c7;
+                color: #d97706;
+            }
+        }
+    }
+
+    .details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            label {
+                font-size: 0.75rem;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-weight: 600;
+            }
+
+            span {
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: #0f172a;
+            }
+
+            &.fullWidth {
+                grid-column: span 2;
+            }
+        }
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .copyGroup {
+            display: flex;
+            gap: 0.5rem;
+
+            input {
+                flex: 1;
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                background: #f8fafc;
+                color: #64748b;
+                font-family: monospace;
+                font-size: 0.875rem;
+                cursor: text;
+
+                &:focus {
+                    outline: none;
+                    border-color: #3b82f6;
+                }
+            }
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+
+            &.copyBtn {
+                background: #e2e8f0;
+                color: #475569;
+
+                &:hover {
+                    background: #cbd5e1;
+                    color: #1e293b;
+                }
+            }
+
+            &.downloadBtn {
+                width: 100%;
+                background: #0f172a;
+                color: white;
+
+                &:hover {
+                    background: #1e293b;
+                }
+
+                &:disabled {
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}

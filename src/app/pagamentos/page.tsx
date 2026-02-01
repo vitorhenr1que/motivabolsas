@@ -1,157 +1,245 @@
 'use client'
 import { useUser } from "../components/contexts/user-provider"
-import { stripe } from "../services/stripe"
+import { api } from "../services/api"
 import { DivDashboard } from "../components/dashboard/DivDashboard"
 import { useEffect, useState } from "react"
 import styles from './style.module.scss'
-import { CiCircleChevDown, CiCircleMore, CiCircleRemove } from "react-icons/ci"
-import { FaRegCircleCheck, FaRegCircleXmark } from "react-icons/fa6"
-import { IoEllipsisHorizontalCircle } from "react-icons/io5"
-import { LuCircleEllipsis } from "react-icons/lu"
 import { Loading } from "../components/Loading"
+import { getInterToken } from "../services/inter-token"
+import {
+    PiCheckCircleFill,
+    PiReceiptBold,
+    PiCreditCardBold,
+    PiDownloadSimpleBold,
+} from "react-icons/pi"
 
-
-
-interface User{
-    birthDate: Date | null,
-    cpf: string,
-    createdAt: Date,
-    email: string,
-    id: string,
-    name: string,
-    currentPayment: boolean,
-    customerId: string
+interface Boleto {
+    cobranca: {
+        codigoSolicitacao: string;
+        dataEmissao: string;
+        dataVencimento: string;
+        valorNominal: number;
+        situacao: string;
+        valorTotalRecebido?: number;
+    }
 }
 
+interface ReceiptData {
+    code: string;
+    amount: number;
+    status: string;
+    method: string;
+    payerName: string;
+    lastUpdate: string;
+    startedAt: string;
+    succeededAt: string;
+    description: string;
+}
 
-
-export default function Payments(){
-    
-    const {user} = useUser()
-    const [paymentsData, setPaymentsData] = useState<any>()
-    const [userData, setUserData] = useState<User | undefined>()
-    const [loading, setLoading] = useState(false)
+export default function Payments() {
+    const { user } = useUser()
+    const [boletosData, setBoletosData] = useState<Boleto[]>([])
     const [loadingTable, setLoadingTable] = useState(false)
-    const [loadingPosition, setLoadingPosition] = useState(0)
-    function getDate(num: number){
-        const date = new Date(num * 1000)
-        const dateOk = date.toLocaleString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        })
-        return dateOk
-    }
+    const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null)
 
-    async function getComprovant(client_secret: string, position: number){
-       try {
-        setLoading(true)
-        setLoadingPosition(position + 1)
-        const charge = await stripe.charges.retrieve(client_secret)
-        console.log(charge)
-        setLoading(false)
-        return window.open(`${charge.receipt_url}`)
-       }catch(e){
-        console.log(e)
-        setLoading(false)
-       }
-    }
-    function getStatus(status: string){
-        switch(status){
-            case 'canceled':
-                return (
-                    <div className={styles.statusDiv}>
-                    <FaRegCircleXmark size={20} color="#e43843"/>
-                    <span>Cancelado</span>
-                    </div>
-                )
-                break
-            case 'processing': 
-            return (
-                <div className={styles.statusDiv}>
-                    <LuCircleEllipsis size={20} color="#e1a92f"/>
-                    <span>Processando</span>
-                </div>
-            )
-            break
-            case 'succeeded': 
-            return (
-                <div className={styles.statusDiv}>
-                    <FaRegCircleCheck size={20} color="green"/>
-                    <span>Pago</span>
-                </div>
-            )
-            break
-            }
+    // Buscar todos os boletos desde a criação da conta
+    useEffect(() => {
+        if (user?.cpf && user?.createdAt) {
+            const createdDate = new Date(user.createdAt)
+            const today = new Date()
+
+            const startDate = createdDate.toISOString().split('T')[0];
+            const endDate = today.toISOString().split('T')[0];
+
+            fetchBoletos(startDate, endDate)
         }
+    }, [user?.cpf, user?.createdAt])
 
-    function getAmount(value: number, currency: string){
-        const convertedValue = value / 100
-        const amount = convertedValue.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: currency
-        })
-        return amount
-    }
-    
-    async function PaymentList(){
-        try{
+    async function fetchBoletos(startDate: string, endDate: string) {
+        if (!user?.cpf) return
+        try {
             setLoadingTable(true)
-            if(user === undefined){
-                return
-            }
-        const payments = await stripe.paymentIntents.list({
-            limit: 10,
-            customer: user?.customerId
-        })
-        setPaymentsData(payments.data)
-        console.log(payments.data)
-        setLoadingTable(false)
-        } catch(e){
-            console.log(e)
+            const { access_token } = await getInterToken()
+
+            const response = await api.post('/boletos/find', {
+                interToken: access_token,
+                cpf: user.cpf,
+                initialDate: startDate,
+                finalDate: endDate
+            })
+
+            const cobrancas = response.data?.cobrancas || []
+
+            // Filtrar apenas boletos RECEBIDOS
+            const pagos = cobrancas.filter((item: Boleto) =>
+                item.cobranca.situacao === "RECEBIDO" ||
+                item.cobranca.situacao === "MARCADO_RECEBIDO"
+            )
+
+            // Ordenar por data de vencimento (mais recente primeiro)
+            pagos.sort((a: Boleto, b: Boleto) =>
+                new Date(b.cobranca.dataVencimento).getTime() - new Date(a.cobranca.dataVencimento).getTime()
+            )
+
+            setBoletosData(pagos)
+        } catch (e) {
+            console.error('Erro ao buscar boletos:', e)
+        } finally {
             setLoadingTable(false)
         }
     }
-    
-    useEffect(()=>{
-        console.log('Customer ID: ',user?.customerId)
-        PaymentList()
-    },[user])
-    return(
+
+    async function handleGenerateReceipt(item: Boleto) {
+        if (!user) return
+        try {
+            const code = item.cobranca.codigoSolicitacao
+            setDownloadingPdf(code)
+
+            const receiptData: ReceiptData = {
+                code: code,
+                amount: item.cobranca.valorTotalRecebido || item.cobranca.valorNominal,
+                status: "SUCESSO",
+                method: "Boleto Bancário",
+                payerName: user.name,
+                lastUpdate: new Date().toISOString(),
+                startedAt: item.cobranca.dataEmissao,
+                succeededAt: item.cobranca.dataVencimento,
+                description: getPaymentDescription(item.cobranca.dataVencimento)
+            }
+
+            const response = await fetch('/api/pdf/comprovante', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(receiptData),
+            })
+
+            if (!response.ok) throw new Error('Falha ao gerar o PDF')
+
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `Comprovante_Motiva_${code}.pdf`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+
+        } catch (error) {
+            console.error('Erro ao baixar recibo:', error)
+            alert('Erro ao baixar o comprovante.')
+        } finally {
+            setDownloadingPdf(null)
+        }
+    }
+
+    function formatDate(dateStr: string) {
+        if (!dateStr) return '-'
+        const parts = dateStr.split('-')
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`
+        }
+        return new Date(dateStr).toLocaleDateString('pt-BR')
+    }
+
+    function formatCurrency(val: number) {
+        return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    }
+
+    function getPaymentDescription(dateStr: string) {
+        if (!dateStr) return 'Pagamento Semestral'
+        const parts = dateStr.split('-')
+        if (parts.length === 3) {
+            const year = parts[0]
+            const month = parseInt(parts[1], 10)
+            const semester = month <= 6 ? 1 : 2
+            return `Pagamento Semestral ${year}.${semester}`
+        }
+        return `Pagamento Semestral`
+    }
+
+    return (
         <DivDashboard>
-            <h1>Pagamentos</h1>
-            
-            {!!loadingTable ? <Loading/> : 
-            <div className={styles.tableContainer}><table className={styles.table}>
-                <thead className={styles.thead}>
-                    <tr className={styles.tHrow}>
-                        <th className={styles.thPayment}>TIPO DE PAGAMENTO</th>
-                        <th className={styles.thClient}>CLIENTE</th>
-                        <th className={styles.thStatus}>STATUS</th>
-                        <th className={styles.thAmount}>VALOR</th>
-                        <th className={styles.thCreated}>CRIADO</th>
-                        <th className={styles.thComprovant}>COMPROVANTE</th>
-                    </tr>
-                </thead>
-                <tbody className={styles.tbody}>
-            {paymentsData && paymentsData.map((index: any, position: number) => {
-                console.log(index)
-                return (
-                    <tr key={index.id} className={styles.tBrow}>
-                        <td className={styles.tdPayment}>Renovação de Bolsa</td>
-                        <td className={styles.tdClient}>{user?.name}</td>
-                        <td className={styles.tdStatus}>{getStatus(index.status)}</td>
-                        <td className={styles.tdAmount}>{getAmount(index.amount, index.currency)}</td>
-                        <td className={styles.tdCreated}>{getDate(index.created)}</td>
-                        <td className={styles.tdButton}><button className={styles.button} disabled={loading} onClick={() => getComprovant(index.latest_charge, position)}>{loading === true && loadingPosition === position + 1 ? <Loading/> : "Ver detalhes"}</button></td>
-                                                                                                                                            {/* ID da compra, posição fazendo a condicional para o loading ser individual e não em todos os botões */}
-                    </tr>
-                    
-                )
-            })}
-                </tbody>
-            </table></div>}
+            <div className={styles.paymentsWrapper}>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div className={styles.title}>
+                        <h1>Histórico de Pagamentos</h1>
+                        <p>Acompanhe suas mensalidades e baixe seus recibos.</p>
+                    </div>
+                </header>
+
+                {loadingTable ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+                        <Loading />
+                    </div>
+                ) : boletosData.length > 0 ? (
+                    <div className={styles.tableContainer}>
+                        <table className={styles.table}>
+                            <thead className={styles.thead}>
+                                <tr>
+                                    <th>Serviço / Descrição</th>
+                                    <th>Status</th>
+                                    <th>Valor</th>
+                                    <th>Vencimento</th>
+                                    <th style={{ textAlign: 'center' }}>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody className={styles.tbody}>
+                                {boletosData.map((item) => (
+                                    <tr key={item.cobranca.codigoSolicitacao} className={styles.tBrow}>
+                                        <td className={styles.tdPayment}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '8px', borderRadius: '8px', color: '#16a34a' }}>
+                                                    <PiReceiptBold size={20} />
+                                                </div>
+                                                <div>
+                                                    <strong>{getPaymentDescription(item.cobranca.dataVencimento)}</strong>
+                                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>Ref: {item.cobranca.codigoSolicitacao}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className={styles.tdStatus}>
+                                            <div className={`${styles.statusBadge} ${styles.succeeded}`}>
+                                                <PiCheckCircleFill />
+                                                <span>Pago</span>
+                                            </div>
+                                        </td>
+                                        <td className={styles.tdAmount}>{formatCurrency(item.cobranca.valorTotalRecebido || item.cobranca.valorNominal)}</td>
+                                        <td className={styles.tdCreated}>{formatDate(item.cobranca.dataVencimento)}</td>
+                                        <td className={styles.tdButton}>
+                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                <button
+                                                    className={styles.detailsBtn}
+                                                    disabled={downloadingPdf === item.cobranca.codigoSolicitacao}
+                                                    onClick={() => handleGenerateReceipt(item)}
+                                                    title="Baixar comprovante"
+                                                >
+                                                    {downloadingPdf === item.cobranca.codigoSolicitacao ? (
+                                                        <Loading />
+                                                    ) : (
+                                                        <>
+                                                            <PiDownloadSimpleBold />
+                                                            <span>Recibo PDF</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className={styles.emptyState}>
+                        <PiCreditCardBold />
+                        <h3>Nenhum pagamento encontrado</h3>
+                        <p>Nenhum pagamento foi encontrado.</p>
+                    </div>
+                )}
+            </div>
         </DivDashboard>
-        
     )
-} 
+}

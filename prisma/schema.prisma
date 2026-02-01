@@ -26,6 +26,8 @@ model User {
   tokenExpiration String?
   token           String?
   addresses Address[]
+  contracts       Contract[]
+  contractSignatures ContractSignature[]
 }
 
 model Address {
@@ -41,4 +43,89 @@ model Address {
   address User @relation(fields: [userId], references: [id])
 
   @@index([userId], map: "Address_userId_fkey")
+}
+
+model Contract {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  version       Int      @default(1)
+
+  // Status do fluxo
+  status        ContractStatus @default(DRAFT)
+
+  // PDF original (que você já gera)
+  pdfUrl        String
+  pdfHash       String?  // sha256 do PDF original (calculado no server)
+
+  // PDF final (contrato + evidências)
+  signedPdfUrl  String?
+  signedPdfHash String?
+  signedAt      DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id])
+  signatures    ContractSignature[]
+  events        ContractEvent[]
+
+  @@index([userId])
+}
+
+model ContractSignature {
+  id          String   @id @default(uuid())
+  contractId  String
+  userId      String
+
+  // Identificador único do “evento de assinatura”
+  evidenceId  String   @unique
+
+  signedAt    DateTime @default(now())
+
+  ip          String?
+  userAgent   String?
+
+  // Texto do aceite (checkbox)
+  consentText String
+
+  // Evidências extras (json)
+  evidence    Json
+
+  // hashes (integridade)
+  originalPdfHash String
+  signedPdfHash   String
+
+  contract    Contract @relation(fields: [contractId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([contractId])
+  @@index([userId])
+}
+
+model ContractEvent {
+  id         String   @id @default(uuid())
+  contractId String
+  type       ContractEventType
+  metadata   Json
+  createdAt  DateTime @default(now())
+
+  contract   Contract @relation(fields: [contractId], references: [id])
+
+  @@index([contractId])
+}
+
+enum ContractStatus {
+  DRAFT
+  SENT
+  SIGNED
+  REFUSED
+  EXPIRED
+}
+
+enum ContractEventType {
+  VIEWED
+  CONSENTED
+  SIGNED
+  REFUSED
 }

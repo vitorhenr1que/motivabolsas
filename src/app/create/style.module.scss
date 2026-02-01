@@ -1,78 +1,320 @@
-.generalContainer{
-  
+.container {
     display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    width: 80%;
-   
-    border-radius: 8px;
-    align-items: center;
-    
-}
-.container{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-}
-.formContainer{
-    display: flex;
-    flex-direction: column;
-    width: 700px;
-    gap: 1rem;
-    padding: 16px 24px;
-    .inputContainer{
-  
+    min-height: 100vh;
+    background-color: var(--white);
+
+    /* Sidebar Visual */
+    .sidebar {
+        flex: 0.8;
+        position: sticky;
+        top: 0;
+        height: 100vh;
         display: flex;
-        flex-direction: column;
-        gap: .5rem;
-        input{
-            padding: 16px 24px;
-            border-radius: 8px;
-            border: 1px solid var(--bf-gray-hover);
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+        overflow: hidden;
+        background-image: url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+
+        @media (max-width: 1024px) {
+            display: none;
+        }
+
+        .sidebarOverlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(17, 74, 105, 0.95), rgba(32, 147, 209, 0.85));
+            z-index: 1;
+        }
+
+        .sidebarContent {
+            position: relative;
+            z-index: 2;
+            color: var(--white);
+
+            .logoLink {
+                display: inline-block;
+                margin-bottom: 4rem;
+                transition: transform 0.2s ease;
+
+                &:hover {
+                    transform: scale(1.05);
+                }
+            }
+
+            h2 {
+                font-size: 2.5rem;
+                font-weight: 800;
+                line-height: 1.1;
+                margin-bottom: 1.25rem;
+
+                span {
+                    color: var(--secondary);
+                }
+            }
+
+            .sidebarDesc {
+                font-size: 1.125rem;
+                opacity: 0.9;
+                line-height: 1.6;
+                margin-bottom: 3.5rem;
+                color: var(--slate-100);
+            }
+
+            .benefitsList {
+                display: flex;
+                flex-direction: column;
+                gap: 2rem;
+
+                .benefitItem {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 1.25rem;
+
+                    .benefitIcon {
+                        width: 48px;
+                        height: 48px;
+                        min-width: 48px;
+                        background: rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(8px);
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: var(--secondary);
+                        font-size: 1.5rem;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+
+                    .benefitInfo {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.25rem;
+
+                        strong {
+                            font-size: 1.125rem;
+                            font-weight: 700;
+                            color: var(--white);
+                        }
+
+                        span {
+                            font-size: 0.9375rem;
+                            color: var(--slate-200);
+                            line-height: 1.4;
+                        }
+                    }
+                }
+            }
         }
     }
-    .doubleInputContainer{
-        display: flex;
+
+    /* Área do Formulário */
+    .formArea {
         flex: 1;
-        justify-content: space-between;
-        gap: 1rem;
-    }
-    .hr{
-        width: 100%;
-    }
-    .signUpButton{
-        padding: 16px 24px;
-        border: none;
-        cursor: pointer;
-        background: var(--button-background);
-        border-radius: 8px;
-        color: var(--text-color-on-background);
-        transition: .3s;
-        &:hover{
-            background: var(--button-background-hover);
+        display: flex;
+        justify-content: center;
+        padding: 4rem 2rem;
+        background-color: var(--slate-50);
+        overflow-y: auto;
+
+        .formWrapper {
+            width: 100%;
+            max-width: 640px;
+            animation: slideUp 0.6s ease-out;
+
+            .formHeader {
+                margin-bottom: 3.5rem;
+
+                .backLink {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    color: var(--primary);
+                    font-size: 0.875rem;
+                    font-weight: 700;
+                    margin-bottom: 2rem;
+                    transition: all 0.2s ease;
+                    padding: 0.5rem 1rem;
+                    background: rgba(17, 74, 105, 0.05);
+                    border-radius: var(--radius-full);
+
+                    &:hover {
+                        background: var(--primary);
+                        color: var(--white);
+                        transform: translateX(-4px);
+                    }
+                }
+
+                h1 {
+                    font-size: 2.25rem;
+                    color: var(--slate-900);
+                    margin-bottom: 0.5rem;
+                }
+
+                p {
+                    color: var(--slate-500);
+                }
+            }
+
+            .form {
+                display: flex;
+                flex-direction: column;
+                gap: 3rem;
+
+                .section {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+
+                    .sectionTitle {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        padding-bottom: 1rem;
+                        border-bottom: 1px solid var(--slate-200);
+                        margin-bottom: 0.5rem;
+
+                        svg {
+                            color: var(--primary);
+                            font-size: 1.5rem;
+                        }
+
+                        h3 {
+                            font-size: 1.125rem;
+                            color: var(--slate-900);
+                            font-weight: 700;
+                        }
+                    }
+
+                    .gridRow {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 1.5rem;
+
+                        @media (max-width: 640px) {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                }
+
+                .errorMessage {
+                    padding: 1rem;
+                    background-color: rgba(239, 68, 68, 0.05);
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                    border-radius: var(--radius-md);
+                    color: var(--error);
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    text-align: center;
+                }
+
+                .termsWrapper {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.75rem;
+
+                    .checkboxLabel {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 0.75rem;
+                        cursor: pointer;
+
+                        input[type="checkbox"] {
+                            width: 18px;
+                            height: 18px;
+                            margin-top: 2px;
+                            accent-color: var(--primary);
+                            cursor: pointer;
+                        }
+
+                        span {
+                            font-size: 0.875rem;
+                            color: var(--slate-600);
+                            line-height: 1.5;
+
+                            a {
+                                color: var(--primary);
+                                font-weight: 600;
+                                text-decoration: none;
+
+                                &:hover {
+                                    text-decoration: underline;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .formFooter {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                    padding-top: 1rem;
+
+                    .submitButton {
+                        height: 56px;
+                        background-color: var(--primary);
+                        color: var(--white);
+                        border: none;
+                        border-radius: var(--radius-md);
+                        font-size: 1.125rem;
+                        font-weight: 700;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        box-shadow: var(--shadow-md);
+
+                        &:hover {
+                            background-color: var(--primary-hover);
+                            transform: translateY(-2px);
+                            box-shadow: var(--shadow-lg);
+                        }
+
+                        &:active {
+                            transform: translateY(0);
+                        }
+
+                        &:disabled {
+                            opacity: 0.7;
+                            cursor: not-allowed;
+                        }
+                    }
+
+                    .loginHint {
+                        text-align: center;
+                        font-size: 0.9375rem;
+                        color: var(--slate-500);
+
+                        a {
+                            color: var(--primary);
+                            font-weight: 700;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-}
-.error{
-    color: var(--bf-red);
 }
 
-@media(max-width: 757px){
-    .formContainer{
-        width: 100%;
-       
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
-@media(max-width: 440px){
-.generalContainer{
-    width: 95%;
-}
-}
-@media(max-width: 560px){
-    .formContainer{
-        .doubleInputContainer{
-            flex-direction: column;
-        }
+
+@media (max-width: 640px) {
+    .formArea {
+        padding: 2rem 1rem !important;
     }
 }

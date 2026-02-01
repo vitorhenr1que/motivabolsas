@@ -1,12 +1,82 @@
-   .inputContainer{
-  
-        display: flex;
-        flex-direction: column;
-        gap: .5rem;
-        flex: 1;
-        input{
-            padding: 16px 24px;
-            border-radius: 8px;
-            border: 1px solid var(--bf-gray-hover);
-        }
-    }
+   .inputContainer {
+       display: flex;
+       flex-direction: column;
+       gap: 0.5rem;
+       flex: 1;
+
+       label {
+           font-size: 0.875rem;
+           font-weight: 600;
+           color: var(--slate-700);
+           padding-left: 2px;
+       }
+
+       .inputWrapper {
+           position: relative;
+           display: flex;
+           align-items: center;
+
+           .inputIcon {
+               position: absolute;
+               left: 1rem;
+               color: var(--slate-400);
+               font-size: 1.25rem;
+               display: flex;
+               pointer-events: none;
+               transition: var(--transition);
+           }
+
+           input {
+               width: 100%;
+               height: 52px;
+               padding: 0 1rem 0 1rem;
+               background-color: var(--white);
+               border: 1px solid var(--slate-200);
+               border-radius: var(--radius-md);
+               font-size: 1rem;
+               transition: all 0.2s ease;
+
+               &::placeholder {
+                   color: var(--slate-300);
+               }
+
+               &:focus {
+                   outline: none;
+                   border-color: var(--primary);
+                   box-shadow: 0 0 0 4px rgba(17, 74, 105, 0.1);
+
+                   +.inputIcon {
+                       color: var(--primary);
+                   }
+               }
+           }
+
+           // Quando tem ícone, aumenta padding esquerdo
+           &:has(.inputIcon) input {
+               padding-left: 3rem;
+           }
+       }
+
+       &.hasError {
+           .inputWrapper input {
+               border-color: var(--error);
+               background-color: rgba(239, 68, 68, 0.02);
+
+               &:focus {
+                   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+               }
+           }
+
+           .inputIcon {
+               color: var(--error);
+           }
+       }
+
+       .errorText {
+           font-size: 0.75rem;
+           color: var(--error);
+           font-weight: 600;
+           margin-top: 2px;
+           padding-left: 4px;
+       }
+   }

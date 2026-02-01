@@ -1,36 +1,74 @@
-.inputContainer{
+.inputContainer {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
-    // .passInput{
-    //     padding: 16px 24px;
-    //     border-radius: 8px;
-    //     border: 1px solid var(--bf-gray-hover);
-    // }
-    flex: .5;
-    .spanError{
-        color: var(--bf-red);
+    gap: 0.5rem;
+    flex: 0.5;
+
+    label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--slate-700);
+        padding-left: 2px;
     }
-    .divInput{
-        border-radius: 8px;
-        border: 1px solid var(--bf-gray-hover);
+
+    .selectWrapper {
+        position: relative;
         display: flex;
-        .select{
-            padding: 16px 24px;
-            border-radius: 8px;
-            flex: 1;
-            border: none;
-            width: 100%;
-            
-        }
-        .cepUf{
-            padding: 16px 24px;
-            border-radius: 8px;
-            flex: 1;
-            border: none;
-            width: 100%;
-            background: var(--bf-gray-hover);
+        align-items: center;
+
+        .inputIcon {
+            position: absolute;
+            left: 1rem;
+            color: var(--slate-400);
+            font-size: 1.25rem;
+            display: flex;
             pointer-events: none;
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .chevronIcon {
+            position: absolute;
+            right: 1rem;
+            color: var(--slate-400);
+            font-size: 1rem;
+            display: flex;
+            pointer-events: none;
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .select,
+        .cepUf {
+            width: 100%;
+            height: 52px;
+            padding: 0 2.5rem 0 3rem;
+            background-color: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            color: var(--slate-900);
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px rgba(17, 74, 105, 0.1);
+
+                ~.inputIcon,
+                ~.chevronIcon {
+                    color: var(--primary);
+                }
+            }
+        }
+
+        .cepUf {
+            background-color: var(--slate-50);
+            cursor: not-allowed;
+            pointer-events: none;
+            color: var(--slate-600);
         }
     }
 }

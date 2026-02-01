@@ -1,174 +1,148 @@
-
-.headerContainer{
-    width: 80%;
-    margin: 0 auto;
-.navContainer {
-    height: 80px;
+.headerContainer {
     width: 100%;
-    background-color: white;
+    background-color: var(--white);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 80px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    gap: .75rem;
-    .toggleAndLogoContainer{
-        display: flex;
-        align-items: center;
-        gap: .75rem;
-        
 
-        .logo{
-            width: 100%;
-                .logoImage{
-                    height: 50px;
-                    width: 100%;
-                }
-        }
-    }
-    .ulContainer{
-        
+    .navContainer {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
         display: flex;
-        list-style: none;
-        gap: .5rem;
         align-items: center;
-        justify-content: center;
-        .liItem{
-            color: #000;
-        }
-        .signInButton{
-            background: var(--button-gray);
-            border: none;
-            padding: 16px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-color-on-background);
-            transition: .5s;
-            font-weight: 700;
-            &:hover{
-                background: var(--button-gray-hover);
-            }
-        }
-        .signUpButton{
-            background: var(--button-background);
-            border: none;
-            padding: 16px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-color-on-background);
-            transition: .5s;
-            font-weight: 700;
-            &:hover{
-                background: var(--button-background-hover);
-            }
-        }
-        .loggedButton{
+        justify-content: space-between;
+        gap: 1rem;
+
+        .toggleAndLogoContainer {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--bf-yellow);
-            cursor: pointer;
-            transition: .3s;
-            position: relative;
-            &:hover{
-                background: var(--bf-yellow-hover);
-                transition: .5s;
-     
-                
-            }
-            .dropdownDiv{
-                cursor: initial;
-                position: absolute;
-                display: block;
-                flex-direction: column;
-                flex: 1;
-                margin-top: 6px;
-                width: 425px;
-                background: #ececec;
-                right: 0;
-                z-index: 1;
-                border-radius: 8px;
-                
-                
+            gap: 1.5rem;
+
+            .logo {
+                display: flex;
+                align-items: center;
+
+                .logoImage {
+                    height: 48px;
+                    width: auto;
+                    object-fit: contain;
+                }
             }
         }
+
+        .ulContainer {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            align-items: center;
+            flex-shrink: 0;
+            white-space: nowrap;
+
+            .signInButton {
+                padding: 0.75rem 1.5rem;
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                color: var(--slate-700);
+                font-size: 0.9375rem;
+                white-space: nowrap;
+
+                &:hover {
+                    background-color: var(--slate-100);
+                    color: var(--primary);
+                }
+            }
+
+            .signUpButton {
+                padding: 0.75rem 1.5rem;
+                background-color: var(--secondary);
+                color: var(--primary);
+                border-radius: var(--radius-md);
+                font-weight: 800;
+                font-size: 0.9375rem;
+                box-shadow: var(--shadow-sm);
+                transition: all 0.2s ease;
+                white-space: nowrap;
+
+                &:hover {
+                    background-color: var(--secondary-hover);
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-md);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                }
+            }
+
+            .loggedButton {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+
+                .dropdownDiv {
+                    position: absolute;
+                    top: calc(100% + 12px);
+                    right: 0;
+                    z-index: 1000;
+                }
+            }
         }
     }
 }
 
-@media(max-width: 1000px){
-    .headerContainer{
-        width: 90%;
-    }
-}
+@media (max-width: 768px) {
+    .headerContainer {
+        height: 70px;
 
-@media(max-width: 700px){
-    
-    .logo{
-        .logoImage{
-            height: 50px;
-        }
-    }
-    
-}
+        .navContainer {
+            padding: 0 1rem;
 
-@media(max-width: 567px){
-    .headerContainer{
-        .navContainer{
-            .ulContainer{
-                .signInButton, .signUpButton{
-                    font-size: .7rem;
-                    padding: 10px 12px;
+            .ulContainer {
+                gap: 0.5rem;
+
+                .signInButton,
+                .signUpButton {
+                    padding: 0.6rem 0.875rem;
+                    font-size: 0.8125rem;
                 }
-                .loggedButton{
-                    .dropdownDiv{
-                        width: 330px;
-                        margin-top: 1.8rem;
-                     }
-                 }
             }
-            .toggleAndLogoContainer{
-                .logo{
-                    .logoImage{
-                        height: 40px;
-                    }
+
+            .toggleAndLogoContainer {
+                gap: 0.75rem;
+
+                .logo .logoImage {
+                    height: 32px;
                 }
             }
         }
-         
-    }
-}
-@media(max-width: 440px){
-    .headerContainer{
-        width: 100%;
     }
 }
 
-@media(max-width: 365px){
-    .headerContainer{
-        .navContainer{
-            .ulContainer{
-                .signInButton, .signUpButton{
-                    font-size: .5rem;
-                    padding: 8px 10px;
+@media (max-width: 480px) {
+    .headerContainer {
+        .navContainer {
+            padding: 0 0.75rem;
+
+            .ulContainer {
+                gap: 0.25rem;
+
+                .signInButton,
+                .signUpButton {
+                    padding: 0.5rem 0.75rem;
+                    font-size: 0.75rem;
                 }
-                .loggedButton{
-                    .dropdownDiv{
-                        width: 330px;
-                        margin-top: 1.8rem;
-                     }
-                 }
             }
-            .toggleAndLogoContainer{
-                .logo{
-                    .logoImage{
-                        height: 40px;
-                    }
-                }
+
+            .toggleAndLogoContainer {
+                gap: 0.5rem;
             }
         }
-         
     }
 }

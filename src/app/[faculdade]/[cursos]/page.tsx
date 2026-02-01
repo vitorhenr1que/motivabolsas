@@ -7,98 +7,124 @@ import Image from 'next/image'
 import { FarvalleDocumentData, FazagDocumentData, Simplify } from '../../../../prismicio-types'
 import { SolicitarBolsa } from '@/app/components/SolicitarBolsa'
 import { notFound } from 'next/navigation'
+import { PiCaretRightBold, PiClockBold, PiGraduationCapBold, PiMapPinBold } from 'react-icons/pi'
 
-type faculdade = "fazag" | "farvalle"  // Colocar novas faculdades aqui
+type faculdade = "fazag" | "farvalle"
 
 type course = Simplify<FazagDocumentData> | Simplify<FarvalleDocumentData>
 
-interface courseProps{
-    
-}
-// colocar NODE_ENV = production
-
-interface ParamsProps{
+interface ParamsProps {
     params: {
         faculdade: faculdade,
         cursos: string
     }
 }
 
-const FACULDADES_PERMITIDAS = ['fazag', 'farvalle']; // Colocar faculdades aqui
+const FACULDADES_PERMITIDAS = ['fazag', 'farvalle'];
 
-export default async function Curso({params}: ParamsProps){
-    console.log('faculdade/cursos - Params: ', params)
-    const parametros = params
-
+export default async function Curso({ params }: ParamsProps) {
     if (!FACULDADES_PERMITIDAS.includes(params.faculdade)) {
-        notFound();  // Retorna 404 silenciosamente
-      }
-    
-      const slugValido = /^[a-z0-9-]+$/.test(params.cursos);
-      if (!slugValido) {
         notFound();
-      }
-        const client = getClient()
-        
-        const response = await client.getByUID(`${params.faculdade}`, `${params.cursos}`, {})
-        const course: course = response.data
+    }
 
-         const responseImages = await client.getByUID(`${params.faculdade}_photos`, `${params.faculdade}`)
-         const faculdadeImages = responseImages.data
-         console.log(faculdadeImages) 
+    const slugValido = /^[a-z0-9-]+$/.test(params.cursos);
+    if (!slugValido) {
+        notFound();
+    }
+
+    const client = getClient()
+
+    const response = await client.getByUID(`${params.faculdade}`, `${params.cursos}`, {})
+    const course: course = response.data
+
+    const responseImages = await client.getByUID(`${params.faculdade}_photos`, `${params.faculdade}`)
+    const faculdadeImages = responseImages.data
+
+    const discountedPrice = course.total_value && course.discount !== null
+        ? (course.total_value - (course.total_value * course.discount / 100)).toFixed(2)
+        : '0.00';
+
     return (
         <div className={styles.container}>
-            <h1>Fotos da {params.faculdade.toUpperCase()}</h1>
-            <section className={styles.main}>
-                <div className={styles.divImages}> {/* Container das Imagens */}
-                <UniversityImages faculdadeImages={faculdadeImages}/>
-                </div> 
+            {/* Breadcrumb */}
+            <nav className={styles.breadcrumb}>
+                <Link href="/">Home</Link>
+                <PiCaretRightBold />
+                <span className={styles.active}>{params.faculdade.toUpperCase()}</span>
+                <PiCaretRightBold />
+                <span>{course.name}</span>
+            </nav>
 
-                <div className={styles.courseContainer}> {/* Container dos Cursos */}
-                    <div className={styles.courseHeader}>
-                    <div className={styles.textsContainer}>
-                        <h3>{course.name?.toUpperCase()}</h3>
-                        <div className={styles.modalidade}>{course.modality}</div>
-                        <span className={styles.vagas}>16 Vagas Restantes</span>
-                        <div className={styles.totalValueContainer}>
-                            <s className={styles.totalValue}>R$ {course.total_value?.toFixed(2)}</s>
-                            <div className={styles.discountContainer}>
-                                <span className={styles.discount}>-{course?.discount}%</span>
+            <section className={styles.headerTitle}>
+                <h1>Graduação em {course.name}</h1>
+                <p>Conheça a infraestrutura da {params.faculdade.toUpperCase()} e garanta seu desconto.</p>
+            </section>
+
+            <section className={styles.main}>
+                <div className={styles.divImages}>
+                    <UniversityImages faculdadeImages={faculdadeImages} />
+                </div>
+
+                <aside className={styles.courseSidebar}>
+                    <div className={styles.courseCard}>
+                        <div className={styles.courseHeader}>
+                            <div className={styles.modalidadeBadge}>
+                                <PiGraduationCapBold size={18} />
+                                <span>{course.modality}</span>
+                            </div>
+                            <span className={styles.vagasBadge}>16 Vagas Restantes</span>
+
+                            <h3>{course.name?.toUpperCase()}</h3>
+
+                            <div className={styles.courseDetails}>
+                                <div className={styles.detailItem}>
+                                    <PiClockBold />
+                                    <span>4 anos</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <PiMapPinBold />
+                                    <span>{params.faculdade.toUpperCase()}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className={styles.imageCourse}>
-                        <Image className={styles.image} src={`${course?.course_image.url}`} alt={`Curso de ${course.name}`} width={500} height={500} quality={100}/>
-                    </div>
-                    
-                    </div>
-                    <div className={styles.courseMain}>
-                    <div className={styles.discountValueContainer}>
-                        <span className={styles.discountText}>R$ </span>
-                        <span className={styles.discountValue}>{course.total_value && course.discount !== null ? (course?.total_value - (course?.total_value * course?.discount / 100)).toFixed(2) : ''}</span>
-                        <span className={styles.discountText}> /mês</span>
-                    </div>
-                    <span>Durante todo o curso</span>
-                    <div className={styles.courseFooter}>
-                        <Link href="#" className={styles.comoFunciona}>Como funciona?</Link>
-                        <SolicitarBolsa faculdade={params.faculdade} fixed={false}/>
-                    </div>
-                </div>
-                    
-                </div>
-                <div className={styles.courseContainerFixed}> {/* Container Fixado somente para disp. móveis */}
-                    <h3>{course.name}</h3>
-                    <div className={styles.fixedContainer}>
-                        <div className={styles.fixedValuesContainer}>
-                            <s>R$ {course.total_value?.toFixed(2)}</s>
-                            <span>R$ <strong>{course.total_value && course.discount !== null ? (course?.total_value - (course?.total_value * course?.discount / 100)).toFixed(2) : ''}</strong> /mês</span>
+
+                        <div className={styles.priceContainer}>
+                            <div className={styles.originalPrice}>
+                                <s>R$ {course.total_value?.toFixed(2)}</s>
+                                <span className={styles.discountBadge}>-{course?.discount}% OFF</span>
+                            </div>
+
+                            <div className={styles.finalPrice}>
+                                <span className={styles.currency}>R$</span>
+                                <span className={styles.value}>{discountedPrice}</span>
+                                <span className={styles.period}>/mês</span>
+                            </div>
+                            <p className={styles.durationNote}>Mensalidade fixa durante todo o curso</p>
                         </div>
-                        <SolicitarBolsa faculdade={params.faculdade} fixed={true}/>
+
+                        <div className={styles.ctaContainer}>
+                            <SolicitarBolsa faculdade={params.faculdade} fixed={false} />
+                            <Link href="#info" className={styles.linkInfo}>Ver detalhes do curso</Link>
+                        </div>
                     </div>
+                </aside>
+
+                {/* Mobile Fixed CTA */}
+                <div className={styles.courseContainerFixed}>
+                    <div className={styles.fixedInfo}>
+                        <h3>{course.name}</h3>
+                        <div className={styles.fixedPrices}>
+                            <s>R$ {course.total_value?.toFixed(2)}</s>
+                            <span>R$ <strong>{discountedPrice}</strong>/mês</span>
+                        </div>
+                    </div>
+                    <SolicitarBolsa faculdade={params.faculdade} fixed={true} />
                 </div>
             </section>
-            <InfoCourse course_information={course.course_information} params={params.faculdade} />
-          
+
+            <div id="info">
+                <InfoCourse course_information={course.course_information} params={params.faculdade} />
+            </div>
         </div>
     )
 }
