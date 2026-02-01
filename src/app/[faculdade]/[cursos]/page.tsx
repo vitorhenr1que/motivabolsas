@@ -44,6 +44,26 @@ export default async function Curso({ params }: ParamsProps) {
         ? (course.total_value - (course.total_value * course.discount / 100)).toFixed(2)
         : '0.00';
 
+    // Lógica para vagas dinâmicas (muda por curso e por dia, max 20)
+    const getVagasRestantes = (slug: string) => {
+        const today = new Date();
+        const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
+
+        // Gera um hash simples baseado no slug do curso
+        let hash = 0;
+        for (let i = 0; i < slug.length; i++) {
+            hash = ((hash << 5) - hash) + slug.charCodeAt(i);
+            hash |= 0;
+        }
+
+        // Combina o hash do curso com o dia do ano para mudar diariamente de forma consistente
+        const seed = Math.abs(hash + dayOfYear);
+        // Retorna um valor entre 5 e 20
+        return (seed % 16) + 5;
+    };
+
+    const vagasRestantes = getVagasRestantes(params.cursos);
+
     return (
         <div className={styles.container}>
             {/* Breadcrumb */}
@@ -72,7 +92,7 @@ export default async function Curso({ params }: ParamsProps) {
                                 <PiGraduationCapBold size={18} />
                                 <span>{course.modality}</span>
                             </div>
-                            <span className={styles.vagasBadge}>16 Vagas Restantes</span>
+                            <span className={styles.vagasBadge}>{vagasRestantes} Vagas Restantes</span>
 
                             <h3>{course.name?.toUpperCase()}</h3>
 
@@ -99,7 +119,7 @@ export default async function Curso({ params }: ParamsProps) {
                                 <span className={styles.value}>{discountedPrice}</span>
                                 <span className={styles.period}>/mês</span>
                             </div>
-                            <p className={styles.durationNote}>Mensalidade fixa durante todo o curso</p>
+                            <p className={styles.durationNote}>Desconto válido durante todo o curso</p>
                         </div>
 
                         <div className={styles.ctaContainer}>
