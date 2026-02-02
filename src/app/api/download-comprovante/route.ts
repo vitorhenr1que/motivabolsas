@@ -7,7 +7,7 @@ import {
   duplicateGoogleDoc,
   deleteGoogleDoc
 } from '../../services/googleApisAuth';
-import { api } from '../../services/api';
+import axios from 'axios';
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     console.log("Novo documento:", newFileId);
 
     // 2) Pegar image_id do doc duplicado
-    const objectId = await api.post('find-image-doc-id', {
+    const objectId = await axios.post(`${baseUrl}/api/find-image-doc-id`, {
       newFileId
     });
 
@@ -86,19 +86,19 @@ export async function POST(request: Request) {
       }
     });
   } catch (error: any) {
-  console.error('Erro ao duplicar:', error);
+    console.error('Erro ao duplicar:', error);
 
-  const details =
-    error?.response?.data || // quando é erro de axios (ex: find-image-doc-id)
-    error?.errors ||         // padrão googleapis em alguns casos
-    error?.message ||        // padrão JS
-    "Erro desconhecido";
+    const details =
+      error?.response?.data || // quando é erro de axios (ex: find-image-doc-id)
+      error?.errors ||         // padrão googleapis em alguns casos
+      error?.message ||        // padrão JS
+      "Erro desconhecido";
 
-  return NextResponse.json(
-    { error: 'Erro ao duplicar documento.', details },
-    { status: 500 }
-  );
-} finally {
+    return NextResponse.json(
+      { error: 'Erro ao duplicar documento.', details },
+      { status: 500 }
+    );
+  } finally {
     // 6) Excluir doc duplicado após responder
     if (newFileId) {
       try {
