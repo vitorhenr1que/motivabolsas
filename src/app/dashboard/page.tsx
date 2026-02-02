@@ -12,6 +12,7 @@ import { Loading } from "../components/Loading";
 import { getInterToken } from "../services/inter-token";
 import { PiSignOutBold, PiCheckCircleFill, PiWarningCircleFill, PiScrollBold, PiGraduationCapBold, PiBuildingsBold, PiCreditCardBold, PiShieldCheckBold } from 'react-icons/pi'
 import { BoletoViewer } from "../components/BoletoViewer";
+import { useUser } from "../components/contexts/user-provider";
 
 interface userDataProps {
     birthDate: Date | null,
@@ -69,6 +70,12 @@ export default function Dashboard() {
     const [disablePaymentButton, setDisablePaymentButton] = useState(false)
     const [checkingBoletos, setCheckingBoletos] = useState(false)
     const [paymentMessage, setPaymentMessage] = useState("")
+    const { setUser: setGlobalUser } = useUser()
+
+    function handleLogOut() {
+        setGlobalUser(undefined)
+        SignOut()
+    }
 
     // New states for Pending Boletos Panel
     const [boletosList, setBoletosList] = useState<ApiResponse[]>([])
@@ -253,7 +260,7 @@ export default function Dashboard() {
                         <h1>Olá, <span>{user?.name.split(' ')[0]}</span>!</h1>
                         <p>Bem-vindo ao seu painel do aluno.</p>
                     </div>
-                    <button className={styles.signOutBtn} onClick={SignOut}>
+                    <button className={styles.signOutBtn} onClick={handleLogOut}>
                         <PiSignOutBold /> Sair
                     </button>
                 </header>
@@ -435,7 +442,7 @@ export default function Dashboard() {
                 <footer className={styles.footer}>
                     <Link href="/termos" className={styles.footerLink}>Termos</Link>
                     <Link href="/privacidade" className={styles.footerLink}>Privacidade</Link>
-                    <Link href="/redefinir-senha" className={styles.footerLink}>Alterar senha</Link>
+                    <Link href="/perfil?editPassword=true" className={styles.footerLink}>Alterar senha</Link>
                     <Link href="/faq" className={styles.footerLink}>FAQ</Link>
                 </footer>
             </div>

@@ -255,7 +255,7 @@ export default function Create() {
 
                         <footer className={styles.formFooter}>
                             <button type='submit' className={styles.submitButton} disabled={loading}>
-                                {loading ? <Loading /> : "Garantir minha Bolsa Grátis"}
+                                {loading ? <Loading /> : "Garantir minha Bolsa"}
                             </button>
                             <p className={styles.loginHint}>
                                 Já tem uma conta? <Link href="/login">Fazer login</Link>

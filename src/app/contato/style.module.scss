@@ -1,62 +1,198 @@
-.container{
+.pageWrapper {
+    min-height: 100vh;
+    background-color: #f8fafc;
     display: flex;
     flex-direction: column;
-    font-family: var(--font-poppins);
-        .titleContainer{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--bf-blue);
-            color: white;
-            height: 35vh;
-            
+}
+
+.heroSection {
+    background: linear-gradient(135deg, #114a69 0%, #0d3b54 100%);
+    color: white;
+    padding: 6rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 70% 30%, rgba(32, 147, 209, 0.2) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .titleContainer {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
         }
 
-        .contentContainer{
-            width: 80%;
+        p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
             margin: 0 auto;
-        .contactContainer{
-            display: flex;
-            justify-content: space-between;
-            .contactDiv{
-                margin-top: 3rem;
-                display: flex;
-                flex-direction: column;
-                gap: .8rem;
-                .icon{
-                    color: var(--bf-yellow);
-                }
-                .contactTitle{
-                    color: var(--bf-blue);
-                    font-size: 1.3rem;
-                    font-weight: 600;
-                    margin-bottom: .5rem;
-                }
-                .contactText{
-                    color: var(--button-gray);
-                }
-                .contactStrong{
-                    color: var(--bf-dark-gray);
-                    font-weight: 900;
-                }
+        }
+    }
+}
+
+.contentContainer {
+    max-width: 1100px;
+    margin: -4rem auto 4rem;
+    padding: 0 1.5rem;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.contactGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.contactCard {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f1f5f9;
+    text-decoration: none !important;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.04);
+        border-color: #e2e8f0;
+
+        .iconWrapper {
+            transform: scale(1.1);
+            background-color: #114a69;
+            color: white;
+        }
+
+        .actionButton {
+            background-color: #114a69;
+            color: white;
+        }
+    }
+
+    .iconWrapper {
+        width: 64px;
+        height: 64px;
+        background-color: #f1f5f9;
+        color: #114a69;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .cardTitle {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.75rem;
+    }
+
+    .cardDescription {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .contactTarget {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #114a69;
+        margin-bottom: 1.5rem;
+        word-break: break-word;
+    }
+
+    .actionButton {
+        padding: 0.75rem 1.5rem;
+        background-color: #f1f5f9;
+        color: #475569;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+}
+
+.footerNote {
+    text-align: center;
+    margin-top: 2rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+
+    a {
+        color: #114a69;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+}
+
+@media (max-width: 1024px) {
+    .contactGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .heroSection {
+        .titleContainer {
+            h1 {
+                font-size: 2.5rem;
             }
         }
     }
-    
 }
 
-@media(max-width: 998px){
-    .container{
-        .titleContainer{
-            h1{
-                font-size: 1rem;
+@media (max-width: 640px) {
+    .heroSection {
+        padding: 4rem 1.5rem;
+
+        .titleContainer {
+            h1 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1.125rem;
             }
         }
-        .contentContainer{
-            .contactContainer{
-                flex-direction: column;
-            }
-        }
-        
+    }
+
+    .contactGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .contentContainer {
+        margin-top: -2rem;
+    }
+
+    .contactCard {
+        padding: 2rem 1.5rem;
     }
 }

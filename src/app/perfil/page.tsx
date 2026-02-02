@@ -76,6 +76,12 @@ export default function Profile() {
                 const response = await api.post('/userinfo')
                 setUserData(response.data)
                 setEditForm(response.data)
+
+                // Verifica se deve abrir a edição de senha
+                const searchParams = new URLSearchParams(window.location.search)
+                if (searchParams.get('editPassword') === 'true') {
+                    setIsChangingPassword(true)
+                }
             } catch (error) {
                 console.error("Erro ao carregar dados do perfil:", error)
             } finally {
