@@ -1,154 +1,188 @@
 .container {
-    width: 80%;
+    padding: 40px;
+    max-width: 1200px;
     margin: 0 auto;
+}
+
+.header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    .inputContainer{
-       display: flex;
-       gap: 1rem;
-       input{
-        padding: 16px 24px;
-        width: 300px;
-        border-radius: 8px;
-        border: .5px solid;
-        display: flex;
-        align-items: center;
-       }
-       button{
-        padding: 16px 24px;
+    margin-bottom: 30px;
+
+    h1 {
+        font-size: 24px;
+        font-weight: 600;
+    }
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+
+    input[name="token"] {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #000;
+        color: white;
         border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
         cursor: pointer;
-        border-radius: 8px;
-        background: #ececec;
-        transition: .2s;
-        &:hover{
-            background: #dfdfdf;
-        }
-       }
-       .isPaid{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 150px;
-       }
-    }
-    .paginationContainer{
-        list-style: none;
-        display: flex;
-        gap: .3rem;
-        .paginationItem{
-            .paginationButton{
-                padding: 10px 15px;
-                background: var(--button-background);
-                border-radius: 4px;
-                color: white;
-                border: none;
-                cursor: pointer;
-                transition: .2s;
-                &:hover{
-                    background: var(--button-background-hover);
-                }
-            }
-            .paginationButtonActive{
-                padding: 10px 15px;
-                background: var(--bf-yellow);
-                border-radius: 4px;
-                color: white;
-                border: none;
-                cursor: pointer;
-                transition: .2s;
-                &:hover{
-                    background: var(--bf-yellow-hover);
-                }
-            }
-        }
-    }
-    .userList{
-        .userListContainer{
-            margin-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            .userContainer{
-                padding: 16px 24px;
-                display: flex;
-                background: var(--bf-gray);
-                border-radius: 8px;
-                flex-direction: column;
-                .userSimpleContainer{
-                    display: flex;
-                    flex: 1;
-                    justify-content: space-between;
-                    align-items: center;
-                    
-                    gap: 1rem;
-                    background: var(--bf-gray);
-                }
-                .showButton{
-                    padding: 16px 24px;
-                    cursor: pointer;
-                    border-radius: 8px;
-                    border: none;
-                    background: var(--button-background);
-                    color: white;
-                    transition: .2s;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    &:hover{
-                        background: var(--button-background-hover);
-                    }
-                }
-                .spanContainer{
-                    display: flex;
-                    flex-direction: column;
-                    .name{
-                        font-weight: 600;
-                    }
-                    .cpf{
-                        font-size: .9rem;
-                    }
-                }
-            }
-        }
-        .statusActive{
-            color: #00a21e;
-            font-weight: 600;
-        }
-        .statusInactive{
-            color: var(--bf-red);
-            font-weight: 600;
+        font-weight: 500;
+
+        &:hover {
+            background-color: #333;
         }
 
-        
-    }
-    .showInformationContainer{
-        .infoDiv{
-            display: flex;
-            flex: 1;
-            align-items: center;
-            justify-content: space-between;
-            .copyButton{
-                margin-left: 10px;
-                padding: 5px 10px;
-                cursor: pointer;
-                border: none;
-                background: var(--button-background);
-                color: white;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: .3rem;
-            }
+        &:disabled {
+            opacity: 0.7;
         }
-        .lastDiv{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+    }
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    label {
+        font-size: 14px;
+        color: #555;
+    }
+}
+
+.tableContainer {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+
+    th,
+    td {
+        padding: 15px 20px;
+        text-align: left;
+        font-size: 14px;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background-color: #f9f9f9;
+        color: #666;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover {
+        background-color: #fafafa;
+    }
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+
+    &.active {
+        background-color: #e6f7ed; // green-ish
+        color: #1a7f37;
+    }
+
+    &.inactive {
+        background-color: #ffeef0; // red-ish
+        color: #cf222e;
+    }
+}
+
+.contractBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #555;
+
+    &.signed {
+        color: #1a7f37;
+        font-weight: 500;
+    }
+}
+
+.actionButton {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: #f0f0f0;
+        border-color: #ccc;
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+
+    button {
+        width: 36px;
+        height: 36px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+
+        &:hover:not(:disabled) {
+            background-color: #f5f5f5;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.active {
+            background-color: #000;
+            color: white;
+            border-color: #000;
         }
     }
 }

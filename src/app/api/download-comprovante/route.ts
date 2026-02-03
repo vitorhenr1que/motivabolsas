@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const { newName, name, course, instituition, cpf, discount, createdAt, id } =
       await request.json();
-
+    console.log('Curso: ', course, 'Desconto: ', discount)
     const fileId =
       instituition.toUpperCase() === "FAZAG"
         ? "1BWGjxinMQS3CJIVGml3JI25CiFVxTcsCg7bKALDNBI4"

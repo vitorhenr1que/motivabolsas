@@ -3,29 +3,26 @@
 import { FormEvent, useEffect, useState } from "react"
 import styles from './style.module.scss'
 import { api } from "../services/api"
-import { MdKeyboardArrowDown } from "react-icons/md";
-import { LuCopy } from "react-icons/lu";
-import { LuCopyCheck } from "react-icons/lu";
-import { InfoCamp } from "../components/InfoCamp";
-import { Loading } from "../components/Loading";
-import { useUser } from "../components/contexts/user-provider";
-import { getInterToken } from "../services/inter-token";
-import { ModalBoleto } from "../components/ModalBoleto";
-import { SearchUser } from "../components/SearchUser";
+import { Loading } from "../components/Loading"
+import { useUser } from "../components/contexts/user-provider"
+import { getInterToken } from "../services/inter-token"
+import { SearchUser } from "../components/SearchUser"
+import { EditUserModal } from "../components/EditUserModal"
+import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold } from "react-icons/pi";
 
-interface addressProps{
-        cep: string,
-        city: string,
-        complement: string,
-        id: string,
-        neighborhood: string,
-        number: string,
-        street: string,
-        uf: string,
-        userId: string
+interface AddressProps {
+    cep: string,
+    city: string,
+    complement: string,
+    id: string,
+    neighborhood: string,
+    number: string,
+    street: string,
+    uf: string,
+    userId: string
 }
 
-interface userDataProps{
+interface UserDataProps {
     birthDate: Date | null,
     cpf: string,
     createdAt: Date,
@@ -34,57 +31,35 @@ interface userDataProps{
     name: string,
     phone: string,
     currentPayment: boolean,
+    firstPayment: boolean,
     customerId: string,
     renovacao: number,
-    addresses: addressProps[]
+    addresses: AddressProps[]
 }
 
-export default function Usuarios(){
-const [adminKey, setAdminKey] = useState("")
-const [actualPage, setActualPage] = useState(0)
-const [users, setUsers] = useState<userDataProps[]>()
-const [totalPages, setTotalPages] = useState(0);
-const [currentPage, setCurrentPage] = useState(0);
-const [searchUsers, setSearchUsers] = useState<userDataProps[]>()
-const [showInformation, setShowInformation] = useState<String>("")
-const [toggle, setToggle] = useState(false)
-const [loading, setLoading] = useState(false)
-const [onlyPaid, setOnlyPaid] = useState(false)
-const [searchTerm, setSearchTerm] = useState("")
-const response = [1,2,3,4,5,6,7,8,9,10]
-const {interToken, setInterToken} = useUser()
+export default function Usuarios() {
+    const [adminKey, setAdminKey] = useState("1234") // Default or empty
+    const [users, setUsers] = useState<UserDataProps[]>([])
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [searchUsers, setSearchUsers] = useState<UserDataProps[]>()
+    const [loading, setLoading] = useState(false)
+    const [onlyPaid, setOnlyPaid] = useState(false)
 
-useEffect(() => {
-    console.log(onlyPaid)
-},[onlyPaid])
+    // Edit Modal State
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<UserDataProps | null>(null);
 
+    const { interToken, setInterToken } = useUser()
 
-
-function handleClickShowInformation(id: string){ // Toggle para o Botão de "Mostrar Informações"
-    setToggle(!toggle)
-    setShowInformation(toggle ? id : "")
-}
-
-function humanizedDate(createdDate: string){
-const date = new Date(createdDate);
-
-const formatter = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "short",
-  timeStyle: "short",
-});
-
-const humanizedDate = formatter.format(date);
-
-return humanizedDate
-}
-
-console.log(searchTerm)
-    async function fetchUsers(page: number){
-        try{
+    async function fetchUsers(page: number) {
+        try {
             setLoading(true)
-            const { access_token } = await getInterToken()
-            console.log('ACESS TOKEN: ', access_token)
-            const response = await api.post('usuarios', {  
+            // Optionally handle Inter Token if needed for something else, keeping it for compatibility
+            // const { access_token } = await getInterToken()
+            // setInterToken(access_token)
+
+            const response = await api.post('usuarios', {
                 secret_key: adminKey,
                 page: page,
                 onlyPaid: onlyPaid,
@@ -92,237 +67,179 @@ console.log(searchTerm)
             setUsers(response.data.users)
             setTotalPages(response.data.totalPages);
             setCurrentPage(response.data.currentPage);
-            setInterToken(access_token)
-            console.log(response)
             setLoading(false)
-        } catch(e: any){
+        } catch (e: any) {
             console.log(e)
             setLoading(false)
-            alert(e.response.data.error)
-        } 
-    }
-
-    async function fetchPaginationUsers(page: number){
-        try{
-            
-            
-            const response = await api.post('usuarios', {  
-                secret_key: adminKey,
-                page: page,
-                onlyPaid: onlyPaid,
-            })
-            setUsers(response.data.users)
-            setTotalPages(response.data.totalPages);
-            setCurrentPage(response.data.currentPage);
-            console.log(response)
-            
-        } catch(e: any){
-            console.log(e)
-            
-            alert(e.response.data.error)
-        } 
-    }
-
-    const paginationWindow = 10; // Define o tamanho fixo da janela (quantos botões serão mostrados)
-
-    /**
-     * Gera a janela fixa de 10 páginas, rolando como uma esteira.
-     * Ao avançar uma página, uma página antiga desaparece e uma nova aparece.
-     */
-    const getVisiblePages = () => {
-        // Define o início da janela com base direta na página atual.
-        // Exemplo:
-        // Página 0: start = 0
-        // Página 4: start = 4 (página 1, 2 e 3 somem)
-        const start = Math.max(currentPage - 3, 0);
-    
-        // Define o fim da janela, mantendo no máximo 10 páginas visíveis.
-        let end = start + paginationWindow;
-    
-        // Ajuste para não ultrapassar o total de páginas.
-        if (end > totalPages) {
-            end = totalPages;
+            alert(e.response?.data?.error || "Erro ao buscar usuários. Verifique a chave.")
         }
-    
-        // Se chegou no fim e tem menos de 10 páginas, reposiciona o início:
+    }
+
+    const handleEdit = (user: UserDataProps) => {
+        setEditingUser(user);
+        setEditModalOpen(true);
+    };
+
+    const handleSuccess = () => {
+        // Refresh list
+        if (searchUsers) {
+            // If we are searching, we might technically need to re-search or just update the item in the list.
+            // For simplicity, we just trigger a refresh of the main list. 
+            // To properly update search results, we'd need to re-trigger the search or update state locally.
+            // We'll update the local state for searchUsers if generic update
+            fetchUsers(currentPage);
+            // Ideally we should re-fetch search, but we don't have the search term here easily unless we lift state from SearchUser.
+            // We'll clear search or let user search again for fresh data if they want perfectly synced data.
+            setSearchUsers(undefined); // Clear search to show updated main list
+        } else {
+            fetchUsers(currentPage);
+        }
+    }
+
+    const paginationWindow = 5;
+    const getVisiblePages = () => {
+        const start = Math.max(currentPage - 2, 0);
+        let end = start + paginationWindow;
+        if (end > totalPages) end = totalPages;
         const adjustedStart = Math.max(end - paginationWindow, 0);
-    
-        // Gera o array de páginas que devem ser mostradas.
         return Array.from({ length: end - adjustedStart }, (_, index) => adjustedStart + index);
     };
 
-        function Test(){
-            console.log(interToken)
-        }
-
-        function FormatPhone(phone: any){
-            return phone.match(/\((\d{2})\)\s(\d{5})-(\d{4})/)[1]
-        }
-        function FormatDdd(phone: any){
-            return phone.match(/\((\d{2})\)\s(\d{5})-(\d{4})/)[2] + phone.match(/\((\d{2})\)\s(\d{5})-(\d{4})/)[3]
-        }
+    const displayUsers = searchUsers || users;
 
     return (
         <div className={styles.container}>
-            <button onClick={() => Test()}>Test</button>
-            <h1>Lista de Usuários</h1>
-            <div className={styles.inputContainer}>
-                <input type="text" name="token" autoComplete="on" placeholder="Digite a chave de admnistrador" onChange={(e) => setAdminKey(e.target.value)} />
-                <button onClick={() => fetchUsers(currentPage)}>
-                    {loading ? <Loading/> : "Mostrar usuários"}
-                </button>
-                <div className={styles.isPaid}>
-                    <label htmlFor="paid">Somente Pagos</label>
-                    <input type="checkbox" id="paid" name="drone" value={""} onChange={() => setOnlyPaid(!onlyPaid)}/>
+            <header className={styles.header}>
+                <h1>Painel Administrativo de Usuários</h1>
+            </header>
+
+            <div className={styles.controls}>
+                <input
+                    type="text"
+                    name="token"
+                    placeholder="Chave de Administrador"
+                    value={adminKey}
+                    onChange={(e) => setAdminKey(e.target.value)}
+                />
+
+                <div className={styles.filters}>
+                    <input
+                        type="checkbox"
+                        id="paid"
+                        checked={onlyPaid}
+                        onChange={() => setOnlyPaid(!onlyPaid)}
+                    />
+                    <label htmlFor="paid">Somente Ativos (Pagos)</label>
                 </div>
+
+                <button onClick={() => fetchUsers(0)}>
+                    {loading ? <Loading /> : "Carregar Usuários"}
+                </button>
             </div>
-            <div className={styles.userList}>
-              
-                {users !== undefined && <div className={styles.userListContainer}>
-                    <SearchUser searchUsers={searchUsers} setSearchUsers={setSearchUsers} onlyPaid={onlyPaid} adminKey={adminKey}/>
-                    {!!searchUsers && searchUsers.map((index, position) => { // Quando existirem usuários buscados mostre isso:
-                        return(
-                            <div key={index.id} className={styles.userContainer}>
-                            <div className={styles.userSimpleContainer}>
-                                <div className={styles.spanContainer}>
-                                    <span className={styles.name}>{index.name.toLocaleUpperCase()}</span>
-                                    <span className={styles.cpf}>{index.cpf}</span>
-                                </div>
-                                <button className={styles.showButton} onClick={() => handleClickShowInformation(index.id)}><MdKeyboardArrowDown size={24}/><span>Mostrar Informações</span></button>
-                            </div>
-                            {showInformation === index.id && <div className={styles.showInformationContainer}>
-                            
-                            <InfoCamp campName={"Id: "} campValue={index.id} />
-                            <InfoCamp campName={"Nome: "} campValue={index.name.toLocaleUpperCase()} />
-                            <InfoCamp campName={"CPF: "} campValue={index.cpf} />
-                            <InfoCamp campName={"E-mail: "} campValue={index.email} />
-                            <InfoCamp campName={"Telefone: "} campValue={index.phone} />
-                            <InfoCamp campName={"Rua: "} campValue={index.addresses[0].street} />
-                            <InfoCamp campName={"Número: "} campValue={index.addresses[0].number} />
-                            <InfoCamp campName={"Complemento: "} campValue={index.addresses[0].complement} />
-                            <InfoCamp campName={"Bairro: "} campValue={index.addresses[0].neighborhood} />
-                            <InfoCamp campName={"CEP: "} campValue={index.addresses[0].cep} />
-                            <InfoCamp campName={"Cidade: "} campValue={index.addresses[0].city} />
-                            <InfoCamp campName={"Identificação Stipe: "} campValue={index.customerId} />
-                            <p><strong>Status da Bolsa: </strong><span className={index.currentPayment === true ? styles.statusActive : styles.statusInactive}>{index.currentPayment === true ? "Ativo" : "Inativo"}</span></p>
-                            <div className={styles.lastDiv}>
-                                <p><strong>Renovação: </strong>{index.renovacao >= 2 ? "Sim" : "Não"}</p>
-                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`).split(',')[0]}</span></p>
-                                <ModalBoleto 
-                                    cep={index.addresses[0].cep}
-                                    city={index.addresses[0].city}
-                                    complement={index.addresses[0].complement}
-                                    cpf={index.cpf}
-                                    email={index.email}
-                                    houseNumber={index.addresses[0].number}
-                                    neighborhood={index.addresses[0].neighborhood}
-                                    name={index.name}
-                                    person="FISICA"
-                                    street={index.addresses[0].street}
-                                    uf={index.addresses[0].uf}
-                                    ddd={FormatPhone(index.phone)}
-                                    tel={FormatDdd(index.phone)}
-                                    key={index.id}
-                                />
-                            </div>
-                            
-                        </div>}
-                        </div>
-                        )
-                    })}
-                    {!searchUsers && users.map((index, position) => { // Caso não exista usuários buscado mostre isso
-                    return (
-                        <div key={index.id} className={styles.userContainer}> {/* Condicional para ocultar caso exista usuários buscados */}
-                            <div className={styles.userSimpleContainer}>
-                                <div className={styles.spanContainer}>
-                                    <span className={styles.name}>{index.name.toLocaleUpperCase()}</span>
-                                    <span className={styles.cpf}>{index.cpf}</span>
-                                </div>
-                                <button className={styles.showButton} onClick={() => handleClickShowInformation(index.id)}><MdKeyboardArrowDown size={24}/><span>Mostrar Informações</span></button>
-                            </div>
-                            {showInformation === index.id && <div className={styles.showInformationContainer}>
-                            
-                            <InfoCamp campName={"Id: "} campValue={index.id} />
-                            <InfoCamp campName={"Nome: "} campValue={index.name.toLocaleUpperCase()} />
-                            <InfoCamp campName={"CPF: "} campValue={index.cpf} />
-                            <InfoCamp campName={"E-mail: "} campValue={index.email} />
-                            <InfoCamp campName={"Telefone: "} campValue={index.phone} />
-                            <InfoCamp campName={"Rua: "} campValue={index.addresses[0].street} />
-                            <InfoCamp campName={"Número: "} campValue={index.addresses[0].number} />
-                            <InfoCamp campName={"Complemento: "} campValue={index.addresses[0].complement} />
-                            <InfoCamp campName={"Bairro: "} campValue={index.addresses[0].neighborhood} />
-                            <InfoCamp campName={"CEP: "} campValue={index.addresses[0].cep} />
-                            <InfoCamp campName={"Cidade: "} campValue={index.addresses[0].city} />
-                            <InfoCamp campName={"Identificação Stipe: "} campValue={index.customerId} />
-                            <p><strong>Status da Bolsa: </strong><span className={index.currentPayment === true ? styles.statusActive : styles.statusInactive}>{index.currentPayment === true ? "Ativo" : "Inativo"}</span></p>
-                            <div className={styles.lastDiv}>
-                                <p><strong>Renovação: </strong>{index.renovacao >= 2 ? "Sim" : "Não"}</p>
-                                <p><strong>Cadastro: </strong><span>{humanizedDate(`${index.createdAt}`).split(',')[0]}</span></p>
-                                <ModalBoleto 
-                                    cep={index.addresses[0].cep}
-                                    city={index.addresses[0].city}
-                                    complement={index.addresses[0].complement}
-                                    cpf={index.cpf}
-                                    email={index.email}
-                                    houseNumber={index.addresses[0].number}
-                                    neighborhood={index.addresses[0].neighborhood}
-                                    name={index.name}
-                                    person="FISICA"
-                                    street={index.addresses[0].street}
-                                    uf={index.addresses[0].uf}
-                                    ddd={FormatPhone(index.phone)}
-                                    tel={FormatDdd(index.phone)}
-                                    key={index.id}
-                                />
-                            </div>
-                            
-                        </div>}
-                        </div>
-                        
-                    )
-                })}</div>}
+
+            {/* Search Component Reuse */}
+            {/* Note: We pass adminKey and onlyPaid. SearchUser component handles its own search API call and sets searchUsers parent state */}
+            <div style={{ marginBottom: '20px' }}>
+                <SearchUser
+                    searchUsers={searchUsers}
+                    setSearchUsers={setSearchUsers}
+                    onlyPaid={onlyPaid}
+                    adminKey={adminKey}
+                />
             </div>
-            
-                {users !== undefined && 
-               <ul className={styles.paginationContainer}>
-               <li className={styles.paginationItem}>
-                   <button
-                       className={styles.paginationButton}
-                       onClick={() => fetchPaginationUsers(0)}
-                       disabled={currentPage === 0}
-                   >
-                       {"<<"}
-                   </button>
-               </li>
-           
-               {getVisiblePages().map((page) => (
-                   <li key={page} className={styles.paginationItem}>
-                       <button
-                           onClick={() => fetchPaginationUsers(page)}
-                           className={currentPage === page
-                               ? styles.paginationButtonActive
-                               : styles.paginationButton
-                           }
-                       >
-                           {page + 1}
-                       </button>
-                   </li>
-               ))}
-           
-               <li className={styles.paginationItem}>
-                   <button
-                       className={styles.paginationButton}
-                       onClick={() => fetchPaginationUsers(totalPages - 1)}
-                       disabled={currentPage === totalPages - 1}
-                   >
-                       {">>"}
-                   </button>
-               </li>
-           </ul>
-                }
-                
-                    
-           
+
+            <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>E-mail</th>
+                            <th>Telefone</th>
+                            <th>Status Bolsa</th>
+                            <th>Contrato</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {displayUsers && displayUsers.length > 0 ? (
+                            displayUsers.map((user) => (
+                                <tr key={user.id}>
+                                    <td>{user.name}</td>
+                                    <td>{user.cpf}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.phone}</td>
+                                    <td>
+                                        <span className={`${styles.statusBadge} ${user.currentPayment ? styles.active : styles.inactive}`}>
+                                            {user.currentPayment ? "Ativo" : "Inativo"}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`${styles.contractBadge} ${user.firstPayment ? styles.signed : ''}`}>
+                                            {user.firstPayment ? (
+                                                <><PiCheckCircleBold /> Assinado</>
+                                            ) : (
+                                                <><PiXCircleBold /> Pendente</>
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button className={styles.actionButton} onClick={() => handleEdit(user)}>
+                                            <PiPencilSimpleBold size={16} /> Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={7} style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
+                                    {loading ? "Carregando..." : "Nenhum usuário encontrado."}
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Pagination (Only show if not searching) */}
+            {!searchUsers && totalPages > 1 && (
+                <ul className={styles.pagination}>
+                    <li>
+                        <button
+                            onClick={() => fetchUsers(0)}
+                            disabled={currentPage === 0}
+                        >
+                            {"<<"}
+                        </button>
+                    </li>
+                    {getVisiblePages().map((page) => (
+                        <li key={page}>
+                            <button
+                                onClick={() => fetchUsers(page)}
+                                className={currentPage === page ? styles.active : ''}
+                            >
+                                {page + 1}
+                            </button>
+                        </li>
+                    ))}
+                    <li>
+                        <button
+                            onClick={() => fetchUsers(totalPages - 1)}
+                            disabled={currentPage === totalPages - 1}
+                        >
+                            {">>"}
+                        </button>
+                    </li>
+                </ul>
+            )}
+
+            <EditUserModal
+                user={editingUser}
+                open={editModalOpen}
+                onOpenChange={setEditModalOpen}
+                onSuccess={handleSuccess}
+                adminKey={adminKey}
+            />
         </div>
     )
 }
