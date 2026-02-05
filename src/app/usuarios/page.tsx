@@ -37,6 +37,7 @@ interface UserDataProps {
     renovacao: number,
     course?: string,
     instituition?: string,
+    discount?: string,
     addresses: AddressProps[]
 }
 

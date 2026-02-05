@@ -29,6 +29,7 @@ interface UserProps {
     renovacao: number;
     course?: string;
     instituition?: string;
+    discount?: string;
     addresses: AddressProps[];
 }
 
@@ -52,6 +53,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
     const [firstPayment, setFirstPayment] = useState(false);
     const [course, setCourse] = useState("");
     const [instituition, setInstituition] = useState("");
+    const [discount, setDiscount] = useState("");
 
     // Address State (assuming single address for editing)
     const [address, setAddress] = useState<AddressProps | null>(null);
@@ -66,6 +68,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
             setFirstPayment(user.firstPayment);
             setCourse(user.course || "");
             setInstituition(user.instituition || "");
+            setDiscount(user.discount || "");
 
             if (user.addresses && user.addresses.length > 0) {
                 setAddress({ ...user.addresses[0] });
@@ -110,6 +113,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
                 firstPayment,
                 course,
                 institution: instituition,
+                discount,
                 address // This sends the updated address object
             });
 
@@ -212,6 +216,14 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
                                     type="text"
                                     value={instituition}
                                     onChange={(e) => setInstituition(e.target.value)}
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label>Desconto (%)</label>
+                                <input
+                                    type="text"
+                                    value={discount}
+                                    onChange={(e) => setDiscount(e.target.value)}
                                 />
                             </div>
                         </div>
