@@ -135,18 +135,27 @@
 }
 
 .actionButton {
-    background: transparent;
-    border: 1px solid #ddd;
-    padding: 6px 12px;
-    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    padding: 0 1rem;
+    font-size: 0.9rem;
+    line-height: 1;
+    font-weight: 600;
+    height: 36px;
+    background-color: var(--white);
+    color: var(--slate-700);
+    box-shadow: 0 0 0 1px var(--slate-200);
+    border: none;
     cursor: pointer;
-    font-size: 13px;
-    color: #333;
-    transition: all 0.2s;
+    gap: 0.5rem;
+    transition: var(--transition);
 
     &:hover {
-        background-color: #f0f0f0;
-        border-color: #ccc;
+        background-color: var(--slate-50);
+        box-shadow: 0 0 0 1px var(--slate-300), var(--shadow-sm);
+        color: var(--slate-900);
     }
 }
 

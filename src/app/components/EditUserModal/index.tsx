@@ -1,5 +1,5 @@
+import { PiX, PiUser, PiMapPin, PiIdentificationCard, PiFloppyDisk, PiWarningCircle } from "react-icons/pi";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { useEffect, useState, FormEvent } from "react";
 import styles from './style.module.scss';
 import axios from "axios"; // Using direct axios or api service
@@ -27,6 +27,8 @@ interface UserProps {
     currentPayment: boolean; // Status da Bolsa
     firstPayment: boolean; // Contrato Assinado
     renovacao: number;
+    course?: string;
+    instituition?: string;
     addresses: AddressProps[];
 }
 
@@ -48,6 +50,8 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
     const [renovacao, setRenovacao] = useState(0);
     const [currentPayment, setCurrentPayment] = useState(false);
     const [firstPayment, setFirstPayment] = useState(false);
+    const [course, setCourse] = useState("");
+    const [instituition, setInstituition] = useState("");
 
     // Address State (assuming single address for editing)
     const [address, setAddress] = useState<AddressProps | null>(null);
@@ -60,6 +64,8 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
             setRenovacao(user.renovacao);
             setCurrentPayment(user.currentPayment);
             setFirstPayment(user.firstPayment);
+            setCourse(user.course || "");
+            setInstituition(user.instituition || "");
 
             if (user.addresses && user.addresses.length > 0) {
                 setAddress({ ...user.addresses[0] });
@@ -102,6 +108,8 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
                 renovacao,
                 currentPayment,
                 firstPayment,
+                course,
+                institution: instituition,
                 address // This sends the updated address object
             });
 
@@ -126,6 +134,9 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
                     <Dialog.Title className={styles.DialogTitle}>Editar Usuário</Dialog.Title>
 
                     <form onSubmit={handleSubmit}>
+                        <div className={styles.sectionTitle}>
+                            <PiUser /> Dados Pessoais
+                        </div>
                         <div className={styles.grid}>
                             {/* Read Only Fields */}
                             <div className={styles.field}>
@@ -183,8 +194,33 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
                             </div>
                         </div>
 
+                        <div className={styles.sectionTitle}>
+                            <PiIdentificationCard /> Acadêmico
+                        </div>
+                        <div className={styles.grid}>
+                            <div className={styles.field}>
+                                <label>Curso</label>
+                                <input
+                                    type="text"
+                                    value={course}
+                                    onChange={(e) => setCourse(e.target.value)}
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label>Instituição</label>
+                                <input
+                                    type="text"
+                                    value={instituition}
+                                    onChange={(e) => setInstituition(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         {/* Address Fields */}
-                        <h4 style={{ marginBottom: '10px', marginTop: '20px' }}>Endereço</h4>
+                        <div className={styles.sectionTitle}>
+                            <PiMapPin /> Endereço
+                        </div>
+
                         {address && (
                             <div className={styles.grid}>
                                 <div className={styles.field}>
@@ -218,37 +254,43 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
                             </div>
                         )}
 
-                        <div className={styles.checkboxField}>
-                            <input
-                                type="checkbox"
-                                id="active"
-                                checked={currentPayment}
-                                onChange={(e) => setCurrentPayment(e.target.checked)}
-                            />
-                            <label htmlFor="active">Ativo (Status da Bolsa)</label>
+                        <div className={styles.sectionTitle}>
+                            <PiWarningCircle /> Status do Sistema
                         </div>
 
-                        <div className={styles.checkboxField}>
-                            <input
-                                type="checkbox"
-                                id="contract"
-                                checked={firstPayment}
-                                onChange={(e) => setFirstPayment(e.target.checked)}
-                            />
-                            <label htmlFor="contract">Contrato Assinado (Primeiro Pagamento)</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className={styles.checkboxField}>
+                                <input
+                                    type="checkbox"
+                                    id="active"
+                                    checked={currentPayment}
+                                    onChange={(e) => setCurrentPayment(e.target.checked)}
+                                />
+                                <label htmlFor="active">Ativo (Status da Bolsa)</label>
+                            </div>
+
+                            <div className={styles.checkboxField}>
+                                <input
+                                    type="checkbox"
+                                    id="contract"
+                                    checked={firstPayment}
+                                    onChange={(e) => setFirstPayment(e.target.checked)}
+                                />
+                                <label htmlFor="contract">Contrato Assinado</label>
+                            </div>
                         </div>
 
                         <div className={styles.actions}>
                             <button type="button" className={styles.cancelButton} onClick={() => onOpenChange(false)}>Cancelar</button>
                             <button type="submit" className={styles.saveButton} disabled={loading}>
-                                {loading ? "Salvando..." : "Salvar Alterações"}
+                                {loading ? "Salvando..." : <><PiFloppyDisk size={18} /> Salvar Alterações</>}
                             </button>
                         </div>
                     </form>
 
                     <Dialog.Close asChild>
                         <button className={styles.closeButton} aria-label="Fechar">
-                            <Cross2Icon />
+                            <PiX />
                         </button>
                     </Dialog.Close>
                 </Dialog.Content>

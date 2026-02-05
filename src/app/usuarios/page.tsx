@@ -9,6 +9,7 @@ import { getInterToken } from "../services/inter-token"
 import { SearchUser } from "../components/SearchUser"
 import { EditUserModal } from "../components/EditUserModal"
 import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold } from "react-icons/pi";
+import { ModalBoleto } from "../components/ModalBoleto";
 
 interface AddressProps {
     cep: string,
@@ -34,6 +35,8 @@ interface UserDataProps {
     firstPayment: boolean,
     customerId: string,
     renovacao: number,
+    course?: string,
+    instituition?: string,
     addresses: AddressProps[]
 }
 
@@ -58,7 +61,8 @@ export default function Usuarios() {
             // Optionally handle Inter Token if needed for something else, keeping it for compatibility
             // const { access_token } = await getInterToken()
             // setInterToken(access_token)
-
+            const { access_token } = await getInterToken()
+            setInterToken(access_token)
             const response = await api.post('usuarios', {
                 secret_key: adminKey,
                 page: page,
@@ -184,9 +188,26 @@ export default function Usuarios() {
                                         </span>
                                     </td>
                                     <td>
-                                        <button className={styles.actionButton} onClick={() => handleEdit(user)}>
-                                            <PiPencilSimpleBold size={16} /> Editar
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <button className={styles.actionButton} onClick={() => handleEdit(user)}>
+                                                <PiPencilSimpleBold size={16} /> Editar
+                                            </button>
+                                            <ModalBoleto
+                                                cpf={user.cpf}
+                                                name={user.name}
+                                                email={user.email}
+                                                ddd={user.phone.replace(/\D/g, '').substring(0, 2)}
+                                                tel={user.phone.replace(/\D/g, '').substring(2)}
+                                                houseNumber={user.addresses?.[0]?.number || ''}
+                                                complement={user.addresses?.[0]?.complement || ''}
+                                                person="Física"
+                                                street={user.addresses?.[0]?.street || ''}
+                                                neighborhood={user.addresses?.[0]?.neighborhood || ''}
+                                                city={user.addresses?.[0]?.city || ''}
+                                                uf={user.addresses?.[0]?.uf || ''}
+                                                cep={user.addresses?.[0]?.cep || ''}
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             ))

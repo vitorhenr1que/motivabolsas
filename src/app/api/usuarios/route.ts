@@ -35,6 +35,8 @@ export async function POST(request: Request) {
                 firstPayment: true,
                 customerId: true,
                 renovacao: true,
+                course: true,
+                instituition: true,
                 addresses: true
             },
             orderBy: { createdAt: "desc" },
@@ -58,7 +60,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const data = await request.json();
-    const { secret_key, id, name, email, phone, currentPayment, firstPayment, renovacao, address } = data;
+    const { secret_key, id, name, email, phone, currentPayment, firstPayment, renovacao, course, institution, address } = data;
 
     const secret = process.env.NEXT_PUBLIC_ADMIN_KEY;
     if (secret !== secret_key) {
@@ -102,6 +104,8 @@ export async function PUT(request: Request) {
                 currentPayment,
                 firstPayment, // Contrato assinado = true
                 renovacao: Number(renovacao),
+                course,
+                instituition: institution,
                 ...addressUpdate
             }
         });
