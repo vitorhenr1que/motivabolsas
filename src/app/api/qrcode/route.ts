@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
 
   const qrBuffer = await QRCode.toBuffer(text);
 
-  return new Response(qrBuffer, {
+  return new Response(new Uint8Array(qrBuffer), {
     headers: {
       'Content-Type': 'image/png',
       'Cache-Control': 'public, max-age=31536000, immutable',
