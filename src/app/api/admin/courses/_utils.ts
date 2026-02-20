@@ -23,8 +23,9 @@ export function buildCommonWhere(input: {
   dateTo?: string;
   uf?: string;
   city?: string;
+  course?: string;
 }): Prisma.UserWhereInput {
-  const { search, dateFrom, dateTo, uf, city } = input;
+  const { search, dateFrom, dateTo, uf, city, course } = input;
 
   const where: Prisma.UserWhereInput = {};
 
@@ -45,6 +46,11 @@ export function buildCommonWhere(input: {
     where.createdAt = {};
     if (dateFrom) (where.createdAt as any).gte = new Date(dateFrom);
     if (dateTo) (where.createdAt as any).lte = new Date(dateTo);
+  }
+
+  // Filtro por curso
+  if (course && course.trim()) {
+    where.course = { contains: course.trim() };
   }
 
   // Filtro por endereço

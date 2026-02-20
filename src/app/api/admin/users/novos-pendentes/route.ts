@@ -18,7 +18,7 @@ function calcNovosPendentesWindow() {
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const { page = 0, secret_key, search, uf, city } = body;
+  const { page = 0, secret_key, search, uf, city, course } = body;
 
   if (!secret_key) return Response.json({ error: "secret_key é obrigatório." }, { status: 400 });
   const authErr = assertAdminKey(secret_key);
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const { start, end } = calcNovosPendentesWindow();
 
     // Reaproveita busca e uf/city, mas NÃO usa dateFrom/dateTo externos para não quebrar a regra
-    const commonWhere = buildCommonWhere({ search, uf, city });
+    const commonWhere = buildCommonWhere({ search, uf, city, course });
 
     const where: Prisma.UserWhereInput = {
       ...commonWhere,

@@ -5,13 +5,14 @@ import type { Prisma } from "@prisma/client";
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
 
-  const { secret_key, search, uf, city, dateFrom, dateTo } = body as {
+  const { secret_key, search, uf, city, dateFrom, dateTo, course } = body as {
     secret_key?: string;
     search?: string;
     uf?: string;
     city?: string;
     dateFrom?: string;
     dateTo?: string;
+    course?: string;
   };
 
   if (!secret_key) {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   if (authErr) return authErr;
 
   try {
-    const commonWhere = buildCommonWhere({ search, uf, city, dateFrom, dateTo });
+    const commonWhere = buildCommonWhere({ search, uf, city, dateFrom, dateTo, course });
 
     const where: Prisma.UserWhereInput = {
       ...commonWhere,

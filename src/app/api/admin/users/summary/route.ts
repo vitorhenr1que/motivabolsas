@@ -17,13 +17,13 @@ function calcNovosPendentesWindow() {
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
 
-  const { secret_key, search, uf, city } = body as {
+  const { secret_key, search, uf, city, course } = body as {
     secret_key?: string;
     search?: string;
     uf?: string;
     city?: string;
+    course?: string;
   };
-
   if (!secret_key) {
     return Response.json({ error: "secret_key é obrigatório." }, { status: 400 });
   }
@@ -32,8 +32,8 @@ export async function POST(request: Request) {
   if (authErr) return authErr;
 
   try {
-    // Filtros comuns (busca/uf/city)
-    const commonWhere = buildCommonWhere({ search, uf, city });
+    // Filtros comuns (busca/uf/city/course)
+    const commonWhere = buildCommonWhere({ search, uf, city, course });
 
     const { start, end } = calcNovosPendentesWindow();
 

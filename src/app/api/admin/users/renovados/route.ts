@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const { page = 0, secret_key, search, dateFrom, dateTo, uf, city } = body;
+  const { page = 0, secret_key, search, dateFrom, dateTo, uf, city, course } = body;
 
   if (!secret_key) return Response.json({ error: "secret_key é obrigatório." }, { status: 400 });
   const authErr = assertAdminKey(secret_key);
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 
   try {
     const { take, skip, currentPage } = parsePaging(page);
-    const commonWhere = buildCommonWhere({ search, dateFrom, dateTo, uf, city });
+    const commonWhere = buildCommonWhere({ search, dateFrom, dateTo, uf, city, course });
 
     const where: Prisma.UserWhereInput = {
       ...commonWhere,

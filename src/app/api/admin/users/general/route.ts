@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     dateTo,
     uf,
     city,
+    course,
   } = body as {
     page?: number;
     secret_key?: string;
@@ -23,8 +24,8 @@ export async function POST(request: Request) {
     dateTo?: string;
     uf?: string;
     city?: string;
+    course?: string;
   };
-
   if (!secret_key) {
     return Response.json({ error: "secret_key é obrigatório." }, { status: 400 });
   }
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
   try {
     const { take, skip, currentPage } = parsePaging(page);
 
-    const commonWhere = buildCommonWhere({ search, dateFrom, dateTo, uf, city });
+    const commonWhere = buildCommonWhere({ search, dateFrom, dateTo, uf, city, course });
 
     const where: Prisma.UserWhereInput = {
       ...commonWhere,
