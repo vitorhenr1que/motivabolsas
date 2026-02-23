@@ -28,6 +28,11 @@ model User {
   addresses Address[]
   contracts       Contract[]
   contractSignatures ContractSignature[]
+
+  @@index([currentPayment])
+  @@index([renovacao])
+  @@index([createdAt])
+  @@index([course])
 }
 
 model Address {
@@ -43,6 +48,8 @@ model Address {
   address User @relation(fields: [userId], references: [id])
 
   @@index([userId], map: "Address_userId_fkey")
+  @@index([uf])
+  @@index([city])
 }
 
 model Contract {

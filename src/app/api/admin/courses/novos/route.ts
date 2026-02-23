@@ -2,6 +2,8 @@ import { prisma } from "@/app/services/prisma";
 import { assertAdminKey, buildCommonWhere } from "../_utils";
 import type { Prisma } from "@prisma/client";
 
+export const maxDuration = 30;
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
 

@@ -14,6 +14,8 @@ function calcNovosPendentesWindow() {
   return { start, end };
 }
 
+export const maxDuration = 30; // Aumenta o timeout para 30 segundos (Vercel Pro)
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
 
@@ -36,10 +38,6 @@ export async function POST(request: Request) {
     const commonWhere = buildCommonWhere({ search, uf, city, course });
 
     const { start, end } = calcNovosPendentesWindow();
-
-    // renovacao: 1: - igual a 1
-    //renovacao: { gt: 1 } - maior que 1
-    // renovacao: { gte: 1 } - maior ou igual a 1
 
     const whereTotal: Prisma.UserWhereInput = {
       ...commonWhere,
@@ -107,6 +105,10 @@ export async function POST(request: Request) {
       },
     });
   } catch (e) {
-    return Response.json({ error: "Erro ao gerar summary." }, { status: 500 });
+    console.error("Erro detalhado no summary:", e);
+    return Response.json({
+      error: "Erro ao gerar summary.",
+      message: e instanceof Error ? e.message : "Erro desconhecido"
+    }, { status: 500 });
   }
 }
