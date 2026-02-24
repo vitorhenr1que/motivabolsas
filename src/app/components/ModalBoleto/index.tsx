@@ -9,23 +9,16 @@ import { useUser } from "../contexts/user-provider";
 import { BoletoGerado } from "./BoletoGerado";
 
 interface ModalContentProps {
+  userId: string;
+  adminKey: string;
   cpf: string;
   name: string;
   email: string;
-  ddd: string;
-  tel: string;
-  houseNumber: string;
-  complement: string;
-  person: string;
-  street: string;
-  neighborhood: string;
-  city: string;
-  uf: string;
-  cep: string;
+  phone: string;
 }
 
 
-export function ModalBoleto({ cpf, name, email, ddd, tel, houseNumber, complement, person, street, neighborhood, city, uf, cep }: ModalContentProps) {
+export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialName, email: initialEmail, phone: initialPhone }: ModalContentProps) {
 
   const [procurouFAZAG, setProcurouFAZAG] = useState('Sim')
   const [openModal, setOpenModal] = useState(false)
@@ -34,61 +27,76 @@ export function ModalBoleto({ cpf, name, email, ddd, tel, houseNumber, complemen
   const [twoMonthsAgo, setTwoMonthsAgo] = useState("")
   const { setModalUser, codigoSolicitacao, setCodigoSolicitacao } = useUser()
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
+  const [userData, setUserData] = useState({
+    cpf: initialCpf,
+    name: initialName,
+    email: initialEmail,
+    ddd: initialPhone.replace(/\D/g, '').substring(0, 2),
+    tel: initialPhone.replace(/\D/g, '').substring(2),
+    houseNumber: '',
+    complement: '',
+    person: 'Física',
+    street: '',
+    neighborhood: '',
+    city: '',
+    uf: '',
+    cep: ''
+  })
+
+  async function fetchFullUserData() {
     setLoading(true)
-
-    const formData = new FormData(e.target as HTMLFormElement)
-    const data = Object.fromEntries(formData)
-
     try {
-      await api.post('/ouvidoria/create', {
-        nome: data.nome,
-        email: data.email,
-        motivo: data.motivo,
-        text: data.text,
-        vinculo: data.vinculo,
-        procurouSetor: procurouFAZAG
-      })
+      const response = await api.get(`usuarios/${userId}?secret_key=${adminKey}`)
+      const user = response.data
+      const addr = user.addresses?.[0] || {}
 
-      await api.post('/ouvidoria/nodemailer', {
-        nome: data.nome,
-        email: data.email,
-        motivo: data.motivo,
-        text: data.text,
-        vinculo: data.vinculo,
-        procurouSetor: procurouFAZAG
-      })
+      const newData = {
+        cpf: user.cpf,
+        name: user.name,
+        email: user.email,
+        ddd: user.phone.replace(/\D/g, '').substring(0, 2),
+        tel: user.phone.replace(/\D/g, '').substring(2),
+        houseNumber: addr.number || '',
+        complement: addr.complement || '',
+        person: 'Física',
+        street: addr.street || '',
+        neighborhood: addr.neighborhood || '',
+        city: addr.city || '',
+        uf: addr.uf || '',
+        cep: addr.cep || ''
+      }
+
+      setUserData(newData)
+      setModalUser(newData)
       setLoading(false)
-
-      alert('Mensagem enviada!')
-      setOpenModal(false)
-    } catch (err) {
-      console.log(err, 'Erro com a validação do formulário')
+    } catch (e) {
+      console.error(e)
+      setLoading(false)
+      alert("Erro ao carregar endereço do usuário.")
     }
   }
+
   const getFormattedDate = (date: Date): string => date.toISOString().split("T")[0];
+
   useEffect(() => {
     const today = new Date();
     today.setDate(today.getDate() + 7)
     setSevenNextDays(getFormattedDate(today));
 
     const pastDate = new Date();
-    pastDate.setMonth(today.getMonth() - 2); // Quantidade de meses atrás
+    pastDate.setMonth(today.getMonth() - 2);
     setTwoMonthsAgo(getFormattedDate(pastDate));
-
-    setModalUser({ cpf, name, email, ddd, tel, houseNumber, complement, person, street, neighborhood, city, uf, cep })
-    console.log('modalUser selected!')
   }, [])
+
   return (
     <>
       <Dialog.Root open={openModal} onOpenChange={(open) => {
         if (open === true) {
           setOpenModal(true)
-          setModalUser({ cpf, name, email, ddd, tel, houseNumber, complement, person, street, neighborhood, city, uf, cep })
+          fetchFullUserData()
         } else {
           setOpenModal(false)
-          setCodigoSolicitacao(undefined) // remove o código gerado do contexto ao fechar o modal
+          setCodigoSolicitacao(undefined)
         }
       }}>
         <Dialog.Trigger asChild >
@@ -108,11 +116,10 @@ export function ModalBoleto({ cpf, name, email, ddd, tel, houseNumber, complemen
               Gerencie e visualize os boletos do aluno.
             </Dialog.Description>
 
-            {/* Conteúdo aqui */}
             {codigoSolicitacao ?
               <BoletoGerado /> :
               <ModalContent
-                cpf={cpf}
+                cpf={userData.cpf}
                 sevenNextDays={sevenNextDays}
                 twoMonthsAgo={twoMonthsAgo}
               />
@@ -128,5 +135,4 @@ export function ModalBoleto({ cpf, name, email, ddd, tel, houseNumber, complemen
       </Dialog.Root>
     </>
   )
-
 }

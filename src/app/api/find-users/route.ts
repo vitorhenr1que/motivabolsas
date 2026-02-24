@@ -45,7 +45,6 @@ export async function POST(request: Request) {
                         firstPayment: true,
                         renovacao: true,
                         customerId: true,
-                        addresses: true,
                     },
                     orderBy: { createdAt: "desc" },
                 });
@@ -86,7 +85,6 @@ export async function POST(request: Request) {
                         firstPayment: true,
                         customerId: true,
                         renovacao: true,
-                        addresses: true
                     }
                 })
                 console.log(userinfo)

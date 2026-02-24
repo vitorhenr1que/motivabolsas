@@ -8,7 +8,7 @@ import { useUser } from "../components/contexts/user-provider"
 import { getInterToken } from "../services/inter-token"
 import { SearchUser } from "../components/SearchUser"
 import { EditUserModal } from "../components/EditUserModal"
-import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold } from "react-icons/pi";
+import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold } from "react-icons/pi";
 import { ModalBoleto } from "../components/ModalBoleto";
 
 interface AddressProps {
@@ -80,10 +80,49 @@ export default function Usuarios() {
         }
     }
 
-    const handleEdit = (user: UserDataProps) => {
-        setEditingUser(user);
-        setEditModalOpen(true);
+    const handleEdit = async (user: UserDataProps) => {
+        try {
+            setLoading(true);
+            const response = await api.get(`usuarios/${user.id}?secret_key=${adminKey}`);
+            setEditingUser(response.data);
+            setEditModalOpen(true);
+            setLoading(false);
+        } catch (e: any) {
+            console.error(e);
+            setLoading(false);
+            alert("Erro ao carregar detalhes do usuário.");
+        }
     };
+
+    async function handleDownloadComprovante(user: UserDataProps) {
+        try {
+            setLoading(true)
+            const response = await api.post('download-comprovante', {
+                name: user?.name,
+                course: user?.course,
+                instituition: user?.instituition,
+                cpf: user?.cpf,
+                discount: user?.discount,
+                createdAt: user?.createdAt,
+                id: user?.id
+            }, {
+                responseType: 'blob'
+            })
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `comprovante_${user.name}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setLoading(false)
+        } catch (e: any) {
+            console.error(e)
+            setLoading(false)
+            alert("Erro ao gerar comprovante. Verifique as informações do usuário.")
+        }
+    }
 
     const handleSuccess = () => {
         // Refresh list
@@ -193,20 +232,18 @@ export default function Usuarios() {
                                             <button className={styles.actionButton} onClick={() => handleEdit(user)}>
                                                 <PiPencilSimpleBold size={16} /> Editar
                                             </button>
+                                            {user.currentPayment && (
+                                                <button className={styles.actionButton} onClick={() => handleDownloadComprovante(user)} disabled={loading}>
+                                                    <PiFileTextBold size={16} /> Comprovante
+                                                </button>
+                                            )}
                                             <ModalBoleto
+                                                userId={user.id}
+                                                adminKey={adminKey}
                                                 cpf={user.cpf}
                                                 name={user.name}
                                                 email={user.email}
-                                                ddd={user.phone.replace(/\D/g, '').substring(0, 2)}
-                                                tel={user.phone.replace(/\D/g, '').substring(2)}
-                                                houseNumber={user.addresses?.[0]?.number || ''}
-                                                complement={user.addresses?.[0]?.complement || ''}
-                                                person="Física"
-                                                street={user.addresses?.[0]?.street || ''}
-                                                neighborhood={user.addresses?.[0]?.neighborhood || ''}
-                                                city={user.addresses?.[0]?.city || ''}
-                                                uf={user.addresses?.[0]?.uf || ''}
-                                                cep={user.addresses?.[0]?.cep || ''}
+                                                phone={user.phone}
                                             />
                                         </div>
                                     </td>

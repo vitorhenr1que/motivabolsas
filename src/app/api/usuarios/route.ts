@@ -1,27 +1,75 @@
-
 import { prisma } from "../../services/prisma";
 
-export async function POST(request: Request) {
-    const { page, secret_key, onlyPaid } = await request.json();
+function parseBool(v: any): boolean {
+    return v === true || v === "true" || v === 1 || v === "1";
+}
 
-    const secret = process.env.NEXT_PUBLIC_ADMIN_KEY;
-    if (secret !== secret_key) {
-        return Response.json({ error: 'Chave de Administrador Incorreta.' }, { status: 400 });
+export async function POST(request: Request) {
+    let body: any;
+
+    // 1) Parse seguro do JSON
+    try {
+        body = await request.json();
+    } catch (err) {
+        console.error("POST /api/usuarios - JSON inválido:", err);
+        return Response.json(
+            { error: "Body inválido. Envie JSON com Content-Type application/json." },
+            { status: 400 }
+        );
     }
+
+    const { page, secret_key, onlyPaid } = body ?? {};
+
+    // 2) Segredo (NÃO use NEXT_PUBLIC para segredo; deixei fallback só pra não quebrar seu projeto hoje)
+    const secret = process.env.ADMIN_KEY ?? process.env.NEXT_PUBLIC_ADMIN_KEY;
+
+    if (!secret) {
+        console.error("POST /api/usuarios - ADMIN_KEY não definida no servidor");
+        return Response.json(
+            { error: "Configuração do servidor: chave admin não definida." },
+            { status: 500 }
+        );
+    }
+
+    // 3) Valida chave
+    if (secret !== secret_key) {
+        return Response.json(
+            { error: "Chave de Administrador Incorreta." },
+            { status: 400 }
+        );
+    }
+
+    // 4) Normaliza page
+    const pageNumber = Number(page ?? 0);
+    if (!Number.isFinite(pageNumber) || pageNumber < 0) {
+        return Response.json(
+            { error: "Parâmetro 'page' inválido. Use número >= 0." },
+            { status: 400 }
+        );
+    }
+
+    // 5) Normaliza onlyPaid
+    const onlyPaidBool = parseBool(onlyPaid);
 
     try {
         const take = 10;
-        const skip = take * page;
+        const skip = take * pageNumber;
 
-        const whereCondition = onlyPaid ? { currentPayment: true } : {};
+        const whereCondition = onlyPaidBool ? { currentPayment: true } : {};
 
-        // Buscar total de usuários
-        const totalItems = await prisma.user.count({
-            where: whereCondition
+        // Logs úteis (pode remover depois)
+        console.log("POST /api/usuarios - params:", {
+            page: pageNumber,
+            take,
+            skip,
+            onlyPaid: onlyPaidBool,
         });
 
-        // Buscar usuários da página atual
-        const userinfo = await prisma.user.findMany({
+        const totalItems = await prisma.user.count({
+            where: whereCondition,
+        });
+
+        const users = await prisma.user.findMany({
             where: whereCondition,
             select: {
                 id: true,
@@ -38,7 +86,6 @@ export async function POST(request: Request) {
                 course: true,
                 instituition: true,
                 discount: true,
-                addresses: true
             },
             orderBy: { createdAt: "desc" },
             take,
@@ -48,74 +95,23 @@ export async function POST(request: Request) {
         const totalPages = Math.ceil(totalItems / take);
 
         return Response.json({
-            users: userinfo,
+            users,
             totalItems,
             totalPages,
-            currentPage: page
+            currentPage: pageNumber,
         });
-
-    } catch (e) {
-        return Response.json({ error: 'Usuário Inválido' }, { status: 400 });
-    }
-}
-
-export async function PUT(request: Request) {
-    const data = await request.json();
-    const { secret_key, id, name, email, phone, currentPayment, firstPayment, renovacao, course, institution, discount, address } = data;
-
-    const secret = process.env.NEXT_PUBLIC_ADMIN_KEY;
-    if (secret !== secret_key) {
-        return Response.json({ error: 'Chave de Administrador Incorreta.' }, { status: 400 });
-    }
-
-    try {
-        // Prepare address update if provided
-        // We assume the user has one address or we update the one provided by ID if we had it, 
-        // but typically the UI sends the address fields.
-        // Since the current UI accessed `addresses[0]`, we'll try to update the first address associated with the user 
-        // or specifically the one passed if we had its ID. 
-        // For simplicity/robustness, if we have address data, we update the user's addresses.
-
-        let addressUpdate = {};
-        if (address && address.id) {
-            addressUpdate = {
-                addresses: {
-                    update: {
-                        where: { id: address.id },
-                        data: {
-                            cep: address.cep,
-                            city: address.city,
-                            complement: address.complement,
-                            neighborhood: address.neighborhood,
-                            number: address.number,
-                            street: address.street,
-                            uf: address.uf,
-                        }
-                    }
-                }
-            }
-        }
-
-        const updatedUser = await prisma.user.update({
-            where: { id },
-            data: {
-                name,
-                email,
-                phone,
-                currentPayment,
-                firstPayment, // Contrato assinado = true
-                renovacao: Number(renovacao),
-                course,
-                instituition: institution,
-                discount: discount ? String(discount) : null,
-                ...addressUpdate
-            }
-        });
-
-        return Response.json(updatedUser);
-
-    } catch (e) {
-        console.error(e);
-        return Response.json({ error: 'Erro ao atualizar usuário.' }, { status: 500 });
+    } catch (e: any) {
+        // ERRO REAL AQUI
+        console.error("POST /api/usuarios - ERRO REAL:", e);
+        return Response.json(
+            {
+                error: "Falha ao listar usuários.",
+                message: e?.message ?? String(e),
+                code: e?.code,
+                meta: e?.meta,
+                // stack: process.env.NODE_ENV === "development" ? e?.stack : undefined,
+            },
+            { status: 500 }
+        );
     }
 }

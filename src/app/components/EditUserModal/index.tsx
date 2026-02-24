@@ -102,9 +102,8 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess, adminKey }:
         setLoading(true);
 
         try {
-            await api.put('usuarios', {
+            await api.put(`usuarios/${user.id}`, {
                 secret_key: adminKey,
-                id: user.id,
                 name,
                 email,
                 phone,
