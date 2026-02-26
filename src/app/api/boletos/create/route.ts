@@ -21,6 +21,9 @@ export async function POST(req: Request) {
     }
 
     // Dados do request
+    const body = await req.json();
+    console.log("RECEBIDO EM /api/boletos/create:", JSON.stringify(body, null, 2));
+
     const {
       interToken,
       email,
@@ -35,37 +38,57 @@ export async function POST(req: Request) {
       neighborhood,
       uf,
       cep,
-    } = await req.json();
+    } = body;
 
-    if (!interToken) {
+    // Se o token vier como objeto, extrai a string
+    let token = interToken;
+    if (interToken && typeof interToken === 'object' && interToken.access_token) {
+      token = interToken.access_token;
+    } else if (interToken && typeof interToken === 'object' && interToken.interToken) {
+      token = interToken.interToken;
+    }
+
+    if (!token) {
       return Response.json({ error: "interToken não informado." }, { status: 400 });
     }
 
     // Reutiliza o agent mTLS (cert + key)
     const agent = createInterHttpsAgent();
 
+    // Sanitização básica
+    const sanitizedCpf = cpf.replace(/\D/g, "");
+    const sanitizedCep = cep.replace(/\D/g, "");
+
     // Monta payload da cobrança
+    // seuNumero no Inter V3 tem limite de 15 caracteres.
+    const uniqueId = Date.now().toString().slice(-10); // 10 chars
+    const shortCpf = sanitizedCpf.slice(-5); // 5 chars
+    const seuNumero = `${shortCpf}${uniqueId}`; // 15 chars
+
     const payload = {
-      seuNumero: cpf, // ideal: garantir que é único por cobrança
+      seuNumero,
       valorNominal: 87,
       dataVencimento: getNextFiveDaysISO(),
       numDiasAgenda: 3,
       pagador: {
         email,
         ddd,
-        telefone: phone,
+        telefone: phone.replace(/\D/g, ""),
         numero: houseNumber,
-        complemento: complement,
-        cpfCnpj: cpf,
+        complemento: complement || "",
+        cpfCnpj: sanitizedCpf,
         tipoPessoa: "FISICA",
         nome: name,
         endereco: street,
         cidade: city,
         bairro: neighborhood,
         uf,
-        cep,
+        cep: sanitizedCep,
       },
     };
+
+    console.log("PAYLOAD INTER:", JSON.stringify(payload, null, 2));
+
 
     // Chamada ao Inter
     const resp = await axios.post(
@@ -74,7 +97,7 @@ export async function POST(req: Request) {
       {
         httpsAgent: agent, // ✅ mTLS aqui
         headers: {
-          Authorization: `Bearer ${interToken}`,
+          Authorization: `Bearer ${token}`,
           "x-conta-corrente": contaCorrente,
           "Content-Type": "application/json",
         },
@@ -87,6 +110,12 @@ export async function POST(req: Request) {
     // Se Inter responder erro, geralmente está em err.response.data
     const status = err?.response?.status ?? 400;
     const interData = err?.response?.data ?? null;
+
+    console.error("ERRO INTER API:", {
+      status,
+      data: interData,
+      message: err.message,
+    });
 
     return Response.json(
       {
