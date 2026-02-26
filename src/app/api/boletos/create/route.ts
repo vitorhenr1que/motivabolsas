@@ -60,10 +60,8 @@ export async function POST(req: Request) {
     const sanitizedCep = cep.replace(/\D/g, "");
 
     // Monta payload da cobrança
-    // seuNumero no Inter V3 tem limite de 15 caracteres.
-    const uniqueId = Date.now().toString().slice(-10); // 10 chars
-    const shortCpf = sanitizedCpf.slice(-5); // 5 chars
-    const seuNumero = `${shortCpf}${uniqueId}`; // 15 chars
+    // O usuário solicitou que o seuNumero seja o CPF formatado (ex: 000.000.000-00)
+    const seuNumero = cpf;
 
     const payload = {
       seuNumero,
