@@ -35,6 +35,7 @@ export default function PaymentButton({ user, disabled, loading }: PaymentButton
             const phone = cleanPhone.substring(2);
 
             await api.post('/boletos/create', {
+                userId: user.id,
                 interToken: access_token,
                 email: user.email,
                 ddd,

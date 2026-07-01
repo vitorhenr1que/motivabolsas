@@ -28,6 +28,7 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
   const { setModalUser, codigoSolicitacao, setCodigoSolicitacao } = useUser()
 
   const [userData, setUserData] = useState({
+    id: userId,
     cpf: initialCpf,
     name: initialName,
     email: initialEmail,
@@ -51,6 +52,7 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
       const addr = user.addresses?.[0] || {}
 
       const newData = {
+        id: user.id,
         cpf: user.cpf,
         name: user.name,
         email: user.email,

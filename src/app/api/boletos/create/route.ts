@@ -1,5 +1,7 @@
 import axios from "axios";
 import { createInterHttpsAgent } from "../../../lib/interMtls";
+import { toStudyFeeAmount } from "@/app/config/study-fee";
+import { prisma } from "@/app/services/prisma";
 
 export const runtime = "nodejs"; // mTLS deve rodar no runtime Node
 
@@ -38,6 +40,7 @@ export async function POST(req: Request) {
       neighborhood,
       uf,
       cep,
+      userId,
     } = body;
 
     // Se o token vier como objeto, extrai a string
@@ -58,6 +61,19 @@ export async function POST(req: Request) {
     // Sanitização básica
     const sanitizedCpf = cpf.replace(/\D/g, "");
     const sanitizedCep = cep.replace(/\D/g, "");
+    const user = await prisma.user.findFirst({
+      where: userId ? { id: userId } : { cpf },
+      select: {
+        studyFee: true,
+      },
+    });
+
+    if (!user) {
+      return Response.json(
+        { error: "Aluno não encontrado para gerar cobrança." },
+        { status: 404 }
+      );
+    }
 
     // Monta payload da cobrança
     // O usuário solicitou que o seuNumero seja o CPF formatado (ex: 000.000.000-00)
@@ -65,7 +81,7 @@ export async function POST(req: Request) {
 
     const payload = {
       seuNumero,
-      valorNominal: 87,
+      valorNominal: toStudyFeeAmount(user.studyFee),
       dataVencimento: getNextFiveDaysISO(),
       numDiasAgenda: 3,
       pagador: {

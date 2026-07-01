@@ -26,6 +26,7 @@ interface InterTokenProps{
 }
 
 interface ModalUserProps{
+  id: string;
   cpf: string;
   name: string;
   email: string;
@@ -84,4 +85,3 @@ export const useUser = (): UserContextType => {
 
   return context;
 };
-

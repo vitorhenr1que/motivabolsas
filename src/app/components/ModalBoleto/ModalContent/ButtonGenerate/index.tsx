@@ -15,6 +15,7 @@ export function ButtonGenerate() {
         setLoading(true)
         try {
             const response = await api.post('boletos/create', {
+                userId: modalUser?.id,
                 interToken: interToken,
                 email: modalUser?.email,
                 ddd: modalUser?.ddd,

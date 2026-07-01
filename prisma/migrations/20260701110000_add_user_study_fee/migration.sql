@@ -1,0 +1,9 @@
+ALTER TABLE `User`
+  ADD COLUMN `studyFee` DECIMAL(10, 2) NOT NULL DEFAULT 87.00;
+
+UPDATE `User`
+SET `studyFee` = 87.00
+WHERE `studyFee` IS NULL;
+
+ALTER TABLE `User`
+  ALTER COLUMN `studyFee` SET DEFAULT 97.00;

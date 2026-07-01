@@ -3,6 +3,7 @@ import { prisma } from "@/app/services/prisma";
 import { NextResponse } from "next/server";
 import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from 'bcrypt'
+import { CURRENT_STUDY_FEE } from "@/app/config/study-fee";
 
 export async function POST(request: Request){
     const { email, password, cpf, name, birthDate, customerId, phone, cep, city, neighborhood, number, street, uf, complement, course, instituition } = await request.json()
@@ -28,6 +29,7 @@ export async function POST(request: Request){
                 phone,
                 course,
                 instituition,
+                studyFee: CURRENT_STUDY_FEE,
                 addresses: {
                     create: {
                         cep,

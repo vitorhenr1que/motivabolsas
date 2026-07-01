@@ -21,6 +21,7 @@ model User {
   createdAt       DateTime  @default(now())
   currentPayment  Boolean   @default(false)
   firstPayment Boolean @default(false)
+  studyFee        Decimal   @default(97.00) @db.Decimal(10, 2)
   renovacao Int? @default(0)
   phone           String
   tokenExpiration String?
