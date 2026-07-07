@@ -77,6 +77,18 @@ export default function Dashboard() {
         SignOut()
     }
 
+    function getCurrentSemester() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // Janeiro = 0, Dezembro = 11
+
+  const semester = month < 6 ? 1 : 2;
+
+  return `${year}.${semester}`;
+}
+
+console.log(getCurrentSemester());
+
     // New states for Pending Boletos Panel
     const [boletosList, setBoletosList] = useState<ApiResponse[]>([])
     const [viewBoleto, setViewBoleto] = useState('')
@@ -364,7 +376,7 @@ export default function Dashboard() {
                                                                 course: user.course || "",
                                                                 discount: displayDiscount
                                                             }}
-                                                            semestre_atual="2026.1"
+                                                            semestre_atual={getCurrentSemester()}
                                                             className={styles.btnPrimary}
                                                             style={{ background: '#0f172a' }}
                                                         />
