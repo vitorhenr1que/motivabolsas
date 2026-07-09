@@ -62,6 +62,19 @@ interface ApiResponse {
     cobranca: Cobranca;
 }
 
+type ContractStatus = "DRAFT" | "SENT" | "SIGNED" | "REFUSED" | "EXPIRED";
+
+interface ContractState {
+    hasContract: boolean;
+    isSigned: boolean;
+    contract: {
+        id: string;
+        status: ContractStatus;
+        signedAt: string | null;
+        createdAt: string;
+    } | null;
+}
+
 export default function Dashboard() {
     const router = useRouter()
     const [user, setUser] = useState<userDataProps>()
@@ -70,6 +83,7 @@ export default function Dashboard() {
     const [disablePaymentButton, setDisablePaymentButton] = useState(false)
     const [checkingBoletos, setCheckingBoletos] = useState(false)
     const [paymentMessage, setPaymentMessage] = useState("")
+    const [contractState, setContractState] = useState<ContractState | null>(null)
     const { setUser: setGlobalUser } = useUser()
 
     function handleLogOut() {
@@ -87,8 +101,6 @@ export default function Dashboard() {
   return `${year}.${semester}`;
 }
 
-console.log(getCurrentSemester());
-
     // New states for Pending Boletos Panel
     const [boletosList, setBoletosList] = useState<ApiResponse[]>([])
     const [viewBoleto, setViewBoleto] = useState('')
@@ -103,7 +115,11 @@ console.log(getCurrentSemester());
                 const userData = response.data
                 setUser(userData)
 
-                if (userData && !userData.currentPayment) {
+                const contractResponse = await api.get('/contracts/status')
+                const contractData = contractResponse.data as ContractState
+                setContractState(contractData)
+
+                if (userData && !userData.currentPayment && contractData.isSigned) {
                     await checkUserBoletos(userData.cpf)
                 }
 
@@ -254,6 +270,10 @@ console.log(getCurrentSemester());
     )
 
     const isPaid = user?.currentPayment === true
+    const hasContract = contractState?.hasContract === true
+    const isContractSigned = contractState?.isSigned === true
+    const pendingContractId = !isContractSigned ? contractState?.contract?.id : undefined
+    const dashboardStatus = isPaid ? "paid" : isContractSigned ? "payment" : "contract"
     const displayDiscount = (() => {
         if (!user) return '0%';
         if (!user.discount || user.discount === "null" || user.discount === "") {
@@ -280,7 +300,7 @@ console.log(getCurrentSemester());
                 {/* Main Action/Status Section */}
                 <section className={styles.heroSection}>
                     <div className={styles.statusCard}>
-                        {isPaid ? (
+                        {dashboardStatus === "paid" ? (
                             <div className={`${styles.statusBadge} ${styles.active}`}>
                                 <PiCheckCircleFill className={styles.icon} />
                                 <div className={styles.texts}>
@@ -288,12 +308,20 @@ console.log(getCurrentSemester());
                                     <span>Tudo certo! Você já é um aluno Motiva Bolsas.</span>
                                 </div>
                             </div>
+                        ) : dashboardStatus === "contract" ? (
+                            <div className={`${styles.statusBadge} ${styles.pending}`}>
+                                <PiWarningCircleFill className={styles.icon} />
+                                <div className={styles.texts}>
+                                    <strong>Status: Aguardando Contrato</strong>
+                                    <span>Gere e assine seu contrato para liberar os boletos.</span>
+                                </div>
+                            </div>
                         ) : (
                             <div className={`${styles.statusBadge} ${styles.pending}`}>
                                 <PiWarningCircleFill className={styles.icon} />
                                 <div className={styles.texts}>
                                     <strong>Status: Aguardando Pagamento</strong>
-                                    <span>Sua bolsa está reservada, mas ainda não foi ativada.</span>
+                                    <span>Contrato assinado. Agora os boletos estão liberados.</span>
                                 </div>
                             </div>
                         )}
@@ -314,7 +342,51 @@ console.log(getCurrentSemester());
                                 </>
                             ) : (
                                 <>
-                                    {boletosList.length > 0 ? (
+                                    {!isContractSigned ? (
+                                        <>
+                                            <h3>{hasContract ? "Contrato pendente de assinatura" : "Ação pendente: gerar contrato"}</h3>
+                                            <p>
+                                                {hasContract
+                                                    ? "Seu contrato já foi gerado. Para liberar os boletos, revise e assine o documento."
+                                                    : "Para oficializar sua bolsa, primeiro gere e assine o contrato. Os boletos serão liberados somente depois da assinatura."}
+                                            </p>
+
+                                            <div className={styles.actionButtons}>
+                                                {hasContract && pendingContractId ? (
+                                                    <div className={styles.actionButtonSlot}>
+                                                        <Link href={`/contracts/${pendingContractId}`} className={`${styles.btnPrimary} ${styles.contractButton}`}>
+                                                            <PiScrollBold /> Assinar contrato
+                                                        </Link>
+                                                    </div>
+                                                ) : user && (
+                                                    <div className={styles.actionButtonSlot}>
+                                                        <GenerateContractButton
+                                                            userData={{
+                                                                name: user.name,
+                                                                cpf: user.cpf,
+                                                                course: user.course || "",
+                                                                discount: displayDiscount
+                                                            }}
+                                                            semestre_atual={getCurrentSemester()}
+                                                            className={styles.btnPrimary}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                <div className={styles.actionButtonSlot}>
+                                                    <Link href="/contato" className={styles.btnSecondary}>
+                                                        Preciso de ajuda
+                                                    </Link>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.contractNotice}>
+                                                <PiWarningCircleFill />
+                                                <strong>Atenção:</strong>
+                                                <span>Os boletos ficam disponíveis apenas depois que o contrato estiver assinado.</span>
+                                            </div>
+                                        </>
+                                    ) : boletosList.length > 0 ? (
                                         <>
                                             <h3>Painel Boletos Pendentes</h3>
                                             <p>Abaixo estão os boletos gerados recentemente. Verifique a situação e realize o pagamento.</p>
@@ -363,59 +435,25 @@ console.log(getCurrentSemester());
                                         </>
                                     ) : (
                                         <>
-                                            <h3>Ação Pendente: Liberação da Bolsa</h3>
-                                            <p>Para oficializar sua bolsa e obter o comprovante de desconto, você precisa assinar o contrato e realizar o pagamento da taxa semestral de adesão.</p>
+                                            <h3>Ação pendente: liberação da bolsa</h3>
+                                            <p>Contrato assinado com sucesso. Agora realize o pagamento da taxa semestral de adesão para ativar sua bolsa.</p>
 
                                             <div className={styles.actionButtons}>
-                                                {!user?.firstPayment && user && (
-                                                    <div style={{ flex: '1 1 200px' }}>
-                                                        <GenerateContractButton
-                                                            userData={{
-                                                                name: user.name,
-                                                                cpf: user.cpf,
-                                                                course: user.course || "",
-                                                                discount: displayDiscount
-                                                            }}
-                                                            semestre_atual={getCurrentSemester()}
-                                                            className={styles.btnPrimary}
-                                                            style={{ background: '#0f172a' }}
-                                                        />
-                                                    </div>
-                                                )}
-
-                                                <div style={{ flex: '1 1 200px' }}>
+                                                <div className={styles.actionButtonSlot}>
                                                     <PaymentButton
                                                         user={user}
-                                                        disabled={disablePaymentButton || !user?.firstPayment}
+                                                        disabled={disablePaymentButton}
                                                         loading={checkingBoletos}
                                                     />
                                                 </div>
 
-                                                <div style={{ flex: '1 1 200px' }}>
-                                                    <Link href="/contato" className={styles.btnSecondary} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div className={styles.actionButtonSlot}>
+                                                    <Link href="/contato" className={styles.btnSecondary}>
                                                         Preciso de ajuda
                                                     </Link>
                                                 </div>
                                             </div>
 
-                                            {!user?.firstPayment && (
-                                                <div style={{
-                                                    marginTop: '1.25rem',
-                                                    padding: '1rem',
-                                                    backgroundColor: '#fff1f2',
-                                                    borderRadius: '12px',
-                                                    border: '1px solid #ffe4e6',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '0.75rem',
-                                                    color: '#e11d48',
-                                                    fontSize: '0.875rem'
-                                                }}>
-                                                    <PiWarningCircleFill style={{ fontSize: '1.25rem' }} />
-                                                    <span style={{ fontWeight: 600 }}>Atenção:</span>
-                                                    <span>É necessário realizar a assinatura do contrato para liberar a ativação da bolsa.</span>
-                                                </div>
-                                            )}
                                             {paymentMessage && <p className={styles.paymentMessage}>{paymentMessage}</p>}
                                         </>
                                     )}

@@ -2,6 +2,7 @@ import axios from "axios";
 import { createInterHttpsAgent } from "../../../lib/interMtls";
 import { toStudyFeeAmount } from "@/app/config/study-fee";
 import { prisma } from "@/app/services/prisma";
+import { getSessionUser } from "@/app/lib/auth";
 
 export const runtime = "nodejs"; // mTLS deve rodar no runtime Node
 
@@ -15,6 +16,11 @@ function getNextFiveDaysISO() {
 
 export async function POST(req: Request) {
   try {
+    const session = await getSessionUser();
+    if (!session) {
+      return Response.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
     if (!contaCorrente) {
       return Response.json(
         { error: "INTER_ACCOUNT não configurada no .env" },
@@ -61,10 +67,24 @@ export async function POST(req: Request) {
     // Sanitização básica
     const sanitizedCpf = cpf.replace(/\D/g, "");
     const sanitizedCep = cep.replace(/\D/g, "");
-    const user = await prisma.user.findFirst({
-      where: userId ? { id: userId } : { cpf },
+    if (userId && userId !== session.userId) {
+      return Response.json(
+        { error: "Usuário inválido para gerar cobrança." },
+        { status: 403 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
       select: {
+        cpf: true,
         studyFee: true,
+        contracts: {
+          where: { status: "SIGNED" },
+          orderBy: { signedAt: "desc" },
+          take: 1,
+          select: { id: true },
+        },
       },
     });
 
@@ -77,6 +97,20 @@ export async function POST(req: Request) {
 
     // Monta payload da cobrança
     // O usuário solicitou que o seuNumero seja o CPF formatado (ex: 000.000.000-00)
+    if (user.contracts.length === 0) {
+      return Response.json(
+        { error: "Assine o contrato antes de gerar o boleto." },
+        { status: 409 }
+      );
+    }
+
+    if (user.cpf.replace(/\D/g, "") !== sanitizedCpf) {
+      return Response.json(
+        { error: "CPF inválido para gerar cobrança." },
+        { status: 403 }
+      );
+    }
+
     const seuNumero = cpf;
 
     const payload = {

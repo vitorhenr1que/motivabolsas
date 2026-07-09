@@ -54,9 +54,9 @@ export default function PaymentButton({ user, disabled, loading }: PaymentButton
             // Recarregar para que a verificação de boletos no Dashboard detecte o novo boleto
             window.location.reload();
 
-        } catch (e) {
+        } catch (e: any) {
             console.error('Erro ao criar boleto:', e);
-            alert("Falha ao gerar o boleto. Por favor, tente novamente.");
+            alert(e?.response?.data?.error || "Falha ao gerar o boleto. Por favor, tente novamente.");
         } finally {
             setIsCreatingCheckout(false);
         }
