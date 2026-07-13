@@ -14,6 +14,7 @@ interface DateSelectorProps {
 
 interface ModalContentProps {
   cpf: string;
+  adminKey: string;
   sevenNextDays: string;
   twoMonthsAgo: string;
 }
@@ -54,7 +55,7 @@ interface ApiResponse {
   pix: Pix;
 }
 
-export function ModalContent({ cpf, sevenNextDays, twoMonthsAgo }: ModalContentProps) {
+export function ModalContent({ cpf, adminKey, sevenNextDays, twoMonthsAgo }: ModalContentProps) {
 
 
   const [loading, setLoading] = useState(false)
@@ -244,7 +245,7 @@ export function ModalContent({ cpf, sevenNextDays, twoMonthsAgo }: ModalContentP
         </div>
       )}
       {/* <ButtonGenerate/>  -- Commented out or kept based on original req? Original had it. Keep it.*/}
-      <ButtonGenerate />
+      <ButtonGenerate adminKey={adminKey} />
     </div>
   );
 

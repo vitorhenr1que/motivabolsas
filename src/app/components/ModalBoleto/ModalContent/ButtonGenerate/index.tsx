@@ -7,7 +7,11 @@ import { PiPlusCircleBold } from "react-icons/pi";
 
 
 
-export function ButtonGenerate() {
+interface ButtonGenerateProps {
+    adminKey: string;
+}
+
+export function ButtonGenerate({ adminKey }: ButtonGenerateProps) {
     const { interToken, modalUser, setCodigoSolicitacao, codigoSolicitacao } = useUser()
     const [loading, setLoading] = useState(false)
 
@@ -16,6 +20,7 @@ export function ButtonGenerate() {
         try {
             const response = await api.post('boletos/create', {
                 userId: modalUser?.id,
+                secret_key: adminKey,
                 interToken: interToken,
                 email: modalUser?.email,
                 ddd: modalUser?.ddd,

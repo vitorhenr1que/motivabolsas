@@ -122,6 +122,7 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
               <BoletoGerado /> :
               <ModalContent
                 cpf={userData.cpf}
+                adminKey={adminKey}
                 sevenNextDays={sevenNextDays}
                 twoMonthsAgo={twoMonthsAgo}
               />

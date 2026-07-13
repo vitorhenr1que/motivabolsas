@@ -17,9 +17,6 @@ function getNextFiveDaysISO() {
 export async function POST(req: Request) {
   try {
     const session = await getSessionUser();
-    if (!session) {
-      return Response.json({ error: "Não autenticado" }, { status: 401 });
-    }
 
     if (!contaCorrente) {
       return Response.json(
@@ -47,7 +44,23 @@ export async function POST(req: Request) {
       uf,
       cep,
       userId,
+      secret_key,
     } = body;
+
+    const adminKey = process.env.ADMIN_KEY ?? process.env.NEXT_PUBLIC_ADMIN_KEY;
+    const isAdmin = Boolean(adminKey && secret_key === adminKey);
+
+    if (!session && !isAdmin) {
+      return Response.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    const targetUserId = isAdmin ? userId : session?.userId;
+    if (!targetUserId) {
+      return Response.json(
+        { error: "Usuário não informado para gerar cobrança." },
+        { status: 400 }
+      );
+    }
 
     // Se o token vier como objeto, extrai a string
     let token = interToken;
@@ -67,7 +80,7 @@ export async function POST(req: Request) {
     // Sanitização básica
     const sanitizedCpf = cpf.replace(/\D/g, "");
     const sanitizedCep = cep.replace(/\D/g, "");
-    if (userId && userId !== session.userId) {
+    if (!isAdmin && userId && userId !== session?.userId) {
       return Response.json(
         { error: "Usuário inválido para gerar cobrança." },
         { status: 403 }
@@ -75,7 +88,7 @@ export async function POST(req: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.userId },
+      where: { id: targetUserId },
       select: {
         cpf: true,
         studyFee: true,
