@@ -1,92 +1,111 @@
 'use client'
+
 import { useEffect, useState } from 'react'
-import styles from './style.module.scss'
 import { useRouter } from 'next/navigation'
-
-
-
 import { PiShieldCheckFill } from 'react-icons/pi'
 
-export function Graduacao() {
+import { getClient } from '../../services/prismic'
+import styles from './style.module.scss'
 
-    const [university, setUniversity] = useState<number>(0)
-    const [course, setCourse] = useState<String>("administracao")
+type University = 'fazag' | 'farvalle'
+
+interface CourseOption {
+    name: string
+    uid: string
+}
+
+const universities: Array<{ label: string; value: University }> = [
+    { label: 'FAZAG', value: 'fazag' },
+    { label: 'FARVALLE', value: 'farvalle' },
+]
+
+export function Graduacao() {
+    const [university, setUniversity] = useState<University>('fazag')
+    const [courses, setCourses] = useState<CourseOption[]>([])
+    const [course, setCourse] = useState('')
+    const [loadingCourses, setLoadingCourses] = useState(true)
     const router = useRouter()
 
-    console.log(course)
-    function handleFind() {
-        router.push(`/${faculdades[university].toLocaleLowerCase()}/${course}`)
-    }
-    const faculdades = ["FAZAG", "FARVALLE"] //Adicionar nova faculdade aqui
+    useEffect(() => {
+        let active = true
 
-    const graduacao: any = [
+        async function loadCourses() {
+            setLoadingCourses(true)
+            setCourse('')
 
-        {
-            "FAZAG": {
-                Presencial: [
-                    { "0": ["ADMINISTRAÇÃO", "administracao"] },
-                    { "1": ["CIÊNCIAS CONTÁBEIS", "ciencias-contabeis"] },
-                    { "2": ["EDUCAÇÃO FÍSICA", "educacao-fisica"] },
-                    { "3": ["ENFERMAGEM", "enfermagem"] },
-                    { "4": ["ENGENHARIA CIVIL", "engenharia-civil"] },
-                    { "5": ["ESTÉTICA E COSMÉTICA", "estetica-e-cosmetica"] },
-                    { "6": ["FARMÁCIA", "farmacia"] },
-                    { "7": ["FISIOTERAPIA", "fisioterapia"] },
-                    { "8": ["NUTRIÇÃO", "nutricao"] },
-                    { "9": ["PEDAGOGIA", "pedagogia"] },
-                    { "10": ["PSICOLOGIA", "psicologia"] },
-                    { "11": ["SERVIÇO SOCIAL", "servico-social"] }
-                ]
-            }
-        },
+            try {
+                const client = getClient()
+                const documents = await client.getAllByType(university, {
+                    orderings: [{ field: `my.${university}.name`, direction: 'asc' }],
+                })
 
-        {
-            "FARVALLE": {
-                Presencial: [
-                    { "0": ["ENFERMAGEM", "enfermagem"] },
-                    { "1": ["FISIOTERAPIA", "fisioterapia"] },
-                    { "2": ["PEDAGOGIA", "pedagogia"] }
-                ]
+                if (!active) return
+
+                const availableCourses = documents
+                    .filter((document) => document.uid && document.data.name)
+                    .map((document) => ({
+                        name: document.data.name as string,
+                        uid: document.uid,
+                    }))
+
+                setCourses(availableCourses)
+                setCourse(availableCourses[0]?.uid ?? '')
+            } catch (error) {
+                console.error('Erro ao carregar os cursos do Prismic:', error)
+                if (active) setCourses([])
+            } finally {
+                if (active) setLoadingCourses(false)
             }
         }
-        // Nova faculdade com os cursos aqui
-    ]
-    console.log(graduacao[0])
-    console.log(course)
-    useEffect(() => { // Quando trocar a seleção da instituição selecionar o primeiro curso por padrão[[]]
-        console.log('test',)
-        if (university === 0) {
-            setCourse(graduacao[0].FAZAG.Presencial[0][0][1])
-        }
-        if (university === 1) {
-            setCourse(graduacao[1].FARVALLE.Presencial[0][0][1])
+
+        loadCourses()
+
+        return () => {
+            active = false
         }
     }, [university])
+
+    function handleFind() {
+        if (course) router.push(`/${university}/${course}`)
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.formGrid}>
                 <div className={styles.selectContainer}>
                     <label htmlFor="inst-select">Instituição:</label>
-                    <select id='inst-select' onChange={(e) => setUniversity(Number(e.target.value))}>
-                        <option value={0}>FAZAG</option>
-                        <option value={1}>FARVALLE</option>
+                    <select
+                        id="inst-select"
+                        value={university}
+                        onChange={(event) => setUniversity(event.target.value as University)}
+                    >
+                        {universities.map((item) => (
+                            <option key={item.value} value={item.value}>{item.label}</option>
+                        ))}
                     </select>
                 </div>
+
                 <div className={styles.selectContainer}>
                     <label htmlFor="course-select">Curso desejado:</label>
-                    <select id='course-select' onChange={(e) => setCourse(e.target.value)}>
-                        <optgroup label='Selecione o curso'>
-                            {university === 0 && graduacao[0].FAZAG.Presencial.map((index: string, position: number) => {
-
-                                return <option value={index[`${position}`][1]} key={position}>{index[`${position}`][0]}</option>
-                            })}
-                            {university === 1 && graduacao[1].FARVALLE.Presencial.map((index: string, position: number) => {
-                                return <option value={index[`${position}`][1]} key={position}>{index[`${position}`][0]}</option>
-                            })}
-                        </optgroup>
+                    <select
+                        id="course-select"
+                        value={course}
+                        onChange={(event) => setCourse(event.target.value)}
+                        disabled={loadingCourses || courses.length === 0}
+                    >
+                        {loadingCourses && <option value="">Carregando cursos...</option>}
+                        {!loadingCourses && courses.length === 0 && <option value="">Nenhum curso disponível</option>}
+                        {courses.map((item) => (
+                            <option key={item.uid} value={item.uid}>{item.name.toUpperCase()}</option>
+                        ))}
                     </select>
                 </div>
-                <button className={styles.buscar} onClick={() => handleFind()}>
+
+                <button
+                    className={styles.buscar}
+                    onClick={handleFind}
+                    disabled={!course || loadingCourses}
+                >
                     Ver Bolsas Disponíveis
                 </button>
             </div>
