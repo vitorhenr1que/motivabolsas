@@ -75,10 +75,13 @@ export async function POST(request: Request) {
     ];
     const courses2_5 = ["Estética e Cosmética"];
     const courses5 = [
+      'Direito',
       "Enfermagem",
       "Engenharia Civil",
       "Fisioterapia",
       "Farmácia",
+      "Fonoaudiologia",
+      'Odontologia',
       "Psicologia",
     ];
 

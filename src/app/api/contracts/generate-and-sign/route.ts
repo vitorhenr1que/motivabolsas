@@ -63,7 +63,8 @@ export async function POST(request: Request) {
       "Serviço Social",
     ];
     const courses2_5 = ["Estética e Cosmética"];
-    const courses5 = ["Enfermagem", "Engenharia Civil", "Fisioterapia", "Farmácia", "Psicologia"];
+    const courses5 = [
+      "Direito", "Enfermagem", "Engenharia Civil", "Fisioterapia", "Farmácia", "Fonoaudiologia","Odontologia", "Psicologia"];
 
     if (courses4.includes(course)) duracao = "4";
     else if (courses2_5.includes(course)) duracao = "2,5";

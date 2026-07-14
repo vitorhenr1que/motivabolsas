@@ -277,8 +277,11 @@ export default function Dashboard() {
     const displayDiscount = (() => {
         if (!user) return '0%';
         if (!user.discount || user.discount === "null" || user.discount === "") {
-            const isPsychology = user.course?.toLowerCase().includes("psicologia");
-            return isPsychology ? "30%" : "40%";
+            const coursesWithThirtyPercentDiscount = ["psicologia", "odontologia", "direito"];
+            const hasThirtyPercentDiscount = coursesWithThirtyPercentDiscount.some((course) =>
+                user.course?.toLowerCase().includes(course)
+            );
+            return hasThirtyPercentDiscount ? "30%" : "40%";
         }
         return user.discount.includes('%') ? user.discount : `${user.discount}%`;
     })();
