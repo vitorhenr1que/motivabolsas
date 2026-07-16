@@ -75,6 +75,19 @@ interface ContractState {
     } | null;
 }
 
+function getContractDiscount(user: userDataProps) {
+    if (!user.discount || user.discount === "null" || user.discount === "") {
+        const coursesWithThirtyPercentDiscount = ["psicologia", "odontologia", "direito"];
+        const hasThirtyPercentDiscount = coursesWithThirtyPercentDiscount.some((course) =>
+            user.course?.toLowerCase().includes(course)
+        );
+
+        return hasThirtyPercentDiscount ? "30%" : "40%";
+    }
+
+    return user.discount.includes('%') ? user.discount : `${user.discount}%`;
+}
+
 export default function Dashboard() {
     const router = useRouter()
     const [user, setUser] = useState<userDataProps>()
@@ -116,8 +129,30 @@ export default function Dashboard() {
                 setUser(userData)
 
                 const contractResponse = await api.get('/contracts/status')
-                const contractData = contractResponse.data as ContractState
+                let contractData = contractResponse.data as ContractState
                 setContractState(contractData)
+
+                // Usuários que já fizeram o primeiro pagamento precisam ter um
+                // contrato disponível para assinatura. A API reaproveita um SENT
+                // existente, portanto acessos repetidos não duplicam contratos.
+                if (userData.firstPayment === true && !contractData.isSigned) {
+                    try {
+                        await api.post('/contracts/generate', {
+                            name: userData.name,
+                            cpf: userData.cpf,
+                            semestre_atual: getCurrentSemester(),
+                            course: userData.course || "",
+                            discount: getContractDiscount(userData),
+                            dataAtual: new Date().toLocaleDateString("pt-BR"),
+                        })
+
+                        const updatedContractResponse = await api.get('/contracts/status')
+                        contractData = updatedContractResponse.data as ContractState
+                        setContractState(contractData)
+                    } catch (contractError: any) {
+                        console.error('Falha ao criar contrato automático:', contractError.message)
+                    }
+                }
 
                 if (userData && !userData.currentPayment && contractData.isSigned) {
                     await checkUserBoletos(userData.cpf)
@@ -276,14 +311,7 @@ export default function Dashboard() {
     const dashboardStatus = isPaid ? "paid" : isContractSigned ? "payment" : "contract"
     const displayDiscount = (() => {
         if (!user) return '0%';
-        if (!user.discount || user.discount === "null" || user.discount === "") {
-            const coursesWithThirtyPercentDiscount = ["psicologia", "odontologia", "direito"];
-            const hasThirtyPercentDiscount = coursesWithThirtyPercentDiscount.some((course) =>
-                user.course?.toLowerCase().includes(course)
-            );
-            return hasThirtyPercentDiscount ? "30%" : "40%";
-        }
-        return user.discount.includes('%') ? user.discount : `${user.discount}%`;
+        return getContractDiscount(user);
     })();
 
     return (
