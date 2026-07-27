@@ -124,6 +124,19 @@ export async function PUT(
         return NextResponse.json({ error: "ID do usuário é obrigatório." }, { status: 400 });
     }
 
+    if (address) {
+        const sanitizedCep = typeof address.cep === "string"
+            ? address.cep.replace(/\D/g, "")
+            : "";
+
+        if (sanitizedCep.length !== 8) {
+            return NextResponse.json(
+                { error: "CEP deve conter 8 dígitos.", field: "cep" },
+                { status: 400 }
+            );
+        }
+    }
+
     try {
         let addressUpdate: any = {};
         if (address && address.id) {

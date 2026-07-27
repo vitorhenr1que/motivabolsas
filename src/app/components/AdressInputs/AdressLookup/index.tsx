@@ -72,6 +72,9 @@ function AddressLookup() {
                 type="text"
                 placeholder="00000-000"
                 required={true}
+                minLength={9}
+                pattern="[0-9]{5}-[0-9]{3}"
+                title="Digite um CEP completo no formato 00000-000"
               />
             )}
           </ReactInputMask>

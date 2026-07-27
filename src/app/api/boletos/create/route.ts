@@ -8,6 +8,21 @@ export const runtime = "nodejs"; // mTLS deve rodar no runtime Node
 
 const contaCorrente = process.env.INTER_ACCOUNT;
 
+function onlyDigits(value: unknown) {
+  return typeof value === "string" ? value.replace(/\D/g, "") : "";
+}
+
+function redactBoletoRequest(body: Record<string, unknown>) {
+  return {
+    ...body,
+    interToken: body.interToken ? "[REDACTED]" : undefined,
+    secret_key: body.secret_key ? "[REDACTED]" : undefined,
+    cpf: typeof body.cpf === "string"
+      ? body.cpf.replace(/^(\d{3})[\d.-]+(\d{2})$/, "$1.***.***-$2")
+      : body.cpf,
+  };
+}
+
 function getNextFiveDaysISO() {
   const d = new Date();
   d.setDate(d.getDate() + 5);
@@ -27,7 +42,10 @@ export async function POST(req: Request) {
 
     // Dados do request
     const body = await req.json();
-    console.log("RECEBIDO EM /api/boletos/create:", JSON.stringify(body, null, 2));
+    console.log(
+      "RECEBIDO EM /api/boletos/create:",
+      JSON.stringify(redactBoletoRequest(body), null, 2)
+    );
 
     const {
       interToken,
@@ -78,8 +96,26 @@ export async function POST(req: Request) {
     const agent = createInterHttpsAgent();
 
     // Sanitização básica
-    const sanitizedCpf = cpf.replace(/\D/g, "");
-    const sanitizedCep = cep.replace(/\D/g, "");
+    const sanitizedCpf = onlyDigits(cpf);
+    const sanitizedCep = onlyDigits(cep);
+
+    if (sanitizedCpf.length !== 11) {
+      return Response.json(
+        { error: "CPF deve conter 11 dígitos." },
+        { status: 400 }
+      );
+    }
+
+    if (sanitizedCep.length !== 8) {
+      return Response.json(
+        {
+          error: "CEP deve conter 8 dígitos.",
+          field: "cep",
+          receivedLength: sanitizedCep.length,
+        },
+        { status: 400 }
+      );
+    }
     if (!isAdmin && userId && userId !== session?.userId) {
       return Response.json(
         { error: "Usuário inválido para gerar cobrança." },
@@ -134,7 +170,7 @@ export async function POST(req: Request) {
       pagador: {
         email,
         ddd,
-        telefone: phone.replace(/\D/g, ""),
+        telefone: onlyDigits(phone),
         numero: houseNumber,
         complemento: complement || "",
         cpfCnpj: sanitizedCpf,
@@ -172,11 +208,18 @@ export async function POST(req: Request) {
     const status = err?.response?.status ?? 400;
     const interData = err?.response?.data ?? null;
 
-    console.error("ERRO INTER API:", {
-      status,
-      data: interData,
-      message: err.message,
-    });
+    console.error(
+      "ERRO INTER API:",
+      JSON.stringify(
+        {
+          status,
+          data: interData,
+          message: err?.message,
+        },
+        null,
+        2
+      )
+    );
 
     return Response.json(
       {

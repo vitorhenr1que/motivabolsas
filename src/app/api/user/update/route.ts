@@ -57,6 +57,17 @@ export async function PATCH(request: Request) {
         // Atualização de Endereço (considerando o primeiro endereço da lista como principal)
         if (addresses && addresses.length > 0) {
             const addr = addresses[0];
+            const sanitizedCep = typeof addr?.cep === "string"
+                ? addr.cep.replace(/\D/g, "")
+                : "";
+
+            if (sanitizedCep.length !== 8) {
+                return NextResponse.json(
+                    { error: "CEP deve conter 8 dígitos.", field: "cep" },
+                    { status: 400 }
+                );
+            }
+
             const addressData = {
                 cep: addr.cep,
                 street: addr.street,
