@@ -423,3 +423,34 @@
         padding: 0 1rem;
     }
 }
+
+.adminPreviewBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #172554;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    border-radius: 12px;
+
+    div { display: grid; gap: .2rem; }
+    span { font-size: .9rem; }
+    button {
+        flex: none;
+        padding: .65rem 1rem;
+        color: #fff;
+        background: #172554;
+        border: 0;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

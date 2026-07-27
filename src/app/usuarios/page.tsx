@@ -8,7 +8,7 @@ import { useUser } from "../components/contexts/user-provider"
 import { getInterToken } from "../services/inter-token"
 import { SearchUser } from "../components/SearchUser"
 import { EditUserModal } from "../components/EditUserModal"
-import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold } from "react-icons/pi";
+import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold, PiEyeBold } from "react-icons/pi";
 import { ModalBoleto } from "../components/ModalBoleto";
 
 interface AddressProps {
@@ -91,6 +91,18 @@ export default function Usuarios() {
             console.error(e);
             setLoading(false);
             alert("Erro ao carregar detalhes do usuário.");
+        }
+    };
+
+    const handleViewDashboard = async (user: UserDataProps) => {
+        try {
+            setLoading(true);
+            await api.post('/admin/preview', { userId: user.id, secret_key: adminKey });
+            window.open('/dashboard', '_blank', 'noopener,noreferrer');
+        } catch (e: any) {
+            alert(e.response?.data?.error || "Não foi possível abrir o dashboard.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -229,6 +241,9 @@ export default function Usuarios() {
                                     </td>
                                     <td>
                                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <button className={`${styles.actionButton} ${styles.viewButton}`} onClick={() => handleViewDashboard(user)}>
+                                                <PiEyeBold size={16} /> Ver dashboard
+                                            </button>
                                             <button className={styles.actionButton} onClick={() => handleEdit(user)}>
                                                 <PiPencilSimpleBold size={16} /> Editar
                                             </button>

@@ -15,6 +15,7 @@ import { BoletoViewer } from "../components/BoletoViewer";
 import { useUser } from "../components/contexts/user-provider";
 
 interface userDataProps {
+    adminPreview?: boolean,
     birthDate: Date | null,
     cpf: string,
     createdAt: Date,
@@ -104,6 +105,12 @@ export default function Dashboard() {
         SignOut()
     }
 
+    async function handleExitPreview() {
+        await api.delete('/admin/preview')
+        window.close()
+        router.push('/usuarios')
+    }
+
     function getCurrentSemester() {
   const now = new Date();
   const year = now.getFullYear();
@@ -135,7 +142,7 @@ export default function Dashboard() {
                 // Usuários que já fizeram o primeiro pagamento precisam ter um
                 // contrato disponível para assinatura. A API reaproveita um SENT
                 // existente, portanto acessos repetidos não duplicam contratos.
-                if (userData.firstPayment === true && !contractData.isSigned) {
+                if (!userData.adminPreview && userData.firstPayment === true && !contractData.isSigned) {
                     try {
                         await api.post('/contracts/generate', {
                             name: userData.name,
@@ -317,13 +324,22 @@ export default function Dashboard() {
     return (
         <DivDashboard>
             <div className={styles.dashboardWrapper}>
+                {user?.adminPreview && (
+                    <aside className={styles.adminPreviewBanner} role="status">
+                        <div>
+                            <strong>Visualização administrativa</strong>
+                            <span>Você está vendo o dashboard de {user.name}. Ações em nome do usuário estão desativadas.</span>
+                        </div>
+                        <button onClick={handleExitPreview}>Sair da visualização</button>
+                    </aside>
+                )}
                 {/* Header Section */}
                 <header className={styles.header}>
                     <div className={styles.welcome}>
                         <h1>Olá, <span>{user?.name.split(' ')[0]}</span>!</h1>
                         <p>Bem-vindo ao seu painel do aluno.</p>
                     </div>
-                    <button className={styles.signOutBtn} onClick={handleLogOut}>
+                    <button className={styles.signOutBtn} onClick={user?.adminPreview ? handleExitPreview : handleLogOut}>
                         <PiSignOutBold /> Sair
                     </button>
                 </header>
@@ -358,7 +374,7 @@ export default function Dashboard() {
                         )}
 
                         <div className={styles.actionContent}>
-                            {isPaid ? (
+                            {isPaid && !user?.adminPreview ? (
                                 <>
                                     <h3>O que eu devo fazer agora?</h3>
                                     <p>Sua bolsa está 100% garantida. Baixe seu comprovante oficial e apresente na {user?.instituition} no momento da sua matrícula para garantir o desconto de {displayDiscount}.</p>
@@ -373,7 +389,12 @@ export default function Dashboard() {
                                 </>
                             ) : (
                                 <>
-                                    {!isContractSigned ? (
+                                    {user?.adminPreview ? (
+                                        <>
+                                            <h3>Painel em modo somente leitura</h3>
+                                            <p>O status, curso, instituição, desconto e cobranças abaixo correspondem ao usuário selecionado. Para segurança, geração de contrato e pagamentos ficam indisponíveis nesta visualização.</p>
+                                        </>
+                                    ) : !isContractSigned ? (
                                         <>
                                             <h3>{hasContract ? "Contrato pendente de assinatura" : "Ação pendente: gerar contrato"}</h3>
                                             <p>

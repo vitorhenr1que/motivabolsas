@@ -6,16 +6,17 @@ import { cookies } from 'next/headers'
 
 export async function middleware(request: NextRequest) {
   const Authorization = request.cookies.get('Authorization')?.value
+  const adminPreview = request.cookies.get('AdminPreview')?.value
   
   if (Authorization && !request.nextUrl.pathname.startsWith('/dashboard')) {
     return Response.redirect(new URL('/dashboard', request.url))
   }
  
-  if (!Authorization && !request.nextUrl.pathname.startsWith('/login')) {
+  if (!Authorization && !adminPreview && !request.nextUrl.pathname.startsWith('/login')) {
     return Response.redirect(new URL('/login', request.url))
   }
   
-  const cookie = cookies().get("Authorization");
+  const cookie = cookies().get("AdminPreview") ?? cookies().get("Authorization");
   if(!cookie){
   return Response.redirect(new URL('/login', request.url))
   }

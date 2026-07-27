@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
-const COOKIE_NAME = process.env.JWT_COOKIE_NAME ?? "token"; // ex: "token" ou "auth_token"
+const COOKIE_NAME = process.env.JWT_COOKIE_NAME ?? "Authorization";
+export const ADMIN_PREVIEW_COOKIE = "AdminPreview";
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
@@ -17,10 +18,13 @@ type JwtPayload = {
   sub?: string; // às vezes o userId vem no "sub"
   email?: string;
   name?: string;
+  adminPreview?: boolean;
 };
 
 export async function getSessionUser() {
-  const cookie = cookies().get(COOKIE_NAME)?.value;
+  const cookieStore = cookies();
+  const previewCookie = cookieStore.get(ADMIN_PREVIEW_COOKIE)?.value;
+  const cookie = previewCookie ?? cookieStore.get(COOKIE_NAME)?.value;
   if (!cookie) return null;
 
   try {
@@ -34,6 +38,7 @@ export async function getSessionUser() {
       userId: String(userId),
       email: p.email ? String(p.email) : undefined,
       name: p.name ? String(p.name) : undefined,
+      adminPreview: p.adminPreview === true,
     };
   } catch {
     return null;
