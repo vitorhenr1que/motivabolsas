@@ -45,6 +45,9 @@ export async function POST(request: Request) {
                         firstPayment: true,
                         renovacao: true,
                         customerId: true,
+                        _count: {
+                            select: { contracts: true },
+                        },
                     },
                     orderBy: { createdAt: "desc" },
                 });
@@ -85,6 +88,9 @@ export async function POST(request: Request) {
                         firstPayment: true,
                         customerId: true,
                         renovacao: true,
+                        _count: {
+                            select: { contracts: true },
+                        },
                     }
                 })
                 console.log(userinfo)

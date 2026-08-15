@@ -15,10 +15,12 @@ interface ModalContentProps {
   name: string;
   email: string;
   phone: string;
+  triggerClassName?: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
 
-export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialName, email: initialEmail, phone: initialPhone }: ModalContentProps) {
+export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialName, email: initialEmail, phone: initialPhone, triggerClassName, onOpenChange }: ModalContentProps) {
 
   const [procurouFAZAG, setProcurouFAZAG] = useState('Sim')
   const [openModal, setOpenModal] = useState(false)
@@ -95,14 +97,16 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
       <Dialog.Root open={openModal} onOpenChange={(open) => {
         if (open === true) {
           setOpenModal(true)
+          onOpenChange?.(true)
           fetchFullUserData()
         } else {
           setOpenModal(false)
+          onOpenChange?.(false)
           setCodigoSolicitacao(undefined)
         }
       }}>
         <Dialog.Trigger asChild >
-          <button className={styles.btnModal}>
+          <button className={triggerClassName || styles.btnModal}>
             <PiReceipt size={20} />
             <span>Boleto</span>
           </button>

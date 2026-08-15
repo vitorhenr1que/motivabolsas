@@ -86,6 +86,9 @@ export async function POST(request: Request) {
                 course: true,
                 instituition: true,
                 discount: true,
+                _count: {
+                    select: { contracts: true },
+                },
             },
             orderBy: { createdAt: "desc" },
             take,

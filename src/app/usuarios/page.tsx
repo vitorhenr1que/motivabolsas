@@ -8,7 +8,8 @@ import { useUser } from "../components/contexts/user-provider"
 import { getInterToken } from "../services/inter-token"
 import { SearchUser } from "../components/SearchUser"
 import { EditUserModal } from "../components/EditUserModal"
-import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold, PiEyeBold } from "react-icons/pi";
+import * as Dialog from "@radix-ui/react-dialog";
+import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold, PiEyeBold, PiDotsThreeBold, PiTrashBold, PiXBold } from "react-icons/pi";
 import { ModalBoleto } from "../components/ModalBoleto";
 
 interface AddressProps {
@@ -39,6 +40,9 @@ interface UserDataProps {
     instituition?: string,
     discount?: string,
     addresses: AddressProps[]
+    _count?: {
+        contracts: number
+    }
 }
 
 export default function Usuarios() {
@@ -53,6 +57,10 @@ export default function Usuarios() {
     // Edit Modal State
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<UserDataProps | null>(null);
+    const [actionsUser, setActionsUser] = useState<UserDataProps | null>(null);
+    const [actionsSheetOpen, setActionsSheetOpen] = useState(false);
+    const [actionsPosition, setActionsPosition] = useState({ top: 0, left: 0 });
+    const [deletingContract, setDeletingContract] = useState(false);
 
     const { interToken, setInterToken } = useUser()
 
@@ -133,6 +141,28 @@ export default function Usuarios() {
             console.error(e)
             setLoading(false)
             alert("Erro ao gerar comprovante. Verifique as informações do usuário.")
+        }
+    }
+
+    async function handleDeleteContract(user: UserDataProps) {
+        const hasContract = (user._count?.contracts ?? 0) > 0;
+        if (!hasContract || deletingContract) return;
+
+        const confirmed = window.confirm(
+            `Excluir ${user._count?.contracts} contrato(s) de ${user.name}? Esta ação remove o contrato e suas assinaturas para que um novo possa ser gerado.`
+        );
+        if (!confirmed) return;
+
+        try {
+            setDeletingContract(true);
+            await api.delete(`usuarios/${user.id}/contrato?secret_key=${encodeURIComponent(adminKey)}`);
+            setActionsSheetOpen(false);
+            setActionsUser(null);
+            handleSuccess();
+        } catch (e: any) {
+            alert(e.response?.data?.error || "Não foi possível excluir o contrato.");
+        } finally {
+            setDeletingContract(false);
         }
     }
 
@@ -240,27 +270,31 @@ export default function Usuarios() {
                                         </span>
                                     </td>
                                     <td>
-                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                            <button className={`${styles.actionButton} ${styles.viewButton}`} onClick={() => handleViewDashboard(user)}>
-                                                <PiEyeBold size={16} /> Ver dashboard
-                                            </button>
-                                            <button className={styles.actionButton} onClick={() => handleEdit(user)}>
-                                                <PiPencilSimpleBold size={16} /> Editar
-                                            </button>
-                                            {user.currentPayment && (
-                                                <button className={styles.actionButton} onClick={() => handleDownloadComprovante(user)} disabled={loading}>
-                                                    <PiFileTextBold size={16} /> Comprovante
-                                                </button>
-                                            )}
-                                            <ModalBoleto
-                                                userId={user.id}
-                                                adminKey={adminKey}
-                                                cpf={user.cpf}
-                                                name={user.name}
-                                                email={user.email}
-                                                phone={user.phone}
-                                            />
-                                        </div>
+                                        <button
+                                            type="button"
+                                            className={styles.actionsTrigger}
+                                            onClick={(event) => {
+                                                const trigger = event.currentTarget.getBoundingClientRect();
+                                                const menuWidth = Math.min(272, window.innerWidth - 16);
+                                                const menuHeight = 330;
+                                                const fitsOnLeft = trigger.left >= menuWidth + 16;
+                                                const left = fitsOnLeft
+                                                    ? trigger.left - menuWidth - 8
+                                                    : Math.min(trigger.right + 8, window.innerWidth - menuWidth - 8);
+
+                                                setActionsPosition({
+                                                    left: Math.max(8, left),
+                                                    top: Math.max(8, Math.min(trigger.top, window.innerHeight - menuHeight - 8)),
+                                                });
+                                                setActionsUser(user);
+                                                setActionsSheetOpen(true);
+                                            }}
+                                            aria-label={`Abrir ações de ${user.name}`}
+                                            aria-haspopup="dialog"
+                                            aria-expanded={actionsSheetOpen && actionsUser?.id === user.id}
+                                        >
+                                            <PiDotsThreeBold size={20} />
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -314,6 +348,69 @@ export default function Usuarios() {
                 onSuccess={handleSuccess}
                 adminKey={adminKey}
             />
+
+            <Dialog.Root open={actionsSheetOpen} onOpenChange={setActionsSheetOpen}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className={styles.actionsOverlay} />
+                    <Dialog.Content
+                        className={styles.actionsSheet}
+                        style={{ top: actionsPosition.top, left: actionsPosition.left }}
+                    >
+                        <div className={styles.sheetHeader}>
+                            <div>
+                                <Dialog.Title>Ações do usuário</Dialog.Title>
+                                <Dialog.Description>{actionsUser?.name}</Dialog.Description>
+                            </div>
+                            <Dialog.Close className={styles.sheetClose} aria-label="Fechar ações">
+                                <PiXBold size={18} />
+                            </Dialog.Close>
+                        </div>
+
+                        {actionsUser && (
+                            <div className={styles.sheetActions}>
+                                <button className={styles.sheetAction} onClick={() => {
+                                    setActionsSheetOpen(false);
+                                    handleViewDashboard(actionsUser);
+                                }}>
+                                    <PiEyeBold size={19} /> Ver dashboard
+                                </button>
+                                <button className={styles.sheetAction} onClick={() => {
+                                    setActionsSheetOpen(false);
+                                    handleEdit(actionsUser);
+                                }}>
+                                    <PiPencilSimpleBold size={19} /> Editar usuário
+                                </button>
+                                {actionsUser.currentPayment && (
+                                    <button className={styles.sheetAction} onClick={() => {
+                                        setActionsSheetOpen(false);
+                                        handleDownloadComprovante(actionsUser);
+                                    }} disabled={loading}>
+                                        <PiFileTextBold size={19} /> Comprovante
+                                    </button>
+                                )}
+                                <ModalBoleto
+                                    userId={actionsUser.id}
+                                    adminKey={adminKey}
+                                    cpf={actionsUser.cpf}
+                                    name={actionsUser.name}
+                                    email={actionsUser.email}
+                                    phone={actionsUser.phone}
+                                    triggerClassName={styles.sheetAction}
+                                    onOpenChange={(open) => {
+                                        if (open) setActionsSheetOpen(false);
+                                        else setActionsUser(null);
+                                    }}
+                                />
+                                {(actionsUser._count?.contracts ?? 0) > 0 && (
+                                    <button className={`${styles.sheetAction} ${styles.deleteContractAction}`} onClick={() => handleDeleteContract(actionsUser)} disabled={deletingContract}>
+                                        <PiTrashBold size={19} /> {deletingContract ? "Excluindo contrato..." : "Excluir contrato"}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
         </div>
     )
 }
