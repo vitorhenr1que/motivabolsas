@@ -16,11 +16,13 @@ interface ModalContentProps {
   email: string;
   phone: string;
   triggerClassName?: string;
+  open?: boolean;
+  hideTrigger?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
 
-export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialName, email: initialEmail, phone: initialPhone, triggerClassName, onOpenChange }: ModalContentProps) {
+export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialName, email: initialEmail, phone: initialPhone, triggerClassName, open, hideTrigger = false, onOpenChange }: ModalContentProps) {
 
   const [procurouFAZAG, setProcurouFAZAG] = useState('Sim')
   const [openModal, setOpenModal] = useState(false)
@@ -45,6 +47,8 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
     uf: '',
     cep: ''
   })
+
+  const isOpen = open ?? openModal
 
   async function fetchFullUserData() {
     setLoading(true)
@@ -80,6 +84,12 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
     }
   }
 
+  useEffect(() => {
+    if (isOpen) fetchFullUserData()
+    // A abertura do Dialog controla quando os dados completos devem ser carregados.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, userId])
+
   const getFormattedDate = (date: Date): string => date.toISOString().split("T")[0];
 
   useEffect(() => {
@@ -94,23 +104,24 @@ export function ModalBoleto({ userId, adminKey, cpf: initialCpf, name: initialNa
 
   return (
     <>
-      <Dialog.Root open={openModal} onOpenChange={(open) => {
-        if (open === true) {
-          setOpenModal(true)
+      <Dialog.Root open={isOpen} onOpenChange={(nextOpen) => {
+        if (open === undefined) setOpenModal(nextOpen)
+
+        if (nextOpen) {
           onOpenChange?.(true)
-          fetchFullUserData()
         } else {
-          setOpenModal(false)
           onOpenChange?.(false)
           setCodigoSolicitacao(undefined)
         }
       }}>
-        <Dialog.Trigger asChild >
-          <button className={triggerClassName || styles.btnModal}>
-            <PiReceipt size={20} />
-            <span>Boleto</span>
-          </button>
-        </Dialog.Trigger>
+        {!hideTrigger && (
+          <Dialog.Trigger asChild>
+            <button className={triggerClassName || styles.btnModal}>
+              <PiReceipt size={20} />
+              <span>Boleto</span>
+            </button>
+          </Dialog.Trigger>
+        )}
         <Dialog.Portal>
           <Dialog.Overlay className={styles.DialogOverlay} />
           <Dialog.Content className={styles.DialogContent}>

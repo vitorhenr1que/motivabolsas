@@ -9,7 +9,7 @@ import { getInterToken } from "../services/inter-token"
 import { SearchUser } from "../components/SearchUser"
 import { EditUserModal } from "../components/EditUserModal"
 import * as Dialog from "@radix-ui/react-dialog";
-import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold, PiEyeBold, PiDotsThreeBold, PiTrashBold, PiXBold } from "react-icons/pi";
+import { PiCheckCircleBold, PiXCircleBold, PiPencilSimpleBold, PiFileTextBold, PiEyeBold, PiDotsThreeBold, PiTrashBold, PiXBold, PiReceipt } from "react-icons/pi";
 import { ModalBoleto } from "../components/ModalBoleto";
 
 interface AddressProps {
@@ -59,6 +59,8 @@ export default function Usuarios() {
     const [editingUser, setEditingUser] = useState<UserDataProps | null>(null);
     const [actionsUser, setActionsUser] = useState<UserDataProps | null>(null);
     const [actionsSheetOpen, setActionsSheetOpen] = useState(false);
+    const [boletoUser, setBoletoUser] = useState<UserDataProps | null>(null);
+    const [boletoModalOpen, setBoletoModalOpen] = useState(false);
     const [actionsPosition, setActionsPosition] = useState({ top: 0, left: 0 });
     const [deletingContract, setDeletingContract] = useState(false);
 
@@ -388,19 +390,13 @@ export default function Usuarios() {
                                         <PiFileTextBold size={19} /> Comprovante
                                     </button>
                                 )}
-                                <ModalBoleto
-                                    userId={actionsUser.id}
-                                    adminKey={adminKey}
-                                    cpf={actionsUser.cpf}
-                                    name={actionsUser.name}
-                                    email={actionsUser.email}
-                                    phone={actionsUser.phone}
-                                    triggerClassName={styles.sheetAction}
-                                    onOpenChange={(open) => {
-                                        if (open) setActionsSheetOpen(false);
-                                        else setActionsUser(null);
-                                    }}
-                                />
+                                <button className={styles.sheetAction} onClick={() => {
+                                    setBoletoUser(actionsUser);
+                                    setBoletoModalOpen(true);
+                                    setActionsSheetOpen(false);
+                                }}>
+                                    <PiReceipt size={20} /> Boleto
+                                </button>
                                 {(actionsUser._count?.contracts ?? 0) > 0 && (
                                     <button className={`${styles.sheetAction} ${styles.deleteContractAction}`} onClick={() => handleDeleteContract(actionsUser)} disabled={deletingContract}>
                                         <PiTrashBold size={19} /> {deletingContract ? "Excluindo contrato..." : "Excluir contrato"}
@@ -411,6 +407,23 @@ export default function Usuarios() {
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
+
+            {boletoUser && (
+                <ModalBoleto
+                    userId={boletoUser.id}
+                    adminKey={adminKey}
+                    cpf={boletoUser.cpf}
+                    name={boletoUser.name}
+                    email={boletoUser.email}
+                    phone={boletoUser.phone}
+                    open={boletoModalOpen}
+                    hideTrigger
+                    onOpenChange={(open) => {
+                        setBoletoModalOpen(open);
+                        if (!open) setBoletoUser(null);
+                    }}
+                />
+            )}
         </div>
     )
 }
