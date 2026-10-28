@@ -40,8 +40,8 @@ export function SolicitarBolsa({faculdade, fixed}: SolicitarBolsaProps){
         }
     },[])
     return !fixed ? (
-        <Link className={styles.linkButton} id={`solicitar_bolsa_${faculdade}`} href="https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0">Solicitar Bolsa</Link>
-    ) : (<Link id={`solicitar_bolsa_mobile_${faculdade}`} href={"https://api.whatsapp.com/send/?phone=5575982802259&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0"}  className={styles.fixedLinkButton}>
+        <Link className={styles.linkButton} id={`solicitar_bolsa_${faculdade}`} href="https://api.whatsapp.com/send/?phone=5575981786679&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0">Solicitar Bolsa</Link>
+    ) : (<Link id={`solicitar_bolsa_mobile_${faculdade}`} href={"https://api.whatsapp.com/send/?phone=5575981786679&text=Ol%C3%A1%2C+gostaria+de+solicitar+minha+bolsa.&type=phone_number&app_absent=0"}  className={styles.fixedLinkButton}>
         <span>Solicitar Bolsa</span>
     </Link>)
     

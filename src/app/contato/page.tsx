@@ -49,9 +49,9 @@ export default function Contato() {
                         </div>
                         <h3 className={styles.cardTitle}>WhatsApp</h3>
                         <p className={styles.cardDescription}>Atendimento rápido para dúvidas sobre matrícula e pagamentos.</p>
-                        <strong className={styles.contactTarget}>75 98280-2259</strong>
+                        <strong className={styles.contactTarget}>+55 75 98178-6679</strong>
                         <Link
-                            href="https://api.whatsapp.com/send/?phone=5575982802259&text=Olá%2C+gostaria+de+tirar+algumas+dúvidas."
+                            href="https://api.whatsapp.com/send/?phone=5575981786679&text=Olá%2C+gostaria+de+tirar+algumas+dúvidas."
                             target="_blank"
                             className={styles.actionButton}
                         >
