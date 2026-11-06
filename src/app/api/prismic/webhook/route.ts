@@ -1,11 +1,29 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 
-export async function GET(req: Request) {
-  // Verifica o token de segurança enviado pelo webhook do Prismic
-  const secret = req.headers.get("x-prismic-secret");
-  if (secret !== process.env.NEXT_PUBLIC_PRISMIC_ACCESS_TOKEN) {
-    return NextResponse.json({ error: "Acesso negado, o token não foi passado ou está incorreto." }, { status: 401 });
+export async function POST(req: Request) {
+  const expectedSecret = process.env.PRISMIC_WEBHOOK_SECRET;
+  if (!expectedSecret) {
+    return NextResponse.json(
+      { error: "O segredo do webhook do Prismic não está configurado." },
+      { status: 503 },
+    );
+  }
+
+  let payload: unknown;
+  try {
+    payload = await req.json();
+  } catch {
+    return NextResponse.json({ error: "JSON inválido." }, { status: 400 });
+  }
+
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    !("secret" in payload) ||
+    payload.secret !== expectedSecret
+  ) {
+    return NextResponse.json({ error: "Acesso negado." }, { status: 401 });
   }
 
   // Revalida todas as páginas associadas à tag "prismic"
