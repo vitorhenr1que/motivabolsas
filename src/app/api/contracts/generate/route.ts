@@ -7,6 +7,7 @@ import {
 } from "../../../services/googleApisAuth";
 import { sha256 } from "../../../lib/contract-signing";
 import { getSessionUser } from "../../../lib/auth";
+import { getCapturePeriod } from "../../../lib/capture-period";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
-    const { name, cpf, semestre_atual, course, discount, dataAtual } =
+    const { name, cpf, course, discount, dataAtual } =
       await request.json();
 
     // Confere usuário no banco
@@ -58,6 +59,8 @@ export async function POST(request: Request) {
         reused: true,
       });
     }
+
+    const capturePeriod = await getCapturePeriod();
 
     // 1) Template do contrato
     const templateId = "1TkaZv_bzwoHmbG_n_5xGZnbODw1uStt8dtzJokLHOzk";
@@ -104,7 +107,7 @@ export async function POST(request: Request) {
       [
         { searchText: "{{NOME_COMPLETO}}", replaceText: name },
         { searchText: "{{CPF}}", replaceText: cpf },
-        { searchText: "{{PERIODO}}", replaceText: semestre_atual },
+        { searchText: "{{PERIODO}}", replaceText: capturePeriod },
         { searchText: "{{CURSO}}", replaceText: course },
         { searchText: "{{DESCONTO}}", replaceText: discount },
         { searchText: "{{DURACAO}}", replaceText: duracao },

@@ -328,3 +328,64 @@
 
     &:hover:not(:disabled) { background: #fff1f0; }
 }
+
+.periodMessage {
+    margin: 0 0 20px;
+    color: #334155;
+}
+
+.periodOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.4);
+}
+
+.periodModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 51;
+    width: min(440px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 24px;
+    background: white;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+
+    h2 { margin: 0 0 12px; font-size: 20px; }
+    p { margin: 0 0 20px; color: #475569; line-height: 1.5; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    input {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    input:focus-visible, button:focus-visible { outline: 2px solid #1e3a8a; outline-offset: 2px; }
+    [role="alert"] { color: #b42318; margin-top: 12px; }
+}
+
+.periodButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+
+    button {
+        padding: 10px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: white;
+        color: #334155;
+        cursor: pointer;
+        &:last-child { background: #000; border-color: #000; color: white; }
+        &:disabled { opacity: 0.6; cursor: wait; }
+    }
+}

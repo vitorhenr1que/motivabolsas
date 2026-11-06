@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { getCapturePeriod } from "../../../lib/capture-period";
 import { prisma } from "../../../services/prisma";
 import {
   exportGoogleDocAsPDF,
@@ -35,7 +36,6 @@ export async function POST(request: Request) {
       userId,
       name,
       cpf,
-      semestre_atual,
       course,
       discount,
       dataAtual,
@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
     }
 
+    const capturePeriod = await getCapturePeriod();
     const templateId = "1TkaZv_bzwoHmbG_n_5xGZnbODw1uStt8dtzJokLHOzk";
 
     let duracao = "0";
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
       [
         { searchText: "{{NOME_COMPLETO}}", replaceText: name },
         { searchText: "{{CPF}}", replaceText: cpf },
-        { searchText: "{{PERIODO}}", replaceText: semestre_atual },
+        { searchText: "{{PERIODO}}", replaceText: capturePeriod },
         { searchText: "{{CURSO}}", replaceText: course },
         { searchText: "{{DESCONTO}}", replaceText: discount },
         { searchText: "{{DURACAO}}", replaceText: duracao },

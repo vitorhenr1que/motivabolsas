@@ -53,6 +53,45 @@ export default function Usuarios() {
     const [searchUsers, setSearchUsers] = useState<UserDataProps[]>()
     const [loading, setLoading] = useState(false)
     const [onlyPaid, setOnlyPaid] = useState(false)
+    const [periodModalOpen, setPeriodModalOpen] = useState(false)
+    const [capturePeriod, setCapturePeriod] = useState("")
+    const [periodBusy, setPeriodBusy] = useState(false)
+    const [periodError, setPeriodError] = useState("")
+    const [periodMessage, setPeriodMessage] = useState("")
+
+    async function openCapturePeriod() {
+        setPeriodBusy(true)
+        setPeriodMessage("")
+        setPeriodError("")
+        try {
+            const response = await api.post('admin/capture-period', { secret_key: adminKey })
+            setCapturePeriod(response.data.period ?? "")
+            setPeriodModalOpen(true)
+        } catch (e: any) {
+            setPeriodMessage(e.response?.data?.error || "Erro ao carregar o período de captação.")
+        } finally {
+            setPeriodBusy(false)
+        }
+    }
+
+    async function saveCapturePeriod(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+        setPeriodBusy(true)
+        setPeriodError("")
+        try {
+            const response = await api.put('admin/capture-period', {
+                secret_key: adminKey,
+                period: capturePeriod,
+            })
+            setCapturePeriod(response.data.period)
+            setPeriodModalOpen(false)
+            setPeriodMessage(`Período de captação ${response.data.period} salvo. Será usado nos novos contratos.`)
+        } catch (e: any) {
+            setPeriodError(e.response?.data?.error || "Erro ao salvar o período de captação.")
+        } finally {
+            setPeriodBusy(false)
+        }
+    }
 
     // Edit Modal State
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -223,7 +262,47 @@ export default function Usuarios() {
                 <button onClick={() => fetchUsers(0)}>
                     {loading ? <Loading /> : "Carregar Usuários"}
                 </button>
+                <button type="button" onClick={openCapturePeriod} disabled={!adminKey.trim() || periodBusy}>
+                    {periodBusy ? "Aguarde..." : "Período de captação"}
+                </button>
             </div>
+            {periodMessage && <p className={styles.periodMessage} role="status">{periodMessage}</p>}
+
+            <Dialog.Root open={periodModalOpen} onOpenChange={(open) => { if (!periodBusy) setPeriodModalOpen(open) }}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className={styles.periodOverlay} />
+                    <Dialog.Content className={styles.periodModal}>
+                        <Dialog.Title>Período de captação</Dialog.Title>
+                        <Dialog.Description>
+                            Defina o período que preencherá {'{{PERIODO}}'} nos novos contratos.
+                            Contratos já gerados mantêm o período original.
+                        </Dialog.Description>
+                        <form onSubmit={saveCapturePeriod}>
+                            <label htmlFor="capture-period">Ano e semestre</label>
+                            <input
+                                id="capture-period"
+                                type="text"
+                                placeholder="2027.1"
+                                value={capturePeriod}
+                                onChange={(event) => setCapturePeriod(event.target.value)}
+                                pattern={'[0-9]{4}\\.[12]'}
+                                maxLength={6}
+                                title="Use o formato 2027.1 ou 2027.2"
+                                required
+                                disabled={periodBusy}
+                                aria-describedby={periodError ? "capture-period-error" : undefined}
+                            />
+                            {periodError && <p id="capture-period-error" role="alert">{periodError}</p>}
+                            <div className={styles.periodButtons}>
+                                <Dialog.Close type="button" disabled={periodBusy}>Cancelar</Dialog.Close>
+                                <button type="submit" disabled={periodBusy}>
+                                    {periodBusy ? "Salvando..." : "Salvar período"}
+                                </button>
+                            </div>
+                        </form>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
 
             {/* Search Component Reuse */}
             {/* Note: We pass adminKey and onlyPaid. SearchUser component handles its own search API call and sets searchUsers parent state */}
