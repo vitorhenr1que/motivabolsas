@@ -42,7 +42,7 @@ ARG CIRCLE_NODE_TOTAL
 RUN node <<'NODE'
 const fs=require('fs');const p='node_modules/next/dist/compiled/@next/font/dist/google/loader.js';let s=fs.readFileSync(p,'utf8');const old='.exec(googleFontFileUrl)[1]';if(!s.includes(old))throw Error('Google font loader changed: review patch');s=s.replace(old,'.exec(googleFontFileUrl)?.[1] || ({wOF2:"woff2",wOFF:"woff",OTTO:"otf"}[fontFileBuffer.toString("ascii",0,4)] || "ttf")');fs.writeFileSync(p,s);
 NODE
-RUN --mount=type=cache,target=/app/.next/cache npm run build && test -s .next/BUILD_ID
+RUN --mount=type=cache,target=/app/.next/cache NODE_OPTIONS=--max-old-space-size=4096 npm run build && test -s .next/BUILD_ID
 FROM base AS runtime
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 COPY --from=build /app /app
