@@ -1,0 +1,50 @@
+# syntax=docker/dockerfile:1
+FROM node:22-bookworm-slim AS base
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl openssl libatomic1 && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+FROM base AS build
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
+RUN --mount=type=cache,target=/root/.npm npm ci && npx prisma generate
+COPY . .
+ARG JWT_COOKIE_NAME
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+ARG GOOGLE_ACCESS_TOKEN
+ARG GOOGLE_REFRESH_TOKEN
+ARG GOOGLE_TOKEN_SCOPE
+ARG GOOGLE_TOKEN_EXPIRY_DATE
+ARG NEXT_PUBLIC_WEBSITE_URL
+ARG USERMAIL
+ARG PASSMAIL
+ARG INTER_WEBHOOK_TOKEN
+ARG SSL_CA_BASE64
+ARG SSL_KEY_BASE64
+ARG SSL_CERT_BASE64
+ARG INTER_ACCOUNT
+ARG NEXT_PUBLIC_INTER_AUTH_URL
+ARG INTER_CLIENT_SECRET
+ARG INTER_CLIENT_ID
+ARG NEXT_PUBLIC_ADMIN_KEY
+ARG NEXT_PUBLIC_PRISMIC_ACCESS_TOKEN
+ARG NEXT_PUBLIC_VERSION
+ARG NEXT_PUBLIC_STRIPE_TEST_KEY
+ARG STRIPE_WEBHOOK_SECRET
+ARG STRIPE_PRICE_ID
+ARG NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+ARG STRIPE_TEST_KEY
+ARG JWT_SECRET
+ARG DATABASE_URL
+ARG NODE_OPTIONS
+ARG NEXT_TELEMETRY_DISABLED
+ARG REVALIDATE_TOKEN
+ARG CIRCLE_NODE_TOTAL
+RUN node <<'NODE'
+const fs=require('fs');const p='node_modules/next/dist/compiled/@next/font/dist/google/loader.js';let s=fs.readFileSync(p,'utf8');const old='.exec(googleFontFileUrl)[1]';if(!s.includes(old))throw Error('Google font loader changed: review patch');s=s.replace(old,'.exec(googleFontFileUrl)?.[1] || ({wOF2:"woff2",wOFF:"woff",OTTO:"otf"}[fontFileBuffer.toString("ascii",0,4)] || "ttf")');fs.writeFileSync(p,s);
+NODE
+RUN --mount=type=cache,target=/app/.next/cache npm run build && test -s .next/BUILD_ID
+FROM base AS runtime
+ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
+COPY --from=build /app /app
+EXPOSE 3000
+CMD ["npm","run","start","--","--hostname","0.0.0.0","--port","3000"]
