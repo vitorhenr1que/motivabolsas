@@ -1,5 +1,11 @@
 import axios from "axios";
 import { createInterHttpsAgent } from "../../../lib/interMtls";
+import { prisma } from "../../../services/prisma";
+
+type Boleto = {
+  cobranca: { codigoSolicitacao: string; [key: string]: unknown };
+  [key: string]: unknown;
+};
 
 export const runtime = "nodejs";
 
@@ -13,7 +19,6 @@ export async function POST(req: Request) {
     }
 
     const { interToken, initialDate, finalDate, cpf } = await req.json();
-    console.log('CHEGOU --->>>', interToken, initialDate, finalDate, cpf);
 
     // --- Validações básicas do request ---
     if (!interToken) {
@@ -55,7 +60,23 @@ export async function POST(req: Request) {
       timeout: 20_000,
     });
 
-    return Response.json(resp.data, { status: 200 });
+    const cobrancas: Boleto[] = resp.data?.cobrancas ?? [];
+    const periods = await prisma.paymentPeriod.findMany({
+      where: { codigoSolicitacao: { in: cobrancas.map(item => item.cobranca.codigoSolicitacao) } },
+      select: { codigoSolicitacao: true, period: true },
+    });
+    const periodsByCode = new Map(periods.map(item => [item.codigoSolicitacao, item.period]));
+
+    return Response.json({
+      ...resp.data,
+      cobrancas: cobrancas.map(item => ({
+        ...item,
+        cobranca: {
+          ...item.cobranca,
+          period: periodsByCode.get(item.cobranca.codigoSolicitacao) ?? null,
+        },
+      })),
+    }, { status: 200 });
   } catch (err: any) {
     const status = err?.response?.status ?? 400;
     const interData = err?.response?.data ?? null;

@@ -21,6 +21,7 @@ interface Boleto {
         valorNominal: number;
         situacao: string;
         valorTotalRecebido?: number;
+        period?: string | null;
     }
 }
 
@@ -104,7 +105,7 @@ export default function Payments() {
                 lastUpdate: new Date().toISOString(),
                 startedAt: item.cobranca.dataEmissao,
                 succeededAt: item.cobranca.dataVencimento,
-                description: getPaymentDescription(item.cobranca.dataVencimento)
+                description: getPaymentDescription(item.cobranca.period)
             }
 
             const response = await fetch('/api/pdf/comprovante', {
@@ -148,16 +149,8 @@ export default function Payments() {
         return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     }
 
-    function getPaymentDescription(dateStr: string) {
-        if (!dateStr) return 'Pagamento Semestral'
-        const parts = dateStr.split('-')
-        if (parts.length === 3) {
-            const year = parts[0]
-            const month = parseInt(parts[1], 10)
-            const semester = month <= 6 ? 1 : 2
-            return `Pagamento Semestral ${year}.${semester}`
-        }
-        return `Pagamento Semestral`
+    function getPaymentDescription(period?: string | null) {
+        return period ? `Pagamento Semestral ${period}` : 'Pagamento Semestral'
     }
 
     return (
@@ -195,7 +188,7 @@ export default function Payments() {
                                                     <PiReceiptBold size={20} />
                                                 </div>
                                                 <div>
-                                                    <strong>{getPaymentDescription(item.cobranca.dataVencimento)}</strong>
+                                                    <strong>{getPaymentDescription(item.cobranca.period)}</strong>
                                                     <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>Ref: {item.cobranca.codigoSolicitacao}</span>
                                                 </div>
                                             </div>

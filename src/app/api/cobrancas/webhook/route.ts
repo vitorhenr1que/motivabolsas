@@ -1,164 +1,60 @@
-import { api } from "@/app/services/api"
-import { getInterToken } from "@/app/services/inter-token"
-import { prisma } from "@/app/services/prisma"
-import axios from "axios"
-import fs from 'fs'
-import https from 'https'
+import { prisma } from "@/app/services/prisma";
+import { registerInterPayment } from "@/app/lib/payment-period";
+import axios from "axios";
 
-const contaCorrente = process.env.INTER_ACCOUNT
-const version = process.env.NEXT_PUBLIC_VERSION
-const sslCert = process.env.SSL_CERT_BASE64
-const sslKey = process.env.SSL_KEY_BASE64
-const sslCa = process.env.SSL_CA_BASE64
+export const runtime = "nodejs";
 
-export async function POST(req: Request){
- 
-    const event = await req.json()
-    if(event[0]){ // Se o receber um array
-        console.log('CORPO DO EVENTO: ', event[0] )
-        console.log('seuNumero: ', event[0].seuNumero, "situacao: ", event[0].situacao)
-    
-           try{
-            if(event[0].situacao){
-                switch (event[0].situacao){
-                    case "RECEBIDO":
-                        const getPaidUser = await prisma.user.findUnique({
-                            where: {
-                                cpf: event[0].seuNumero,
-                            },
-                            select: {
-                                renovacao: true, 
-                           }
-                        })
-                        const refreshPayment = await prisma.user.update({
-                            where: {
-                                cpf: event[0].seuNumero,
-                            },
-                            data: {
-                                currentPayment: true,
-                                firstPayment: true,
-                                renovacao: Number(getPaidUser?.renovacao) + 1
-                            },
-                            select: {
-                                id: true,
-                                phone: true,
-                                name: true,
-                                course: true,
-                                instituition: true,
-                                cpf: true,
-                                discount: true,
-                                renovacao: true,
-                                createdAt: true,
-                                addresses: {
-                                    select: {
-                                        city: true
-                                    }
-                                },  
-                           }
-                        })
-                        
-                         axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', { // Utilizando sem o await para nao travar o processo e encaminhar a resposta pro INTER imediato, o webhook faz depois
-                            getPaidUser: refreshPayment,
-                            event: event
-                        }, {timeout: 5000}).catch(() => {
-                            console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
-                            console.log('seuNumero: ', event[0].seuNumero, "situacao: ", event[0].situacao)
-                        })
-                    break;
+type CobrancaEvent = {
+    codigoSolicitacao: string;
+    seuNumero: string;
+    situacao: string;
+};
+
+function notifyWebhook(path: string, body: unknown) {
+    axios.post(`https://webhook.fazag.edu.br:8443/webhook/${path}`, body, {
+        timeout: 5000,
+    }).catch(() => {
+        console.log(`Processo concluído, mas não foi possível notificar o webhook N8N ${path}.`);
+    });
+}
+
+export async function POST(req: Request) {
+    try {
+        const payload = await req.json();
+        const events: CobrancaEvent[] = Array.isArray(payload) ? payload : [payload];
+
+        for (const event of events) {
+            if (event.situacao === "RECEBIDO" || event.situacao === "MARCADO_RECEBIDO") {
+                const refreshPayment = await registerInterPayment(event.codigoSolicitacao, event.seuNumero);
+                if (refreshPayment) {
+                    notifyWebhook("recebido", {
+                        getPaidUser: refreshPayment,
+                        event: Array.isArray(payload) ? [event] : event,
+                    });
                 }
+            } else if (event.situacao === "A_RECEBER") {
+                const userInfo = await prisma.user.findUnique({
+                    where: { cpf: event.seuNumero },
+                    select: {
+                        id: true,
+                        phone: true,
+                        name: true,
+                        course: true,
+                        instituition: true,
+                        cpf: true,
+                        discount: true,
+                        renovacao: true,
+                        createdAt: true,
+                        addresses: { select: { city: true } },
+                    },
+                });
+                notifyWebhook("a-receber", { userInfo, event: Array.isArray(payload) ? [event] : event });
             }
-            return Response.json(event[0], {status: 200})
-           }catch(e){
-                return Response.json({error: e}, {status: 400})
-            }
+        }
+
+        return Response.json(payload, { status: 200 });
+    } catch (error) {
+        console.error("Erro ao registrar pagamento do Inter:", error);
+        return Response.json({ error: "Falha ao registrar evento de cobrança." }, { status: 500 });
     }
-    else{ // Se receber um objeto
-        console.log('CORPO DO EVENTO: ', event )
-        console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
-    
-           try{ 
-            if(event.situacao){
-                switch (event.situacao){
-                    case "RECEBIDO":
-                        const getPaidUser = await prisma.user.findUnique({
-                            where: {
-                                cpf: event.seuNumero,
-                            },
-                            select: {
-                                renovacao: true
-                           }
-                        })
-                        const refreshPayment = await prisma.user.update({
-                            where: {
-                                cpf: event.seuNumero,
-                            },
-                            data: {
-                                currentPayment: true,
-                                firstPayment: true,
-                                renovacao: Number(getPaidUser?.renovacao) + 1 
-                            },
-                            select: {
-                                id: true,
-                                phone: true,
-                                name: true,
-                                course: true,
-                                instituition: true,
-                                cpf: true,
-                                discount: true,
-                                renovacao: true,
-                                createdAt: true,
-                                addresses: {
-                                    select: {
-                                        city: true
-                                    }
-                                },  
-                           }
-                        })
-                         axios.post('https://webhook.fazag.edu.br:8443/webhook/recebido', {
-                            getPaidUser: refreshPayment,
-                            event: event
-                        }, {timeout: 5000}).catch(() => {
-                            console.log(`Processo concluído, mas não foi possível notificar o webhook N8N de recebido.`)
-                            console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
-                        })
-                    break;
-                    case "A_RECEBER":
-                        const userInfo = await prisma.user.findUnique({
-                            where: {
-                                cpf: event.seuNumero,
-                            },
-                            select: {
-                                id: true,
-                                phone: true,
-                                name: true,
-                                course: true,
-                                instituition: true,
-                                cpf: true,
-                                discount: true,
-                                renovacao: true,
-                                createdAt: true,
-                                addresses: {
-                                    select: {
-                                        city: true
-                                    }
-                                },  
-                           }
-                        })
-                        const webhook = axios.post('https://webhook.fazag.edu.br:8443/webhook/a-receber', {
-                            userInfo,
-                            event: event
-                        }, {timeout: 5000}).catch(() => {
-                            console.log(`Processo concluído, mas não foi possível notificar o webhook N8N a receber.`)
-                            console.log('seuNumero: ', event.seuNumero, "situacao: ", event.situacao)
-                        })
-                    break;
-                }
-            }
-            return Response.json(event, {status: 200})
-           }catch(e){
-                return Response.json({error: e}, {status: 400})
-            }
-    }
-    
-       
 }
