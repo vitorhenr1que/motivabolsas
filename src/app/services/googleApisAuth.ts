@@ -193,20 +193,25 @@ export async function listImageObjectIds(documentId: string): Promise<string[]> 
 
   const imageObjectIds: string[] = [];
 
-  for (const element of documentBody) {
-    const paragraph = element.paragraph;
-
-    if (paragraph && paragraph.elements) {
-      for (const el of paragraph.elements) {
-        if (el.inlineObjectElement) {
-          const objectId = el.inlineObjectElement.inlineObjectId;
-          if (objectId) {
-            imageObjectIds.push(objectId);
-          }
+  function collectImages(content: typeof documentBody) {
+    for (const element of content) {
+      for (const el of element.paragraph?.elements || []) {
+        const objectId = el.inlineObjectElement?.inlineObjectId;
+        if (objectId) {
+          imageObjectIds.push(objectId);
         }
+      }
+      for (const row of element.table?.tableRows || []) {
+        for (const cell of row.tableCells || []) {
+          collectImages(cell.content || []);
+        }
+      }
+      if (element.tableOfContents?.content) {
+        collectImages(element.tableOfContents.content);
       }
     }
   }
+  collectImages(documentBody);
 
   console.log(`Imagens encontradas: ${imageObjectIds.length}`);
   console.log(imageObjectIds);

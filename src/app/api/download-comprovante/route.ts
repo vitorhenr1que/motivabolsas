@@ -5,9 +5,9 @@ import {
   exportGoogleDocAsPDF,
   replaceTextsAndImagesInGoogleDoc,
   duplicateGoogleDoc,
-  deleteGoogleDoc
+  deleteGoogleDoc,
+  listImageObjectIds
 } from '../../services/googleApisAuth';
-import axios from 'axios';
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -15,6 +15,15 @@ export const maxDuration = 60;
 export async function POST(request: Request) {
   let newFileId = ''; // o finally não pega variáveis de dentro do try
   const url = new URL(request.url);
+  // O proxy termina o TLS; request.url pode apontar para a porta HTTP interna.
+  const publicHost = request.headers.get('x-forwarded-host')?.split(',')[0].trim()
+    || request.headers.get('host');
+  if (publicHost) {
+    url.port = '';
+    url.host = publicHost;
+  }
+  const protocol = request.headers.get('x-forwarded-proto')?.split(',')[0].trim();
+  if (protocol === 'https' || protocol === 'http') url.protocol = `${protocol}:`;
   const baseUrl = url.origin;
 
   try {
@@ -46,9 +55,12 @@ export async function POST(request: Request) {
     console.log("Novo documento:", newFileId);
 
     // 2) Pegar image_id do doc duplicado
-    const objectId = await axios.post(`${baseUrl}/api/find-image-doc-id`, {
-      newFileId
-    });
+    const [imageObjectId] = await listImageObjectIds(newFileId);
+    if (!imageObjectId) {
+      throw new Error('Imagem do QR code não encontrada no modelo do comprovante.');
+    }
+    const qrCodeUrl = new URL('/api/qrcode', baseUrl);
+    qrCodeUrl.searchParams.set('text', new URL(`/consulta/${id}`, baseUrl).href);
 
     // 3) Substituir textos e imagem
     await replaceTextsAndImagesInGoogleDoc(
@@ -67,8 +79,8 @@ export async function POST(request: Request) {
       ],
       [
         {
-          imageObjectId: `${objectId.data.image_id}`,
-          imageUrl: `${baseUrl}/api/qrcode?text=${baseUrl}/consulta/${id}`
+          imageObjectId,
+          imageUrl: qrCodeUrl.href
         }
       ]
     );
